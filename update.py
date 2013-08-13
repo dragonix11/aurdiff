@@ -50,18 +50,19 @@ def main():
     if (lastname, lastversion) in pkglist:
         index = pkglist.index((lastname, lastversion))
         pkglist = pkglist[:index]
+    if not pkglist:
+        print("Nothing to update")
+        return
     for name, version in reversed(pkglist):
         print("Updating %s to %s" % (name, version))
         download_pkgbuild(name)
         subprocess.call(['git', 'add', op.join(AUR_FOLDER, name)])
-        commit_msg = "Updated %s to %s" % (name, version)
-        subprocess.call(['git', 'commit', '-m', commit_msg])
     lastname, lastversion = pkglist[0]
     info = {'name': lastname, 'version': lastversion}
     with open(json_path, 'wt') as fp:
         json.dump(info, fp)
     subprocess.call(['git', 'add', json_path])
-    commit_msg = "Saving lastupdate info"
+    commit_msg = "Updated %d packages" % len(pkglist)
     subprocess.call(['git', 'commit', '-m', commit_msg])
 
 if __name__ == '__main__':
