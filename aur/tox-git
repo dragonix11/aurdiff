@@ -1,0 +1,35 @@
+# Maintainer: Boohbah <boohbah at gmail.com> 
+
+pkgname=tox-git
+_gitname=ProjectTox-Core
+pkgver=999.f9bfb42
+pkgrel=1
+pkgdesc="A FOSS instant messaging application aimed to replace Skype (git version)"
+arch=('i686' 'x86_64')
+url="https://github.com/irungentoo/ProjectTox-Core"
+license=('GPL')
+depends=('libsodium-git' 'libconfig>=1.4')
+makedepends=('git' 'cmake' 'check' 'checkinstall')
+source=('git://github.com/irungentoo/ProjectTox-Core.git')
+md5sums=('SKIP')
+
+pkgver() {
+  cd $_gitname
+  echo $(git rev-list --count HEAD).$(git rev-parse --short HEAD)
+}
+
+build() {
+  cd $_gitname
+  mkdir build && cd build
+  cmake ..
+  make
+}
+
+package() {
+  cd $_gitname/build/testing
+  install -Dm755 nTox "$pkgdir/usr/bin/nTox"
+  install -Dm755 DHT_test Messenger_test Lossless_UDP_testclient \
+    Lossless_UDP_testserver toxic/toxic "$pkgdir/usr/bin/"
+  install -Dm644 ../core/libtoxcore.a "$pkgdir/usr/lib/libtoxcore.a"
+  install -Dm644 ../../COPYING "$pkgdir/usr/share/licenses/$pkgname/COPYING"
+}
