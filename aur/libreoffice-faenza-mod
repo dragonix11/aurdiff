@@ -1,0 +1,24 @@
+# Maintainer: Pierrick BRUN <pierrick.brun gmail.com>
+pkgname=libreoffice-faenza-mod
+pkgver=0.7.4i
+pkgrel=3
+pkgdesc="An icons pack for libreoffice inspired by Faenza icons"
+arch=(any)
+url="http://gnome-look.org/content/show.php/Faenza+Icons++for+LibreOffice++4.0.0?content=157970"
+license=('GPL')
+depends=('libreoffice-common')
+conflicts=('libreoffice-flat-icon-set')
+install=${pkgname}.install
+source=("https://dl.dropboxusercontent.com/u/1229628/libreoffice_faenzaMODV${pkgver}.zip")
+noextract=("libreoffice_faenzaMODV${pkgver}.zip")
+md5sums=('c2147ddf688980d8c57b651a3ba0fcef') 
+
+package() {
+LO_DIR=/usr/lib/libreoffice/share/config
+
+mv libreoffice_faenzaMODV${pkgver}.zip images_faenza.zip
+mkdir -p $pkgdir$LO_DIR
+cp images_faenza.zip $pkgdir$LO_DIR
+
+}
+
