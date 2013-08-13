@@ -1,0 +1,30 @@
+# Maintainer: Peter Kotvan <peter dot kotvan at gmail dot com>
+pkgname=lumail
+_gitname=lumail
+pkgver=0.17
+pkgrel=1
+pkgdesc="Modern console-based email client developed for GNU/Linux."
+arch=('i686' 'x86_64')
+url="http://lumail.org/"
+license=('GPLv2')
+depends=('lua51' 'mimetic' 'ncurses' 'pcre')
+makedepends=('git')
+provides=('lumail')
+conflicts=('lumail')
+backup=('etc/lumail.lua')
+source=(http://lumail.org/download/lumail-$pkgver.tar.gz)
+md5sums=('375722c087f6c43c68094e0e15004901')
+
+build() {
+    cd "$srcdir/lumail-$pkgver"
+    make
+}
+
+package() {
+    cd "$srcdir/lumail-$pkgver"
+    install -d $pkgdir/etc
+    install -d $pkgdir/usr/bin
+    cp ./lumail.lua "$pkgdir/etc/lumail.lua"
+    cp ./lumail $pkgdir/usr/bin/
+}
+
