@@ -1,0 +1,44 @@
+# Maintainer: Pier Luigi Fiorini <pierluigi.fiorini@gmail.com>
+
+pkgname=hawaii-terminal-git
+pkgver=0.0.0
+pkgrel=1
+pkgdesc="Hawaii: Terminal"
+arch=('i686' 'x86_64')
+url="http://www.maui-project.org"
+license=('GPL')
+depends=('qtdeclarative-git' 'qtquickcontrols-git')
+makedepends=('git' 'cmake')
+
+_gitroot="git://github.com/hawaii-desktop/terminal.git"
+_gitbranch=master
+_gitname=terminal
+source=(${_gitname}::${_gitroot}#branch=${_gitbranch})
+md5sums=('SKIP')
+
+pkgver() {
+	cd ${srcdir}/${_gitname}
+	echo $(git rev-list --count HEAD).$(git rev-parse --short HEAD)
+}
+
+build() {
+	cd ${srcdir}/${_gitname}
+
+	git submodule update --init
+
+	export PATH=/opt/hawaiide/bin:$PATH
+	export PKG_CONFIG_PATH=/opt/hawaiide/lib/pkgconfig
+
+	mkdir build
+	cd build
+	cmake -DCMAKE_INSTALL_PREFIX=/usr -DCMAKE_INSTALL_LIBDIR=/usr/lib \
+		-DCMAKE_INSTALL_PLUGINSDIR=/usr/lib/hawaii/plugins \
+		-DCMAKE_INSTALL_QMLDIR=/usr/lib/hawaii/qml \
+		-DCMAKE_BUILD_TYPE=Release ..
+	make
+}
+
+package() {
+	cd ${srcdir}/${_gitname}/build
+	make DESTDIR="${pkgdir}" install
+}
