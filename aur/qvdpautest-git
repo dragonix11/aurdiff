@@ -1,0 +1,37 @@
+# Maintainer: Gustavo Alvarez <sl1pkn07@gmail.com>
+
+pkgname=qvdpautest-git
+pkgver=20130725.8a2de5e
+pkgrel=1
+pkgdesc="A VDPAU Benchmark. (GIT version)"
+arch=('i686' 'x86_64')
+license=('LGPL')
+url="http://www.nvnews.net/vbulletin/showthread.php?p=2015214"
+makedepends=('cmake')
+depends=('qt4' 'libvdpau')
+provides=('qvdpautest')
+conflicts=('qvdpautest')
+source=('git://github.com/robertmassaioli/qvdpautest.git'
+        'qvdpautest.sh')
+md5sums=('SKIP'
+         'd4f50d76f9e4f9837956fa521879f44a')
+_gitname="qvdpautest"
+
+pkgver() {
+  cd "${_gitname}"
+  echo "$(git log -1 --format="%cd" --date=short | tr -d '-').$(git log -1 --format="%h")"
+}
+
+build() {
+  cd "${srcdir}/${_gitname}"
+
+  cmake . -DCMAKE_INSTALL_PREFIX=/usr
+  make
+}
+
+package() {
+  cd "${srcdir}/${_gitname}"
+  install -Dm755 "${srcdir}/qvdpautest.sh" "${pkgdir}/usr/bin/qvdpautest"
+  install -Dm755 src/qvdpautest "${pkgdir}/usr/share/qvdpautest/qvdpautest"
+  install -m644 data/* "${pkgdir}/usr/share/qvdpautest/"
+}
