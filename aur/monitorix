@@ -1,0 +1,70 @@
+# Contributor: graysky <graysky AT archlinux dot us>
+
+pkgname=monitorix
+pkgver=3.3.0
+pkgrel=1
+pkgdesc='A lightweight system monitoring tool that uses rrd databases.'
+arch=('any')
+url='http://www.monitorix.org'
+license=('GPL')
+depends=('perl' 'perl-cgi' 'perl-mailtools' 'perl-mime-lite' 'perl-libwww' 'perl-dbi' 'perl-xml-simple'
+'perl-config-simple' 'perl-config-general' 'rrdtool' 'perl-http-server-simple')
+optdepends=(
+	'anything-sync-daemon: offload your databases to tmpfs to save i/o to your disk.'
+	'hddtemp: enable support for hdd temp monitoring.'
+	'lm_sensors: enable support for system temp monitoring.'
+	'nvidia: enable support for nVidia card temp and usage monitoring.'
+	'smartmontools: enable support for hdd bad sector monitoring.'
+	'terminus-font: if graphs do not contain characters, you may need this font package.')
+conflicts=$pkgname-beta
+replaces=$pkgname-beta
+backup=etc/$pkgname.conf
+install=readme.install
+source=(http://www.$pkgname.org/$pkgname-$pkgver.tar.gz)
+sha256sums=('9578d79121034cfee94ebcdcec3a1c55fddd0ff022cdd8184d1d5109f813d29a')
+_basedir="srv/http/monitorix"
+_libdir="var/lib/$pkgname"
+
+prepare() {
+	cd "$pkgname-$pkgver"
+
+	# temp fix in 3.3.0
+	# can be removed when pull request is merged
+	# https://github.com/graysky2/Monitorix/commit/2398c5a669193990fa8534330c089f559c5c95f0
+	sed -i '/^base_cgi/ s,-,/,' $pkgname.conf
+	
+	# use Arch default location for http servers and disable built-in httpd
+	sed -e '/^base_dir/ s,\/usr\/share,\/srv\/http,' \
+		-e '/^<httpd_builtin>/{$!N; s/y/n/}' <$pkgname.conf >$pkgname.conf.Arch_modified
+}
+
+package() {
+	cd "$pkgname-$pkgver"
+
+	install -Dm755 $pkgname "$pkgdir/usr/bin/$pkgname"
+	install -Dm755 $pkgname.cgi "$pkgdir/$_basedir/cgi/$pkgname.cgi"
+	install -Dm644 $pkgname.conf.Arch_modified "$pkgdir/etc/$pkgname.conf"
+	
+	for i in lib/*.pm; do
+		install -Dm644 "$i" "$pkgdir/usr/lib/$pkgname/${i##lib/}"
+	done
+
+	for i in Changes COPYING README*; do
+		install -Dm644 "$i" "$pkgdir/usr/share/doc/$i"
+	done
+	
+	install -Dm644 logo_bot.png "$pkgdir/$_basedir/logo_bot.png"
+	install -m644 logo_top.png "$pkgdir/$_basedir/logo_top.png"
+	install -m644 monitorixico.png "$pkgdir/$_basedir/monitorixico.png"
+	install -Dm755 docs/$pkgname.service "$pkgdir/usr/lib/systemd/system/$pkgname.service"
+	install -Dm644 docs/$pkgname.logrotate "$pkgdir/etc/logrotate.d/$pkgname"
+	install -m644 docs/$pkgname-alert.sh "$pkgdir/usr/share/doc/$pkgname-alert.sh"
+	install -m644 docs/$pkgname-apache.conf "$pkgdir/usr/share/doc/$pkgname-apache.conf"
+	install -Dm644 man/man5/$pkgname.conf.5 "$pkgdir/usr/share/man/man5/$pkgname.conf.5"
+	install -Dm644 man/man8/$pkgname.8 "$pkgdir/usr/share/man/man8/$pkgname.8"
+	install -dm777 "$pkgdir/$_basedir/imgs"
+
+	for i in reports/*.html; do
+		install -Dm644 "$i" "$pkgdir/$_libdir/reports/${i##reports/}"
+	done
+}
