@@ -1,0 +1,107 @@
+# Maintainer: OK100 <ok100@lavabit.com>
+# vim:set sw=2 sts=2 et:
+
+pkgname=vim-x
+pkgdesc='Vi Improved, a highly configurable, improved version of the vi text editor. Compiled with --with-x=yes'
+_topver=7.4
+_patchlevel=0
+__hgrev=980dfdc910b3
+_versiondir="vim${_topver//./}"
+pkgver=${_topver}.${_patchlevel}
+pkgrel=1
+arch=('i686' 'x86_64')
+license=('custom:vim')
+url="http://www.vim.org"
+depends=("vim-runtime=${pkgver}-${pkgrel}" 'gpm')
+makedepends=('gpm' 'libxt')
+conflicts=('gvim' 'vim')
+provides=('vim')
+source=("ftp://ftp.archlinux.org/other/vim/vim-${pkgver}.tar.xz"
+		"ftp://ftp.archlinux.org/other/vim/vim-${pkgver}.tar.xz.sig"
+        'pythoncomplete.vim::http://www.vim.org/scripts/download_script.php?src_id=10872'
+        'vimrc'
+		'archlinux.vim')
+
+# source PKGBUILD && mksource
+mksource() {
+
+  [[ -x /usr/bin/hg ]] || (echo "hg not found. Install mercurial." && return 1)
+
+  __hgroot='http://vim.googlecode.com/hg/'
+  __hgrepo='vim'
+  __hgbranch='default'
+
+  hg clone -b ${__hgbranch} -u ${__hgrev} "${__hgroot}${__hgrepo}" ${__hgrepo}
+
+  pushd ${__hgrepo}
+  if (( $(hg id -n) < $(hg id -nr ${__hgbranch}) )); then
+    printf 'You are not building the latest revision!\n'
+    printf "Consider updating __hgrev to $(hg id -r ${__hgbranch}).\n"
+  fi
+  popd
+
+  mv vim vim-${pkgver}
+  find vim-${pkgver} -depth -type d -name .hg -exec rm -rf {} \;
+  rm vim-${pkgver}/{.hgignore,.hgtags}
+  tar -cJf vim-${pkgver}.tar.xz vim-${pkgver}/*
+  rm -r vim-${pkgver}
+
+  gpg --detach-sign ${pkgname}-${pkgver}.tar.xz
+
+  scp ${pkgname}-${pkgver}.tar.xz nym:/srv/ftp/other/vim/
+  scp ${pkgname}-${pkgver}.tar.xz.sig nym:/srv/ftp/other/vim/
+}
+
+build() {
+  cd "${srcdir}"
+
+  cp -a vim-${pkgver} vim-build
+
+  # define the place for the global (g)vimrc file (set to /etc/vimrc)
+  sed -i 's|^.*\(#define SYS_.*VIMRC_FILE.*"\) .*$|\1|' \
+    vim-build/src/feature.h
+  sed -i 's|^.*\(#define VIMRC_FILE.*"\) .*$|\1|' \
+    vim-build/src/feature.h
+
+  (cd vim-build/src && autoconf)
+
+  cd "${srcdir}"/vim-build
+
+  ./configure --prefix=/usr --localstatedir=/var/lib/vim \
+    --with-features=huge --with-compiledby=ArchLinux \
+    --enable-gpm --enable-acl --with-x=yes \
+    --disable-gui --enable-multibyte --enable-cscope \
+    --disable-netbeans --enable-perlinterp --disable-pythoninterp \
+    --disable-python3interp --disable-rubyinterp --disable-luainterp
+
+  make
+}
+
+package() {
+  cd "${srcdir}"/vim-build
+  make -j1 VIMRCLOC=/etc DESTDIR="${pkgdir}" install
+
+  # provided by (n)vi in core
+  rm "${pkgdir}"/usr/bin/{ex,view}
+
+  # delete some manpages
+  find "${pkgdir}"/usr/share/man -type d -name 'man1' 2>/dev/null | \
+    while read _mandir; do
+    cd ${_mandir}
+    rm -f ex.1 view.1 # provided by (n)vi
+    rm -f evim.1    # this does not make sense if we have no GUI
+  done
+
+  # Runtime provided by runtime package
+  rm -r "${pkgdir}"/usr/share/vim
+
+  # license
+  install -Dm644 "${srcdir}"/vim-${pkgver}/runtime/doc/uganda.txt \
+    "${pkgdir}"/usr/share/licenses/vim/license.txt
+}
+
+md5sums=('1dfdea2e3fbf778647286d7e23ef9f54'
+         '93a30685d74df2fe24d408bc9cf6330f'
+         '6e7adfbd5d26c1d161030ec203a7f243'
+         '20fceda56badf201695c57999b0bc609'
+         '10353a61aadc3f276692d0e17db1478e')
