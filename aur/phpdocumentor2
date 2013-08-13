@@ -1,0 +1,39 @@
+# Maintainer: Michael Lass <bevan@bi-co.net>
+
+pkgname=phpdocumentor2
+_pkgreal=phpDocumentor
+pkgver=2.0.1
+pkgrel=1
+pkgdesc="Documentation Generator for PHP"
+arch=('any')
+url="http://www.phpdoc.org/"
+license=('custom')
+depends=('graphviz' 'php-xsl')
+conflicts=('phpdocumentor')
+install=$pkgname.install
+source=("http://pear.phpdoc.org/get/${_pkgreal}-${pkgver}.tgz"
+        "${pkgname}.install")
+md5sums=('0cfb0aba2d6789c7c36573fcbe934fd0'
+         '53af52d12a7f43946e1e2232bbea9eec')
+
+package() {
+	# Install main application
+	install -dm755 ${pkgdir}/usr/share/webapps
+	mv ${srcdir}/${_pkgreal}-${pkgver} ${pkgdir}/usr/share/webapps/${pkgname}
+	chmod -R a+r ${pkgdir}/usr/share/webapps/${pkgname}
+
+	# Move LICENSE, README and CONTRIBUTING
+	install -dm755 ${pkgdir}/usr/share/licenses/${pkgname}
+        install -dm755 ${pkgdir}/usr/share/doc/${pkgname}
+	mv ${pkgdir}/usr/share/webapps/${pkgname}/LICENSE \
+		${pkgdir}/usr/share/licenses/${pkgname}/LICENSE
+        mv ${pkgdir}/usr/share/webapps/${pkgname}/README.md \
+                ${pkgdir}/usr/share/doc/${pkgname}/README
+        mv ${pkgdir}/usr/share/webapps/${pkgname}/CONTRIBUTING.md \
+                ${pkgdir}/usr/share/doc/${pkgname}/CONTRIBUTING
+
+	# Make phpdoc.php executable and link it to /usr/bin/phpdoc
+	chmod a+x ${pkgdir}/usr/share/webapps/${pkgname}/bin/phpdoc.php
+	install -dm755 ${pkgdir}/usr/bin
+	ln -s /usr/share/webapps/${pkgname}/bin/phpdoc.php ${pkgdir}/usr/bin/phpdoc
+}
