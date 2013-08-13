@@ -1,0 +1,128 @@
+# Maintainer: Thomas Dziedzic < gostrc at gmail >
+# Contributor: dibblethewrecker dibblethewrecker.at.jiwe.dot.org
+# Contributor: Emiliano Vavassori <syntaxerrormmm(at)gmail.com>
+
+pkgname=grass
+pkgver=6.4.3
+pkgrel=1
+pkgdesc='Geographic Information System (GIS) used for geospatial data management and analysis, image processing, graphics/maps production, spatial modeling, and visualization.'
+arch=('i686' 'x86_64')
+url='http://grass.osgeo.org/'
+license=('GPL')
+depends=('cfitsio' 'fftw' 'gdal' 'glu' 'libjpeg' 'libpng' 'libtiff' 'libxmu' 'ncurses' 'mesa' 'python2' 'postgresql' 'proj' 'tcl' 'tk' 'wxpython' 'xorg-server' 'zlib')
+makedepends=('freetype2')
+optdepends=('sqlite3: sqlite3 database interface'
+	    'mysql: mysql database interface'
+            'r: R language interface'
+            'blas: required for GMATH library'
+            'lapack: required for GMATH library'
+	    'cairo: cairo support'
+	    'ffmpeg: ffmpeg support'
+	    'lesstif: motif support')
+options=('!libtool' '!makeflags')
+install='grass.install'
+source=("http://grass.osgeo.org/grass64/source/${pkgname}-${pkgver}.tar.gz"
+        "grass.sh"
+        "grass.conf"
+	"grass-python2.patch")
+md5sums=('d82d11b96e1ca1e23078b7657293bf22'
+         '23da2e9399b3c5504851dec37821abe1'
+         '6103480c2a1adc19a50b9e925e5e6d4c'
+         'c025f8ec1d88e55d351713378435d3b0')
+
+build() {
+  cd "${srcdir}/${pkgname}-${pkgver}"
+
+  # Fixing by hand shebang for .py files.
+  find . -iname \*.py | xargs sed -ie 's:^#!/usr/bin/env python$:#!/usr/bin/env python2:'
+  find . -iname \*.py | xargs sed -ie 's:^#!/usr/bin/python$:#!/usr/bin/env python2:'
+
+  # Fixing Makefile compilation
+  patch -p0 -i "${srcdir}/grass-python2.patch"
+  
+  # The following exports are probably not needed
+  export PYTHON=python2
+  export DOXNAME=python2
+  export GRASS_python=python2
+
+  # Trying to fix a problem with GRASS configure
+  # Thanks to Scimmia from ArchLinux Forum
+  # https://bbs.archlinux.org/viewtopic.php?id=161172
+  unset CPPFLAGS
+
+  # Enabling 64bit support - EGV
+  if [ "$CARCH" = "x86_64" ]; then
+	  ENABLE64BIT="--enable-64bit"
+  else
+	  ENABLE64BIT="--disable-64bit"
+  fi
+
+  # see ${srcdir}/grass-6.4.0/REQUIREMENTS.html for options
+  # GLw is hard disabled, since no package in Archlinux can provide it - EGV
+  ./configure ${ENABLE64BIT} \
+    --prefix=/opt \
+    --enable-W11 \
+    --without-glw \
+    --with-jpeg \
+    --with-tiff \
+    --with-png \
+    --with-tcltk \
+    --with-opengl \
+    --with-fftw \
+    --with-postgres \
+    --with-freetype \
+    --with-freetype-includes=/usr/include/freetype2 \
+    --with-nls \
+    --with-gdal \
+    --with-geos \
+    --with-proj-includes=/usr/include \
+    --with-proj-libs=/usr/lib \
+    --with-proj-share=/usr/share/proj \
+    --with-python=/usr/bin/python2-config \
+    --with-wxwidgets=/usr/bin/wx-config
+
+    # sqlite3 support
+    # --with-sqlite \
+
+    # mysql support
+    # --with-mysql \
+    # --with-mysql-includes=/usr/include/mariadb \
+
+    # blas support
+    # --with-blas \
+
+    # lapack support
+    # --with-lapack \
+
+  make
+}
+
+package() {
+  cd "${srcdir}/${pkgname}-${pkgver}"
+
+  make \
+    INST_DIR=${pkgdir}/opt/grass-${pkgver} \
+    BINDIR=${pkgdir}/usr/bin \
+    install
+
+  # fix $GISBASE path
+  sed -i "s|GISBASE=${pkgdir}/opt/grass-${pkgver}|GISBASE=/opt/grass-${pkgver}|g" \
+    ${pkgdir}/usr/bin/grass64
+
+  # install profile.d file
+  install -D ${srcdir}/grass.sh \
+    ${pkgdir}/etc/profile.d/grass.sh
+
+  # install some freedesktop.org compatibility
+  install -D -m644 gui/icons/grass.desktop \
+    ${pkgdir}/usr/share/applications/grass.desktop
+
+  sed -i -e 's/grass65/grass64/' -e 's_/usr/share/icons_/usr/share/pixmaps_' \
+    ${pkgdir}/usr/share/applications/grass.desktop
+
+  install -D -m644 gui/icons/grass-48x48.png \
+    ${pkgdir}/usr/share/pixmaps/grass-48x48.png
+
+  install -D -m644 ${srcdir}/grass.conf \
+    ${pkgdir}/etc/ld.so.conf.d/grass.conf
+}
