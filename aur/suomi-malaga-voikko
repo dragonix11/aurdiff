@@ -1,0 +1,44 @@
+# Contributor:	Jussi Timperi	<gmail.com: jussi.timperi>
+# Maintainer:	Jesse Jaara	<gmail.com: jesse.jaara>
+
+#pkgbase=suomi-malaga
+pkgname=suomi-malaga-voikko
+#pkgname=(suomi-malaga-voikko $pkgbase-sukija)
+pkgver=1.14
+pkgrel=1
+pkgdesc="A description of Finnish morphology written in Malaga."
+arch=('any')
+url="http://voikko.sourceforge.net/"
+license=('GPL2')
+makedepends=('python2' 'malaga>=7.12')
+conflicts=('suomi-malaga')
+provides=('suomi-malaga')
+source=(http://downloads.sourceforge.net/voikko/suomi-malaga-$pkgver.tar.gz)
+
+build() {
+  cd "$srcdir/suomi-malaga-$pkgver"
+
+  sed 's|PYTHON=python|PYTHON=python2|g' -i Makefile
+  make voikko EXTRA_LEX=vocabulary/erikoisalat/linux-distributions.lex
+#  make sukija EXTRA_LEX=vocabulary/erikoisalat/linux-distributions.lex
+}
+
+package_suomi-malaga-voikko() {
+  cd "$srcdir/suomi-malaga-$pkgver"
+
+  make voikko-install DESTDIR="$pkgdir/usr/lib/voikko"
+
+}
+
+package_suomi-malaga-sukija() {
+  cd "$srcdir/suomi-malaga-$pkgver/sukija"
+
+  mkdir -p "${pkgdir}/usr/lib/suomi-malaga/2/mor-standard"
+  cp suomi.lex_l "${pkgdir}/usr/lib/suomi-malaga/2/mor-standard/sukija-fi_FI.lex_l"
+  cp suomi.mor_l "${pkgdir}/usr/lib/suomi-malaga/2/mor-standard/sukija-fi_FI.mor_l"
+  cp suomi.sym_l "${pkgdir}/usr/lib/suomi-malaga/2/mor-standard/sukija-fi_FI.sym_l"
+  cp suomi.pro "${pkgdir}/usr/lib/suomi-malaga/2/mor-standard/sukija-fi_FI.pro"
+
+}
+
+md5sums=('4513d6b544334d8eb65b34f0b7d6ca7f')
