@@ -1,0 +1,42 @@
+# Maintainer: Gustavo Alvarez <sl1pkn07@gmail.com>
+
+pkgname=libaacs-git
+pkgver=0.6.0.8.g2708c77
+pkgrel=1
+pkgdesc="Advanced Access Content System. (GIT version)"
+arch=('i686' 'x86_64')
+license=('LGPL')
+url="http://www.videolan.org/developers/libaacs.html"
+depends=('libgcrypt')
+makedepends=('git' 'flex' 'bison')
+options=('!libtool')
+provides=('libaacs')
+conflicts=('libaacs')
+source=('git://git.videolan.org/libaacs.git')
+md5sums=('SKIP')
+_gitname="libaacs"
+
+pkgver() {
+  cd "${_gitname}"
+  echo "$(git describe --always | tr - .)"
+}
+
+prepare() {
+  cd "${_gitname}"
+
+  sed 's|AM_CONFIG_HEADER(config.h)|AC_CONFIG_HEADERS([config.h])|g' -i configure.ac
+  sed 's|-D_POSIX_C_SOURCE=200112L|-D_POSIX_C_SOURCE=200112L -D_XOPEN_SOURCE=500|g' -i configure.ac
+}
+
+build() {
+  cd "${_gitname}"
+
+  ./bootstrap
+  ./configure --prefix=/usr
+  make
+}
+
+package() {
+  cd "${_gitname}"
+  make DESTDIR="${pkgdir}" install
+}
