@@ -1,0 +1,22 @@
+# Maintainer: Josip Ponjavic <josipponjavic at gmail dot com>
+
+pkgname=opensuse-plasma-theme
+_pkgname=kdebase4-runtime-branding-openSUSE
+pkgver=13.1_260.13
+_pkgver=13.1-260.13
+pkgrel=1
+pkgdesc="Latest openSUSE Factory version of KDE Plasma theme."
+arch=('any')
+url=http://www.opensuse.org/
+license=('custom')
+depends=(kdebase-workspace)
+groups=(kde)
+source=("http://download.opensuse.org/repositories/KDE:/Distro:/Factory/openSUSE_Factory/i586/$_pkgname-$_pkgver.i586.rpm")
+sha256sums=('13b96d5e4039f27e3ac614051f4c30df5875002dc9d4a0776ea5bb321957e945')
+
+package() {
+  cd $srcdir
+  mkdir -p $pkgdir/usr/share/{apps/desktoptheme,licenses/$pkgname}
+  cp -R ./usr/share/kde4/apps/desktoptheme/openSUSE{,default} $pkgdir/usr/share/apps/desktoptheme
+  mv ./usr/share/doc/packages/$_pkgname/COPYING $pkgdir/usr/share/licenses/$pkgname
+}
