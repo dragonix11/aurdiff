@@ -1,0 +1,25 @@
+# Contributor: Jonathan Liu <net147@gmail.com>
+pkgname=vblade
+pkgver=21
+pkgrel=1
+pkgdesc="Virtual EtherDrive(R) blade AoE target"
+arch=('i686' 'x86_64')
+url="http://aoetools.sourceforge.net/"
+license=('GPL2')
+depends=('bash')
+source=("http://downloads.sourceforge.net/aoetools/$pkgname-$pkgver.tgz")
+md5sums=('0a2a257737a808d8f2fbfa5de3172337')
+
+build() {
+  cd "$srcdir/$pkgname-$pkgver"
+  make
+}
+
+package() {
+  cd "$srcdir/$pkgname-$pkgver"
+  install -d "$pkgdir/usr/sbin"
+  install -d "$pkgdir/usr/share/man/man8"
+  make prefix="$pkgdir/usr" install
+}
+
+# vim:set ts=2 sw=2 et:

@@ -1,0 +1,62 @@
+# Maintainer: Kazuki Przyborowski <kazukiprzyborowski[at]gmail[dot]com>
+pkgname=python2-upcean
+pkgver=2.4.4
+pkgrel=2
+pkgdesc="A barcode library/moudle for python2."
+url="https://github.com/GameMaker2k/PyUPC-EAN/"
+arch=('any' 'i686' 'x86_64')
+license=('BSD')
+depends=('python2' 'python2-imaging' 'python2-cherrypy' 'readline' 'freetype2' 'tk')
+makedepends=('curl')
+conflicts=()
+replaces=()
+backup=()
+install=''
+_gitrevision='08b3861a2924e32458917a9fb2219b7bae22b747'
+_curluseragent='Mozilla/5.0 (X11; Linux i686; rv:23.0) Gecko/20100101 Firefox/23.0'
+source=("https://github.com/GameMaker2k/PyUPC-EAN/archive/${_gitrevision}.tar.gz")
+md5sums=('e4fe860155dd49c31fbc7a25b5ea29c0')
+sha256sums=('7c06c6f8c382db6293d72f0e0fdff2bd8db78a1a40185ee00a168c27bd6f5f23')
+sha384sums=('d5fbf0acbf7992dcb86b37d4219666efb0f6fabe3b6c9a54e1247ee7778fc7610c54afca4848ef71a6da93d7b2111a8b')
+sha512sums=('3565d5d2e1e2a25f6bcfbc2035585da22403c0614731d582addc6902ade938fb7bb924c8a6fa8fe393c31f13dfc15754a5c38dc90e7c4f935850d869dfb37262')
+
+build() {
+  cd "${srcdir}/PyUPC-EAN-${_gitrevision}/upcean-pil"
+  find . -iname "*.py"  | xargs sed -i.bak -e '1s"^#!.\+$"#!/usr/bin/python2"'
+  rm -rfv *.py.bak
+  cd "${srcdir}/PyUPC-EAN-${_gitrevision}/upcean-pil/upcean"
+  find . -iname "*.py"  | xargs sed -i.bak -e '1s"^#!.\+$"#!/usr/bin/python2"'
+  rm -rfv *.py.bak
+}
+
+package() {
+  cd "${srcdir}/PyUPC-EAN-${_gitrevision}/upcean-pil"
+  test -z "${pkgdir}/usr/share/licenses/python2-upcean" || /usr/bin/install -v -d -m 0644 "${pkgdir}/usr/share/licenses/python2-upcean"
+  install -v -d -m 0644 "${pkgdir}/usr/share/icons/hicolor/32x32/apps"
+  curl --user-agent "${_curluseragent}" --referer "http://www.softicons.com/free-icons/toolbar-icons/diagram-old-icons-by-double-j-design/barcode-icon" "http://files.softicons.com/download/toolbar-icons/diagram-old-icons-by-double-j-design/png/32x32/diagram-60.png" > "${pkgdir}/usr/share/icons/hicolor/32x32/apps/upcean-py2.png"
+  install -v -d -m 0644 "${pkgdir}/usr/share/icons/hicolor/48x48/apps"
+  curl --user-agent "${_curluseragent}" --referer "http://www.softicons.com/free-icons/toolbar-icons/diagram-old-icons-by-double-j-design/barcode-icon" "http://files.softicons.com/download/toolbar-icons/diagram-old-icons-by-double-j-design/png/48x48/diagram-60.png" > "${pkgdir}/usr/share/icons/hicolor/48x48/apps/upcean-py2.png"
+  install -v -d -m 0644 "${pkgdir}/usr/share/icons/hicolor/64x64/apps"
+  curl --user-agent "${_curluseragent}" --referer "http://www.softicons.com/free-icons/toolbar-icons/diagram-old-icons-by-double-j-design/barcode-icon" "http://files.softicons.com/download/toolbar-icons/diagram-old-icons-by-double-j-design/png/64x64/diagram-60.png" > "${pkgdir}/usr/share/icons/hicolor/64x64/apps/upcean-py2.png"
+  install -v -d -m 0644 "${pkgdir}/usr/share/icons/hicolor/96x96/apps"
+  curl --user-agent "${_curluseragent}" --referer "http://www.softicons.com/free-icons/toolbar-icons/diagram-old-icons-by-double-j-design/barcode-icon" "http://files.softicons.com/download/toolbar-icons/diagram-old-icons-by-double-j-design/png/96x96/diagram-60.png" > "${pkgdir}/usr/share/icons/hicolor/96x96/apps/upcean-py2.png"
+  install -v -d -m 0644 "${pkgdir}/usr/share/applications"
+  echo -e "[Desktop Entry]\nName=PyUPC-EAN GUI\nName[en_US]=PyUPC-EAN GUI\nComment=Create UPC/EAN barcodes and save as image.\nComment[en_US]=Create UPC/EAN barcodes and save as image.\nGenericName=Barcode Generator\nGenericName[en_US]=Barcode Generator\nExec=upc-ui-py2\nTryExec=upc-ui-py2\nTerminal=false\nType=Application\nIcon=/usr/share/icons/hicolor/64x64/apps/upcean-py2.png\nCategories=Graphics;Graphics;2DGraphics;Graphics;RasterGraphics;\n" > "${pkgdir}/usr/share/applications/upcean.desktop"
+  install -v -d -m 0644 "${pkgdir}/usr/share/upcean-py2"
+  /usr/bin/install -c "./upc-ui.py" "${pkgdir}/usr/share/upcean-py2/upc-ui-py2.py"
+  install -v -d -m 0644 "${pkgdir}/usr/bin"
+  touch "${pkgdir}/usr/bin/upc-ui-py2"
+  echo -e '#!/bin/sh\n\n/usr/bin/python2 "/usr/share/upcean-py2/upc-ui-py2.py"\n' > "${pkgdir}/usr/bin/upc-ui-py2"
+  chmod -v +x "${pkgdir}/usr/bin/upc-ui-py2"
+  /usr/bin/install -c "./httpd.py" "${pkgdir}/usr/share/upcean-py2/upc-httpd-py2.py"
+  touch "${pkgdir}/usr/bin/upc-httpd-py2"
+  echo -e '#!/bin/sh\n\n/usr/bin/python2 "/usr/share/upcean-py2/upc-httpd-py2.py"\n' > "${pkgdir}/usr/bin/upc-httpd-py2"
+  chmod -v +x "${pkgdir}/usr/bin/upc-httpd-py2"
+  /usr/bin/install -v -c "./LICENSE" "${pkgdir}/usr/share/licenses/python2-upcean/LICENSE"
+  /usr/bin/python2 ./setup.py build
+  /usr/bin/python2 ./setup.py install --root "${pkgdir}"
+  /usr/bin/python2 -m compileall "${pkgdir}/usr/lib/python2.7/site-packages/upcean/"
+  /usr/bin/python2 -O -m compileall "${pkgdir}/usr/lib/python2.7/site-packages/upcean/"
+}
+
+# vim:set ts=2 sw=2 et:
