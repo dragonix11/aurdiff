@@ -1,0 +1,66 @@
+# Maintainer: Jan Was <janek.jan+arch@gmail.com>
+# Great Contributor: mainiak <mainiak@gmail.com> (first maintainer)
+# Contributor: spooky <spookyh+arch@gmail.com> 
+# Contributor: Hyacinthe Cartiaux <hyacinthe.cartiaux@free.fr>
+
+pkgname=apt-cacher-ng
+pkgver=0.7.16
+pkgrel=1
+pkgdesc="A caching proxy specialized for package files."
+url="http://www.unix-ag.uni-kl.de/~bloch/acng/"
+arch=('i686' 'x86_64')
+license=('custom')
+depends=('zlib' 'bzip2' 'fuse' 'xz' 'gcc-libs')
+makedepends=('cmake')
+source=("http://ftp.debian.org/debian/pool/main/a/apt-cacher-ng/apt-cacher-ng_${pkgver}.orig.tar.xz"
+        'acng.conf.patch'
+        'apt-cacher-ng.service'
+        'apt-cacher-ng.rc.d')
+
+backup=('etc/apt-cacher-ng/acng.conf')
+
+md5sums=('7f24f46a46335a48bcee601f07ce8ad5'
+         '73b60c46955ded6d82dae4217a372aa6'
+         '336e3dd6c969c44642c263127f24a10c'
+         '1e8c9c2e5b3282c5462b66e5d3df4244')
+
+build() {
+  cd ${srcdir}/${pkgname}-${pkgver}
+  make all || return 1
+
+  patch -Np0 -i "${srcdir}/acng.conf.patch"
+}
+
+package() {
+  cd ${srcdir}/${pkgname}-${pkgver}
+
+  _bins="${pkgdir}/usr/bin"
+  _confs="${pkgdir}/etc/${pkgname}"
+  _docs="${pkgdir}/usr/share/doc/${pkgname}"
+
+
+  mkdir -p $_bins
+  mkdir -p $_confs
+  mkdir -p $_docs
+
+  cp -rf conf/* $_confs/
+  cp -rf doc/{000apt-cacher-ng-proxy,apt-cacher-ng.pdf,html,README} $_docs/
+
+  install -m755 -d ${pkgdir}/usr/share/man/man8
+  install -m644 doc/man/apt-cacher-ng.8 ${pkgdir}/usr/share/man/man8/apt-cacher-ng.8
+  install -m644 doc/man/acngfs.8 ${pkgdir}/usr/share/man/man8/acngfs.8
+
+  install -D -m644 COPYING "${pkgdir}/usr/share/licenses/${pkgname}/LICENSE"
+
+  install -m775 build/apt-cacher-ng $_bins/
+  install -m775 build/acngfs $_bins/
+  install -m775 build/in.acng $_bins/
+
+  install -D -m755 ${srcdir}/apt-cacher-ng.rc.d ${pkgdir}/etc/rc.d/apt-cacher-ng
+  install -D -m644 ${srcdir}/apt-cacher-ng.service ${pkgdir}/usr/lib/systemd/system/apt-cacher-ng.service
+  mkdir -p ${pkgdir}/var/log/apt-cacher-ng
+  mkdir -p ${pkgdir}/var/cache/apt-cacher-ng
+}
+
+
+# vim:set ts=2 sw=2 et:
