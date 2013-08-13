@@ -56,7 +56,7 @@ def main():
         subprocess.call(['git', 'add', op.join(AUR_FOLDER, name)])
         commit_msg = "Updated %s to %s" % (name, version)
         subprocess.call(['git', 'commit', '-m', commit_msg])
-    lastname, lastversion = pkglist[-1]
+    lastname, lastversion = pkglist[0]
     info = {'name': lastname, 'version': lastversion}
     with open(json_path, 'wt') as fp:
         json.dump(info, fp)
