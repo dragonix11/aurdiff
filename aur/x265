@@ -1,0 +1,24 @@
+# Maintainer: kfgz <kfgz at interia pl>
+# Contributor: cataphract <mail at geleia dot net>
+
+pkgname=x265
+pkgver=20130811
+pkgrel=1
+_pkgver=88e0c10bf47b
+pkgdesc="free H265/HEVC video encoder"
+arch=('i686' 'x86_64')
+license=('GPL')
+makedepends=('yasm' 'cmake')
+conflicts=('x265-hg')
+url="https://bitbucket.org/multicoreware/x265"
+source=(https://bitbucket.org/multicoreware/x265/get/${_pkgver}.zip)
+md5sums=('601adb02b917921ddb29cb101f0644c4')
+
+build() {
+  cd "${srcdir}"/multicoreware-x265-${_pkgver}/build/linux
+  cmake -G "Unix Makefiles" ../../source
+  make
+}
+package() {
+  install -D -m755 "${srcdir}"/multicoreware-${pkgname}-${_pkgver}/build/linux/x265 "${pkgdir}"/usr/bin/x265
+}
