@@ -1,0 +1,51 @@
+# Maintainer: Andreas Schreiner <andreas.schreiner@sonnenmulde.at>
+# Contributor: Mike WB2FKO <mph at sportscliche dot com>
+pkgname=quisk
+pkgver=3.6.12
+pkgrel=1
+pkgdesc="Software defined radio (SDR)"
+arch=('i686' 'x86_64')
+url="http://james.ahlstrom.name/quisk/"
+license=('GPL')
+depends=('python2' 'fftw' 'portaudio')
+source=(http://james.ahlstrom.name/quisk/$pkgname-$pkgver.tar.gz
+        $pkgname.desktop
+        $pkgname.patch)
+md5sums=('e75b19a3041ee9340512f1e5ffb8bf81'
+         '44cddf20e06994ce3abcd4b563567ef3'
+         '432376d339fb23a9780578487def00c7')
+
+build() {
+  # use python2 instead python for compilation
+  cd $srcdir
+  patch -p1 < $pkgname.patch
+
+  cd "$srcdir/$pkgname-$pkgver"
+  make
+}
+
+package() {
+    mkdir -p $pkgdir/opt/$pkgname
+    cd "$srcdir/$pkgname-$pkgver"
+    install -Dm644 quisk $pkgdir/opt/$pkgname/quisk
+    cp -ra *.h $pkgdir/opt/$pkgname
+    cp -ra *.c $pkgdir/opt/$pkgname
+    cp -ra *.html $pkgdir/opt/$pkgname
+    cp -ra *.py $pkgdir/opt/$pkgname
+    cp -ra *.so $pkgdir/opt/$pkgname
+    cp -ra *.txt $pkgdir/opt/$pkgname
+    mv charleston "$pkgdir/opt/$pkgname"
+    mv n2adr "$pkgdir/opt/$pkgname"
+    mv sdriqpkg "$pkgdir/opt/$pkgname"
+    mv softrock "$pkgdir/opt/$pkgname"
+    mv usb "$pkgdir/opt/$pkgname"
+    find "$pkgdir/opt/$pkgname/" -type f  | xargs chmod 644
+    find "$pkgdir/opt/$pkgname/" -type d | xargs chmod 755
+    cd $srcdir
+    mkdir -p $pkgdir/usr/share/applications
+#   If the working directory is moved (e.g. from /opt to /home) 
+#   the following .desktop file will have to be edited. Developer
+#   has not provided a launcher icon.
+    install -Dm644 $pkgname.desktop $pkgdir/usr/share/applications/$pkgname.desktop
+    echo -e "\n Quisk will be installed in the /opt directory of root \n"
+}

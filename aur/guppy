@@ -1,0 +1,23 @@
+# Maintainer: crazedpsyc <crazedpsyc@duckduckgo.com>
+
+pkgname=guppy
+pkgver=0.4.3
+pkgrel=2
+pkgdesc="A modular python IRC bot which aims to be easy to install and extend"
+arch=(any)
+url="http://guppy.uk.to/"
+license=GPL3
+depends=(python3 pyopenssl)
+provides=(guppy)
+conflicts=(guppy-git)
+source=(http://guppy.gshellz.org/release/$pkgname-$pkgver.tar.gz)
+md5sums=(d35f0e44078a28a64ae9d215711a29c8)
+
+build() {
+    cd "$startdir/src/$pkgname"
+    mkdir -p "$startdir/pkg/usr/bin/"
+    install -m777 "dist/arch/install" "$startdir/pkg/usr/bin/install-guppy"
+    mkdir -p "$startdir/pkg/usr/share/$pkgname/"
+    install -D -m777 {README,guppy,irc.py} "$startdir/pkg/usr/share/$pkgname/"
+    install -d -m777 plugins "$startdir/pkg/usr/share/$pkgname/"
+}
