@@ -1,0 +1,49 @@
+# $Id: PKGBUILD 36062 2009-04-19 20:15:39Z jgc $
+# Maintainer: Paul Gideon Dann <pdgiddie_at_gmail.com>
+
+pkgname=poppler-qt-lcd
+pkgver=0.24.0
+pkgrel=1
+provides=('poppler-qt=$pkgver')
+conflicts=('poppler-qt')
+pkgdesc="Poppler Qt bindings, with patches to allow subpixel rendering via Cairo"
+arch=(i686 x86_64)
+license=('GPL')
+depends=('qt4' 'cairo' "poppler>=${pkgver}")
+makedepends=('cmake' 'pkgconfig')
+url="https://github.com/giddie/poppler-qt4-cairo-backend"
+source=(http://poppler.freedesktop.org/poppler-${pkgver}.tar.xz
+        0001-Cairo-backend-added-to-Qt4-wrapper.patch
+        0002-Setting-default-Qt4-backend-to-Cairo.patch
+        0003-Forcing-subpixel-rendering-in-Cairo-backend.patch
+        0004-Don-t-build-the-main-poppler-library.patch)
+md5sums=('891000481f639e996d000d767d953a7f'
+         '7e5ebc9c969b3f424600fd257714a84c'
+         'e09e962247551be9471adcd90c2b2ca2'
+         'b0416a7a6f326c1cfd605ea46e3b1da5'
+         '2250ab7f022a6a04bc8cdfbfa9ac7840')
+
+build() {
+  cd "${srcdir}/poppler-${pkgver}"
+
+  for patch in ${srcdir}/*.patch; do
+    patch -Np1 -i $patch
+  done;
+
+  mkdir -p build
+  cd build
+  cmake -DQT_QMAKE_EXECUTABLE=/usr/bin/qmake-qt4 \
+        -DCMAKE_INSTALL_PREFIX=/usr \
+        -DENABLE_CPP=OFF -DENABLE_UTILS=OFF \
+        -DWITH_GLIB=OFF -DBUILD_QT4_TESTS=OFF \
+        ..
+  make poppler-qt4
+}
+
+package() {
+  cd "${srcdir}/poppler-${pkgver}/build"
+
+  make DESTDIR="${pkgdir}" -C qt4/src install
+  msg "Removing unwanted pkg-config files"
+  rm -f "${pkgdir}"/usr/lib/pkgconfig/poppler{,-splash,-cairo}.pc
+}
