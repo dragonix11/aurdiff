@@ -1,0 +1,52 @@
+# Maintainer: Steven Allen <steven@stebalien.com>
+# Contributor: Army
+# Contributor: Bastien Dejean <baskerville@lavabit.com>
+_pkgname=sxiv
+pkgname=$_pkgname-git
+pkgver=20130810.469
+pkgrel=1
+pkgdesc="Simple (or small or suckless) X Image Viewer"
+arch=('i686' 'x86_64')
+url="https://github.com/muennich/sxiv"
+license=('GPL2')
+depends=('imlib2' 'desktop-file-utils')
+makedepends=('git')
+optdepends=(
+'imagemagick: for the example commands in config.def.h'
+'libjpeg-turbo: for the example commands in config.def.h'
+'gimp: for the example commands in config.def.h'
+)
+provides=("$_pkgname")
+conflicts=("$_pkgname")
+install=$pkgname.install
+source=("$_pkgname::git+https://github.com/muennich/sxiv.git")
+md5sums=('SKIP')
+
+pkgver() {
+  cd "$srcdir/$_pkgname"
+  echo "$(git log -1 --format="%cd" --date=short | sed 's|-||g').$(git rev-list --count master)"
+}
+
+prepare() {
+  cd "$srcdir/$_pkgname"
+
+  # custom config
+  # SRCDEST seems like the wrong variable but not according to gtmanfred
+  if [[ -e "$SRCDEST/config.h" ]]; then
+    msg "using custom config.h";
+    cp "$SRCDEST/config.h" .
+  fi
+}
+
+build() {
+  cd "$srcdir/$_pkgname"
+  make PREFIX="/usr"
+}
+
+package() {
+  cd "$srcdir/$_pkgname"
+  make PREFIX="/usr" DESTDIR="$pkgdir" install
+  install -Dm644 sxiv.desktop "$pkgdir/usr/share/applications/sxiv.desktop"
+}
+
+# vim:set ts=2 sw=2 et:
