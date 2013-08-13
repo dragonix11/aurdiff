@@ -1,0 +1,85 @@
+# Maintainer: David Spicer <azleifel at gmail dot com>
+# Contributor: Maik Opitz <maik@fjordblau.de>
+
+pkgname=vdr
+pkgver=2.0.2
+pkgrel=2
+arch=('i686' 'x86_64')
+pkgdesc="Video Disk Recorder (VDR)"
+url="http://www.tvdr.de/"
+license=('GPL2')
+depends=('fontconfig' 'fribidi' 'libjpeg' 'gettext' 'perl')
+makedepends=('linux-api-headers')
+optdepends=('lirc: To use a remote control'
+            'runvdr-extreme: An alternative runvdr script'
+            'vdrsymbols-ttf: Symbols that some VDR plugins and patches use')
+backup=('var/lib/vdr/channels.conf'
+        'var/lib/vdr/diseqc.conf'
+        'var/lib/vdr/keymacros.conf'
+        'var/lib/vdr/scr.conf'
+        'var/lib/vdr/sources.conf'
+        'var/lib/vdr/svdrphosts.conf')
+options=(emptydirs)
+install="${pkgname}.install"
+source=(ftp://ftp.tvdr.de/${pkgname}/${pkgname}-${pkgver}.tar.bz2
+        Make.config.${pkgname}-${pkgver}
+        vdr.service
+        MainMenuHooks-v1_0_1.diff
+        timercmd-0.1.diff)
+md5sums=('5359cae7e14671cc9a3c690d45d8e0a2'
+         '783a148597bba071bebc12bd9b9b93ac'
+         '6c83ebd5040a531759024fb3de732329'
+         '738253da91ddb371add61b75f53338b3'
+         '792a71488db98f4d45a6069aa0ec51b9')
+
+prepare() {
+  cd "${srcdir}/${pkgname}-${pkgver}"
+
+  patch -Np1 -i "${srcdir}/MainMenuHooks-v1_0_1.diff"
+  patch -Np1 -i "${srcdir}/timercmd-0.1.diff"
+
+  cp "${srcdir}/Make.config.${pkgname}-${pkgver}" Make.config
+}
+
+build() {
+  cd "${srcdir}/${pkgname}-${pkgver}"
+
+  make
+}
+
+package() {
+  cd "${srcdir}/${pkgname}-${pkgver}"
+
+  # VDR directory environment
+  _vdrCONFDIR="/var/lib/vdr"
+  _vdrINCDIR="/usr/include"
+  _vdrLIBDIR="/usr/lib/vdr"
+  _vdrLOCDIR="/usr/share/locale"
+  _vdrRESDIR="/usr/share/vdr"
+
+  # Install
+  # NB. Allowing simultaneous jobs can occasionally break the install process
+  make -j1 DESTDIR="${pkgdir}" install
+
+  # Install Make.config
+  install -m644 Make.config "${pkgdir}${_vdrINCDIR}/vdr"
+
+  # Add includes directories compatibility links for plugin builds
+  install -d -m755 "${pkgdir}${_vdrINCDIR}/vdr/include"
+  ln -sf .. "${pkgdir}${_vdrINCDIR}/vdr/include/vdr"
+  ln -sf ../../libsi "${pkgdir}${_vdrINCDIR}/vdr/include/libsi"
+
+  # Add directory for plugin configuration files
+  install -d -m755 "${pkgdir}${_vdrCONFDIR}/plugins"
+
+  # Install systemd service file
+  install -d -m755 "${pkgdir}/usr/lib/systemd/system/"
+  install -m644 "${srcdir}/vdr.service" "${pkgdir}/usr/lib/systemd/system/"
+
+  # Install documents
+  install -d -m755 "${pkgdir}/usr/share/doc/${pkgname}"
+  for _file in channels.conf.* CONTRIBUTORS HISTORY INSTALL MANUAL PLUGINS.html README* runvdr.template UPDATE*; do
+    install -m644 ${_file} "${pkgdir}/usr/share/doc/${pkgname}"
+  done
+}
+
