@@ -1,0 +1,34 @@
+# Maintainer: Michael Lass <bevan@bi-co.net>
+# Contributor: Angel Velasquez <angvp@archlinux.org>
+# Contributor: Corrado Primier <bardo@aur.archlinux.org>
+# Contributor: G_Syme <demichan(at)mail(dot)upb(dot)de>
+ 
+pkgname=eclipse-subclipse
+pkgver=1.10.1
+pkgrel=1
+_urlver=49310
+pkgdesc="Subversion integration for the Eclipse platform"
+arch=('any')
+url="http://subclipse.tigris.org/"
+license=('EPL')
+depends=('eclipse' 'subversion')
+source=(http://subclipse.tigris.org/files/documents/906/${_urlver}/site-${pkgver}.zip)
+md5sums=('67068c16754a180fef1657348b1c3460')
+ 
+package() {
+ _dest="${pkgdir}"/usr/share/eclipse/dropins/${pkgname/eclipse-}/eclipse
+ 
+ cd "${srcdir}"
+ 
+ # Features
+ find features -type f -name '*.jar' | while read feature ; do
+  install -dm755 "${_dest}"/${feature/.jar}
+  cd "${_dest}"/${feature/.jar}
+  jar xf "${srcdir}/${feature}"
+ done
+ 
+ # Plugins
+ find plugins -type f -exec install -Dm644 {} "${_dest}"/{} \;
+}
+ 
+# vim:set ts=2 sw=2 et:
