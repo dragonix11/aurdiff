@@ -1,0 +1,51 @@
+# Contributor: Thomas Dziedzic < gostrc at gmail >
+# Contributor: Stefan Husmann <stefan-husmann@t-online.de>
+# Contributor: Mihai Militaru <mihai.militaru@gmx.com>
+# Contributor: scippio <scippio@berounet.cz>
+# Contributor: Jesse Jaara <jesse.jaara@gmail.com>
+# Contributor: Dan Vratil <dan@progdan.cz>
+# Maintainer: Davorin Učakar <davorin.ucakar@gmail.com>
+
+pkgname=lib32-freeimage
+pkgver=3.15.4
+pkgrel=2
+pkgdesc="Library project for developers who would like to support popular graphics image formats"
+arch=('x86_64')
+license=('GPL' 'custom:FIPL')
+url="http://freeimage.sourceforge.net"
+depends=('freeimage' 'lib32-gcc-libs')
+makedepends=('gcc-multilib')
+source=("http://downloads.sourceforge.net/project/freeimage/Source%20Distribution/${pkgver}/FreeImage${pkgver//./}.zip"
+	'openexr.patch')
+sha1sums=('1d30057a127b2016cf9b4f0f8f2ba92547670f96'
+	  '48cc72441ab9aa0d3ace8fe1c1959908871c1bd0')
+
+prepare()
+{
+  cd ${srcdir}/FreeImage
+  patch -p1 -i ${srcdir}/openexr.patch
+}
+
+build()
+{
+  export CC="gcc -march=i686 -m32"
+  export CXX="g++ -march=i686 -m32"
+  export CFLAGS="${CFLAGS/-march=x86-64} -fPIC -fexceptions -fvisibility=hidden -DNO_LCMS"
+  export CXXFLAGS="${CXXFLAGS/-march=x86-64} -fPIC -fexceptions -fvisibility=hidden -DNO_LCMS"
+
+  cd FreeImage        
+  make
+  make -f Makefile.fip 
+}
+
+package() 
+{
+  cd FreeImage
+  make DESTDIR=${pkgdir} install || true
+  make -f Makefile.fip DESTDIR=${pkgdir} install
+
+  rm -rf ${pkgdir}/usr/include
+  mv ${pkgdir}/usr/lib ${pkgdir}/usr/lib32
+
+  install -Dm 644 ${srcdir}/FreeImage/license-fi.txt ${pkgdir}/usr/share/licenses/${pkgname}/LICENSE
+}
