@@ -1,0 +1,53 @@
+# Maintainer: Robert Knauer <robert@privatdemail.net>
+# Contributor: Thomas Baechler <thomas@archlinux.org>
+
+pkgname=nvidia-pae
+pkgver=325.15
+_extramodules=extramodules-3.10-pae
+pkgrel=1
+pkgdesc="NVIDIA drivers for linux-pae"
+arch=('i686' 'x86_64')
+url="http://www.nvidia.com/"
+depends=('linux-pae>=3.10' 'linux-pae<3.11' 'nvidia-libgl' "nvidia-utils=${pkgver}")
+makedepends=('linux-pae-headers>=3.10' 'linux-pae-headers<3.11')
+conflicts=('nvidia-96xx' 'nvidia-173xx')
+license=('custom')
+install=nvidia.install
+options=(!strip)
+
+if [ "$CARCH" = "i686" ]; then
+  _arch='x86'
+  _pkg="NVIDIA-Linux-${_arch}-${pkgver}"
+  source+=(
+    "http://us.download.nvidia.com/XFree86/Linux-${_arch}/${pkgver}/${_pkg}.run"
+  )
+  sha256sums+=(
+    '3d790e4bfed24641f7cc76879144ab5d52b12271012ba381b0d33aa1a2e08775'
+  )
+elif [ "$CARCH" = "x86_64" ]; then
+  _arch='x86_64'
+  _pkg="NVIDIA-Linux-${_arch}-${pkgver}-no-compat32"
+  source+=(
+    "http://us.download.nvidia.com/XFree86/Linux-${_arch}/${pkgver}/${_pkg}.run"
+  )
+  sha256sums+=(
+    'ee0dfa35c9b4da27a85684911a11236b82d63c171e0537624cce8ceccb7056e3'
+  )
+fi
+
+build() {
+  _kernver="$(cat /lib/modules/${_extramodules}/version)"
+  cd "${srcdir}"
+  rm -rf "${_pkg}"
+  sh "${_pkg}.run" --extract-only
+  cd "${_pkg}/kernel"
+  make SYSSRC=/lib/modules/"${_kernver}/build" module
+}
+
+package() {
+  install -D -m644 "${srcdir}/${_pkg}/kernel/nvidia.ko" "${pkgdir}/lib/modules/${_extramodules}/nvidia.ko"
+  install -d -m755 "${pkgdir}/etc/modprobe.d"
+  echo "blacklist nouveau" >> "${pkgdir}/etc/modprobe.d/nouveau_blacklist-pae.conf"
+  sed -i -e "s/EXTRAMODULES='.*'/EXTRAMODULES='${_extramodules}'/" "${startdir}/nvidia.install"
+  gzip "${pkgdir}/lib/modules/${_extramodules}/nvidia.ko"
+}
