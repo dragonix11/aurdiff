@@ -1,0 +1,42 @@
+# Maintainer: Martin Schmölzer <mschmoelzer@gmail.com>
+
+pkgname=yosys-git
+_pkgbasename=yosys
+pkgver=0.1.git20130811
+pkgrel=1
+pkgdesc="A framework for Verilog RTL synthesis with extensive Verilog-2005 support"
+arch=('i686' 'x86_64')
+url="http://www.clifford.at/yosys/"
+license=('custom:ISC')
+depends=('minisat-git' 'tcl' 'qt4' 'graphviz')
+makedepends=('git')
+source=(git+https://github.com/cliffordwolf/yosys.git#commit=ccf36cb7d81a9513db15b8a36c240d2c7ec9f5b5
+        yosys-Makefile-Arch-Linux.patch
+        license.txt)
+sha256sums=('SKIP'
+            'e02a97a95ff560f2ba9cc65ec733b1b091bea680837b182e69a09899a6f78e9a'
+            'e09c086c53f9cc8ebecc207ae7d854f544e26f89baf65c002b7471313cde02b8')
+
+prepare() {
+  cd "${srcdir}/${_pkgbasename}"
+
+  patch -Np0 -i ${srcdir}/yosys-Makefile-Arch-Linux.patch
+}
+
+build() {
+  cd "${srcdir}/${_pkgbasename}"
+
+  make
+}
+
+package() {
+  cd "${srcdir}/${_pkgbasename}"
+
+  install -d "${pkgdir}/usr/bin"
+
+  make DESTDIR="${pkgdir}/usr" install
+
+  install -D -m 644 "${srcdir}/license.txt" "${pkgdir}/usr/share/licenses/yosys-git/license.txt"
+}
+
+# vim: set ts=2 sw=2 ft=sh noet:
