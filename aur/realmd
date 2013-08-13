@@ -1,0 +1,31 @@
+# Maintainer: Mantas M. <grawity@gmail.com>
+pkgname=realmd
+pkgver=0.14.4
+pkgrel=1
+pkgdesc="DBus service for configuring kerberos and other online identities."
+arch=(i686 x86_64)
+url="http://freedesktop.org/software/realmd/"
+license=(GPL3)
+depends=(dbus krb5 openldap polkit)
+makedepends=(intltool packagekit xmlto)
+source=("http://www.freedesktop.org/software/$pkgname/releases/$pkgname-$pkgver.tar.gz"
+        "http://www.freedesktop.org/software/$pkgname/releases/$pkgname-$pkgver.tar.gz.sig")
+sha1sums=('d6ad8e424c491d802d50fff7eba94f0c77f25c2b'
+          'SKIP')
+
+build() {
+  cd "$pkgname-$pkgver"
+  ./configure \
+    --prefix=/usr           \
+    --sbindir=/usr/bin      \
+    --sysconfdir=/etc       \
+    --with-distro=defaults  ;
+  make
+}
+
+package() {
+  cd "$pkgname-$pkgver"
+  make DESTDIR="$pkgdir" install
+} 
+
+# vim: ts=2:sw=2:et
