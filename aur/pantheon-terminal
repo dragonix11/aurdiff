@@ -1,0 +1,34 @@
+# Maintainer: Alucryd <alucryd at gmail dot com>
+
+pkgname=pantheon-terminal
+pkgver=0.2.3
+pkgrel=1
+pkgdesc="A modern terminal from elementary project"
+arch=('i686' 'x86_64')
+url="https://launchpad.net/pantheon-terminal"
+license=('GPL3')
+groups=('pantheon')
+depends=('granite' 'libnotify' 'vte3')
+makedepends=('cmake' 'vala')
+install=${pkgname}.install
+source=("https://launchpad.net/${pkgname}/0.x/${pkgver}/+download/${pkgname}-${pkgver}.tar.gz")
+sha256sums=('867fb5f4071780616df0a237b305470dc23a6663476c0b154244264ef6eaa0ae')
+
+build() {
+  cd ${pkgname}-${pkgver}
+
+  if [[ -d build ]]; then
+    rm -rf build
+  fi
+  mkdir build && cd build
+  cmake .. -DCMAKE_INSTALL_PREFIX=/usr -DGSETTINGS_COMPILE=OFF
+  make
+}
+
+package() {
+  cd ${pkgname}-${pkgver}/build
+
+  make GCONF_DISABLE_MAKEFILE_SCHEMA_INSTALL=1 DESTDIR="${pkgdir}" install
+}
+
+# vim: ts=2 sw=2 et:
