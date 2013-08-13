@@ -1,0 +1,29 @@
+# Maintainer: sudokode <sudokode@gmail.com>
+
+pkgname=asciiio-git
+pkgver=30.e687422
+pkgrel=1
+pkgdesc="A simple terminal recorder"
+arch=('any')
+url="http://ascii.io"
+license=('custom')
+depends=('python2')
+makedepends=('git')
+backup=('etc/asciiio.conf')
+source=("$pkgname::git://github.com/sickill/ascii.io-cli.git")
+sha256sums=('SKIP')
+
+pkgver() {
+  cd $pkgname
+
+  echo "$(git rev-list --count HEAD).$(git rev-parse --short HEAD)";
+}
+
+package() {
+  cd $pkgname
+
+  install -D -m755 bin/asciiio "$pkgdir"/usr/bin/asciiio
+  install -D -m644 config.example "$pkgdir"/etc/asciiio.conf
+  install -D -m644 LICENSE.txt "$pkgdir"/usr/share/licenses/asciiio/LICENSE
+}
+
