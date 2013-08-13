@@ -1,0 +1,33 @@
+# Maintainer: ledti <antegist at gmail.com>
+
+pkgname=profanity-git
+pkgver=1464.b1768f9
+pkgrel=1
+pkgdesc="A console based jabber client inspired by irssi, devel version."
+arch=('i686' 'x86_64')
+url="http://www.profanity.im"
+license=('GPL3')
+depends=('openssl' 'expat' 'ncurses' 'glib2' 'libnotify' 'curl' 'libxss')
+makedepends=('libstrophe-git' 'git')
+provides=('profanity')
+conflicts=('profanity')
+source=('profanity::git://github.com/boothj5/profanity.git#branch=master')
+sha256sums=('SKIP')
+
+pkgver() {
+  cd "$srcdir/profanity"
+  echo $(git rev-list --count master).$(git rev-parse --short master)
+}
+
+build() {
+  cd "$srcdir/profanity"
+  ./bootstrap.sh
+  ./configure --prefix=/usr
+  make
+}
+
+package() {
+  cd "$srcdir/profanity"
+  make DESTDIR="$pkgdir" install
+}
+
