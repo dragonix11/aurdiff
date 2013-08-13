@@ -1,0 +1,46 @@
+# Maintainer: Darshit Shah <darnir@gmail.com>
+
+_gitname=wget
+pkgname=$_gitname-git
+pkgver=v1.14.75.g695f113
+pkgrel=1
+pkgdesc="A network utility to retrieve files from the Web"
+arch=('i686' 'x86_64')
+url="http://www.gnu.org/software/wget/wget.html"
+license=('GPL3')
+depends=('openssl' 'libidn' 'pcre' 'util-linux')
+optdepends=("ca-certificates: HTTPS Downloads")
+makedepends=('git' 'perl')
+provides=('wget')
+conflicts=('wget')
+backup=('etc/wgetrc')
+install=wget.install
+source=("git://git.savannah.gnu.org/${_gitname}.git"
+        "git://git.savannah.gnu.org/gnulib.git")
+md5sums=('SKIP' 'SKIP')
+
+build() {
+  cd $_gitname
+  ./bootstrap --gnulib-srcdir=../gnulib
+  ./configure --prefix=/usr --without-included-regex --enable-threads=posix --enable-dependency-tracking --with-ssl=openssl --enable-nls --sysconfdir=/etc
+  make
+}
+
+package() {
+  cd $_gitname
+  make DESTDIR="$pkgdir/" install
+
+  cat >> "$pkgdir/etc/wgetrc" <<EOF
+
+# default root certs location
+ca_certificate=/etc/ssl/certs/ca-certificates.crt
+EOF
+}
+
+pkgver() {
+  cd $_gitname
+  #Use the tag from the last commit.
+  git describe --always | sed 's|-|.|g'
+}
+
+# vim:set ts=2 sw=2 et:
