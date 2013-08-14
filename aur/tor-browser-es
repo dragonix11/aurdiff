@@ -1,0 +1,54 @@
+# Maintainer (Spanish version): OmeGa <omega at mailoo dot org>
+# Maintainer (English version): Max Roder <maxroder@web.de>
+
+pkgname=tor-browser-es
+pkgver=2.3.25_12
+_realpkgver=2.3.25-12-dev
+_language=es-ES
+pkgrel=1
+pkgdesc="Navegación anónima utilizando Firefox y Tor"
+arch=('i686' 'x86_64')
+url="https://www.torproject.org/projects/torbrowser.html"
+license=('GPL')
+optdepends=('kdebase-kdialog: KDE dialog boxes'
+            'libnotify: Gnome dialog boxes'
+            'zenity: simple dialog boxes')
+install=$pkgname.install
+source=(https://www.torproject.org/dist/torbrowser/linux/tor-browser-gnu-linux-$CARCH-$_realpkgver-$_language.tar.gz
+        https://www.torproject.org/dist/torbrowser/linux/tor-browser-gnu-linux-$CARCH-$_realpkgver-$_language.tar.gz.asc
+        $pkgname.desktop
+        $pkgname.png
+        $pkgname.sh)
+noextract=(tor-browser-gnu-linux-$CARCH-$_realpkgver-$_language.tar.gz)
+
+if [[ $CARCH == x86_64 ]]; then
+  sha256sums=('1962acc04ed88b7cf2e4aebb11cc44409005a49244cf1223dcb1cd500206d9c3'
+              '2e0de0997b6344b87a7ae91693e04535665a92aa32133cb0caefd2764e46658b')
+else
+  sha256sums=('9f5693f269fe4c52c2b779a6c1b944ad362052283c4751af15812b6198c8e67b'
+              '1c9eb5492fbd8831edda81b2d7e72c25fe2639b7e10b8aa8c680293e5a7f21b8')
+fi
+sha256sums+=('e73b5788d195e359d7d3621db402998fb4bfca49caf5fc5814b7c2839f93b5f1'
+             '17fc2f5784d080233aca16e788d62ab6fe3e57cf781b123cfe32767de97d6d3b'
+             '7fc947b8ae1483c5abb4545f6e26b315ff1fb16eb7ae8837f7afb10a9277383b')
+
+package() {
+  cd "$srcdir"
+
+  sed -i "s/REPL_NAME/$pkgname/g"         $pkgname.sh
+  sed -i "s/REPL_LANGUAGE/$_language/g"   $pkgname.sh
+  sed -i "s/REPL_VERSION/$_realpkgver/g"  $pkgname.sh
+
+  sed -i "s/REPL_NAME/$pkgname/g"       $pkgname.desktop
+  sed -i "s/REPL_COMMENT/$pkgdesc/"     $pkgname.desktop
+  sed -i "s/REPL_LANGUAGE/$_language/"  $pkgname.desktop
+
+  install -Dm755 $pkgname.sh      "$pkgdir/usr/bin/$pkgname"
+  install -Dm644 $pkgname.png     "$pkgdir/usr/share/pixmaps/$pkgname.png"
+  install -Dm644 $pkgname.desktop "$pkgdir/usr/share/applications/$pkgname.desktop"
+
+  install -Dm644 tor-browser-gnu-linux-$CARCH-$_realpkgver-$_language.tar.gz \
+    "$pkgdir/opt/$pkgname/tor-browser-gnu-linux-$CARCH-$_realpkgver-$_language.tar.gz"
+}
+
+# vim:set ts=2 sw=2 et:

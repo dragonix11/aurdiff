@@ -1,0 +1,42 @@
+# Maintainer: twa022 <twa022 at gmail dot com>
+# Based on gnome-session PKGBUILD
+
+_pkgname=cinnamon-session
+pkgname=${_pkgname}-git
+pkgver=64.58710ea
+pkgrel=1
+pkgdesc="The Cinnamon Session Handler"
+arch=(i686 x86_64)
+license=(GPL LGPL)
+depends=(systemd dconf gconf gsettings-desktop-schemas gtk3 gnome-desktop
+         hicolor-icon-theme json-glib libgl libsm libxtst upower)
+makedepends=(intltool gnome-common mesa gtk-doc xtrans)
+options=('!emptydirs')
+install=${_pkgname}.install
+url="http://cinnamon.linuxmint.com/"
+source=(${_pkgname}::git+https://github.com/linuxmint/cinnamon-session.git
+        timeout.patch)
+
+pkgver() {
+  cd $_pkgname
+  echo $(git rev-list --count master).$(git rev-parse --short master)
+}
+
+build() {
+  cd $_pkgname
+
+  # Increase timeout, for slow machines
+#  patch -Np1 -i ../timeout.patch
+
+  ./autogen.sh --prefix=/usr --sysconfdir=/etc \
+      --localstatedir=/var --libexecdir=/usr/lib/cinnamon-session \
+      --sbindir=/usr/bin --disable-schemas-compile --enable-systemd
+  make
+}
+
+package() {
+  cd $_pkgname
+  make DESTDIR="$pkgdir" install
+}
+sha256sums=('SKIP'
+            '6b834c58d9e65af8c306785b80b472e66835124dc3ff20c881e4afdb88a341c2')

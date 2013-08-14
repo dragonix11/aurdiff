@@ -1,0 +1,19 @@
+# Maintainer: Michael Serpieri contact at pygoscelis dot org
+
+pkgname=python2-raspberry-gpio
+pkgver=0.5.3a
+pkgrel=1
+pkgdesc="Python library for GPIO access on a Raspberry Pi"
+arch=('any')
+url="http://code.google.com/p/raspberry-gpio-python/"
+license=('MIT')
+depends=('python2')
+makedepends=('python2-distribute')
+replace=('raspberry-gpio-python')
+conflicts=('raspberry-gpio-python')
+source=(http://pypi.python.org/packages/source/R/RPi.GPIO/RPi.GPIO-$pkgver.tar.gz)
+md5sums=('9cb086d2d2186062c5ae190a40902bb0')
+build() {
+	cd $srcdir/RPi.GPIO-$pkgver
+	python2 setup.py install --prefix=/usr --root="$pkgdir/" --optimize=1
+}

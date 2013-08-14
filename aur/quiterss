@@ -1,0 +1,33 @@
+# Contributer: giacomogiorgianni@gmail.com 
+
+pkgname=quiterss
+_name=QuiteRSS
+code=2739
+pkgver=0.13.2
+pkgrel=1
+pkgdesc="QuiteRSS is fast and light rss ,feed reader written in C++/Qt4"
+arch=('any')
+url="http://code.google.com/p/quite-rss/"
+license=('GPL')
+depends=('qtwebkit')
+makedepends=('cmake' 'gettext' 'automoc4')
+options=('')
+source=("http://quite-rss.googlecode.com/files/${_name}-${pkgver}-src.tar.bz2")
+sha1sums=('d27d00883859b73436e1f707676172acde335ddd')
+install=$pkgname.install
+ 
+build() {
+   
+  cd "${srcdir}/${_name}-${pkgver}-src"
+  #sed -i '1,1i#include  <QSslError>|' src/webpage.cpp
+  qmake-qt4 ${srcdir}/${_name}-${pkgver}-src/$_name.pro PREFIX=/usr \
+  "CONFIG+=LINUX_INTEGRATED" \
+  "INSTALL_ROOT_PATH=${pkgdir}"
+ 
+  make
+}
+ 
+package() {
+  cd "${srcdir}/${_name}-${pkgver}-src"
+  make INSTALL_ROOT=${pkgdir} install
+}
