@@ -1,0 +1,40 @@
+# Maintainer: Sergey Yakovlev <me@klay.me>
+
+pkgname=gleez
+pkgver=0.10.4
+pkgrel=1
+pkgdesc='A Light, Simple, Flexible Content Management System based on Kohana Framework'
+arch=('any')
+url='http://gleezcms.org/'
+license=('custom:Gleez CMS License')
+depends=('php>=5.3')
+optdepends=('apache: A high performance Unix-based HTTP server'
+            'nginx: Lightweight HTTP server and IMAP/POP3 proxy server'
+            'nginx-pagespeed: Lightweight HTTP server and IMAP/POP3 proxy server with ngx_pagespeed'
+            'mariadb: Fast SQL database server, drop-in replacement for MySQL'
+            'memcached: A distributed memory object caching system'
+            'mongodb: A high-performance, open source, schema-free document-oriented database. Used by Mango Reader module'
+            'varnish: High-performance HTTP accelerator'
+            'mod_pagespeed: Apache module that automatically optimizes web pages and resources on them'
+            'php-apc: A free, open, and robust framework for caching and optimizing PHP intermediate code'
+            'php-imagick: PHP extension for IMagick'
+            'php-gd: GD extension for PHP'
+            'php-memcached: PHP extension for interfacing with memcached via libmemcached library'
+            'php-mongo: Officially supported PHP driver for MongoDB. Used by Mango Reader module'
+            'gleez-cerber: Cerber Theme for Gleez CMS'
+            'gleez-mango: Module that monitors all system logs using MongoDB')
+options=('emptydirs')
+install="${pkgname}.install"
+source=("https://github.com/sergeyklay/cms/archive/v${pkgver}.tar.gz")
+md5sums=('da7314a081edd9ddf8859679117a7605')
+
+build() {
+    /bin/true
+}
+
+package() {
+    cd "${srcdir}/cms-${pkgver}"
+
+    install -d "${pkgdir}/usr/share/webapps/${pkgname}"
+    cp -r {*,.htaccess} "${pkgdir}/usr/share/webapps/${pkgname}"
+}

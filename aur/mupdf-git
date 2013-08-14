@@ -1,0 +1,47 @@
+# Maintainer: Army
+_pkgname=mupdf
+pkgname=$_pkgname-git
+pkgver=1.3rc1.13.g00fbe24
+pkgrel=1
+pkgdesc="lightweight PDF viewer and toolkit written in portable C"
+arch=('i686' 'x86_64')
+url="http://mupdf.com"
+license=('GPL3')
+depends=('libxext' 'jbig2dec' 'desktop-file-utils' 'libjpeg' 'freetype2' 'openssl')
+makedepends=('git')
+provides=("$_pkgname")
+conflicts=("$_pkgname")
+install=$pkgname.install
+source=("$_pkgname::git+git://git.ghostscript.com/mupdf.git")
+md5sums=('SKIP')
+
+pkgver() {
+  cd "$srcdir/$_pkgname"
+  echo $(git describe --tags | sed 's|-|.|g')
+}
+
+prepare() {
+  cd "$srcdir/$_pkgname"
+  git submodule update --init thirdparty/openjpeg
+  git submodule update --init thirdparty/curl
+}
+
+build() {
+  cd "$srcdir/$_pkgname"
+  make build=release prefix="$pkgdir/usr"
+}
+
+package() {
+  cd "$srcdir/$_pkgname"
+  make build=release prefix="$pkgdir/usr" install
+
+  cd "$srcdir/$_pkgname/platform/debian"
+  install -Dm644 "mupdf.desktop" "$pkgdir/usr/share/applications/mupdf.desktop"
+  install -Dm644 "mupdf.xpm" "$pkgdir/usr/share/pixmaps/mupdf.xpm"
+  
+  # apparently an upstream bug, namcap doesn't like it, so I fix it
+  cd "$pkgdir/usr/lib"
+  for i in *;do chmod -x "$i";done
+}
+
+# vim:set ts=2 sw=2 et:

@@ -1,0 +1,40 @@
+# Maintainer: m039 <flam44 (at) gmail (dot) com>
+# Contributors: jdarnold
+#-----------------------------------------------
+
+pkgname=emacs-auto-complete-git
+provides=('emacs-auto-complete')
+pkgver=v1.0.334.g8a13f40
+pkgrel=1
+pkgdesc="Auto-Complete is an intelligent auto-completion extension for Emacs"
+url="http://auto-complete.org/"
+arch=('any')
+license=('GPL3')
+depends=('emacs' 'emacs-popup-el-git')
+makedepends=('git' 'make')
+source=('git://github.com/auto-complete/auto-complete.git')
+md5sums=('SKIP')
+install=$pkgname.install
+
+_gitname="auto-complete"
+
+pkgver() {
+  cd $_gitname
+  git describe --always | sed 's|-|.|g'
+}
+
+build() {
+  cd $_gitname
+  git submodule init; git submodule update
+  make byte-compile
+}
+
+package() {
+  _pkg_emacs=$pkgdir/usr/share/emacs/site-lisp/$_gitname
+  
+  cd $_gitname
+  install -d $_pkg_emacs/
+  install -d $_pkg_emacs/dict
+  install -Dm644 *.{el,elc} $_pkg_emacs/
+  install -Dm644 ./dict/* $_pkg_emacs/dict
+}

@@ -1,0 +1,22 @@
+# Maintainer: Jarek Sedlacek <jareksedlacek@gmail.com>:
+
+pkgname=python-crontab
+pkgver=1.4.3
+pkgrel=1
+pkgdesc="Python Crontab API"
+arch=('i686' 'x86_64')
+url="http://pypi.python.org/pypi/python-crontab/"
+license=('GPL3')
+depends=('python' 'python-dateutil')
+source=(http://pypi.python.org/packages/source/p/$pkgname/$pkgname-$pkgver.tar.gz)
+
+build() {
+    cd $srcdir/$pkgname-$pkgver
+}
+
+package(){
+    cd $srcdir/$pkgname-$pkgver
+    python setup.py install --prefix=/usr --root=$pkgdir
+}
+
+md5sums=('1d6848d5f315438e58d88ef06e1e17ff')

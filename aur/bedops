@@ -1,0 +1,21 @@
+# Maintainer: Cory Giles <mail@corygil.es>
+
+pkgname=bedops
+pkgver=2.2.0
+pkgrel=1
+pkgdesc="Highly scalable genomic feature operations."
+arch=('x86_64')
+url="http://code.google.com/p/bedops/"
+license=('GPL')
+source=(http://bedops.googlecode.com/files/${pkgname}_linux_${arch}-v${pkgver}.tar.bz2)
+md5sums=('3d6cffe429bc9d403eca5aae9d0bd4b7')
+
+build() {
+    sed -i 's/#!\/usr\/bin\/env python/#!\/usr\/bin\/env python2/g' bin/*
+}
+
+package() {
+    cd $srcdir
+    mkdir -p $pkgdir/usr/bin
+    install -t $pkgdir/usr/bin bin/*
+}

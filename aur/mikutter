@@ -1,0 +1,28 @@
+# vim:set ts=2 sw=2 et:
+# Maintainer: 2GMon <t_2gmon@yahoo.co.jp>
+pkgname=mikutter
+pkgver=0.2.2.1328
+pkgrel=1
+pkgdesc="a moest twitter client"
+arch=('i686' 'x86_64')
+url="http://mikutter.hachune.net/"
+license=('GPL3')
+depends=('ruby-gtk2')
+optdepends=('libnotify: notify support')
+source=(http://mikutter.hachune.net/bin/$pkgname.$pkgver.tar.gz mikutter.install)
+install=mikutter.install
+
+package() {
+  mkdir "$pkgdir/opt"
+  cp -r "$srcdir/$pkgname" "$pkgdir/opt"
+
+  mkdir -p "$pkgdir/usr/bin"
+  cat <<'EOF' > "$pkgdir/usr/bin/mikutter"
+#!/bin/sh
+ruby /opt/mikutter/mikutter.rb $@
+EOF
+  chmod a+x "$pkgdir/usr/bin/mikutter"
+}
+
+md5sums=('f264f1322a0ebafbbbbb78e147c689aa'
+         '956838809e9ec9519c8bd9164484f702')

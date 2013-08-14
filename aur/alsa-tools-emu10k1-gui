@@ -1,0 +1,44 @@
+# Maintainer: 3ED <krzysztof1987@gmail.com>
+
+pkgname=alsa-tools-emu10k1-gui
+pkgver=1.0.27
+pkgrel=2
+pkgdesc="A gui for tools from alsa-tools which are related to emu10kx"
+url="http://alsa-project.org/"
+arch=('i686' 'x86_64')
+license=('GPL')
+depends=('alsa-tools' 'qt3')
+source=("ftp://ftp.alsa-project.org/pub/tools/alsa-tools-${pkgver}.tar.bz2"
+        "qlo10k1.desktop")
+sha256sums=('6562611b5a6560712f109e09740a9d4fa47296b07ed9590cb44139c5f154ada2'
+            '4bc133ba0e97a155dd3bbf8b3eb54f792011a95a2618df543827c8e63e412cc5')
+
+prepare() {
+  cd "$srcdir/alsa-tools-$pkgver/qlo10k1"
+  sed 's|$QTDIR/include|/usr/include/qt3/|g' -i configure
+  sed 's|$QTDIR/bin|/usr/lib/qt3/bin|g' -i configure
+  sed 's|$QTDIR/lib|/usr/lib|g' -i configure
+  sed 's|$QTDIR/$QT_LIB_DIR|/usr/lib|g' -i configure
+}
+
+build() {
+  export PATH=/usr/lib/qt3/bin/:$PATH
+  export QTDIR=/usr/lib/qt3/
+
+  cd "$srcdir/alsa-tools-$pkgver/qlo10k1"
+  ./configure --prefix=/usr --with-qtdir=$QTDIR --disable-ld10k1test
+  make
+}
+
+package() {
+  cd "$srcdir/alsa-tools-$pkgver/qlo10k1"
+
+  make DESTDIR="$pkgdir/" install
+
+  install -dm755 "$pkgdir/usr/share/applications"
+  install -m 644 "$srcdir/qlo10k1.desktop" \
+    "$pkgdir/usr/share/applications/qlo10k1.desktop"
+
+  find "$pkgdir/" -name '*.la' -delete
+}
+
