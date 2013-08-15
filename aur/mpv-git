@@ -1,0 +1,72 @@
+# Maintainer: RudolfPolzer <divVerent@xonotic.org>
+# Based on the mplayer2-lite-git PKGBUILD
+
+pkgname=mpv-git
+pkgver=0.35441.9dfc7da
+pkgrel=1
+pkgdesc="A movie player and encoder for linux (uses dynamically linked ffmpeg; git version)"
+arch=('i686' 'x86_64')
+license=('GPL')
+url="https://github.com/mpv-player/mpv"
+depends=('libcaca' 'portaudio' 'ffmpeg' 'lcms2' 'libdvdread' 'smbclient' 'libmng' 'libcdio-paranoia' 'libxinerama' 'lirc-utils' 'libxss' 'desktop-file-utils' 'libquvi' 'mpg123' 'libxv' 'libxkbcommon')
+makedepends=('git' 'mesa' 'python-docutils')
+provides=('mpv')
+conflicts=('mpv')
+options=(!emptydirs)
+install=mpv.install
+source=('git+http://github.com/mpv-player/mpv#branch=master'
+        'mpv.desktop')
+md5sums=('SKIP'
+         '5753c2001c302b1e43ddee1cf063c0bc')
+
+_gitname="mpv"
+
+pkgver() {
+  cd "$srcdir/$_gitname"
+  microver="$(git log -1 --pretty=format:%h )"
+  minorver="$(git rev-list --count HEAD)"
+  echo "0.$minorver.$microver"
+}
+
+build() {
+  # Custom CFLAGS break the mpv build
+  unset CFLAGS
+  unset LDFLAGS
+  cd "$srcdir/$_gitname"
+
+  msg "Starting configure..."
+  ./configure --prefix=/usr \
+      --disable-lircc \
+      --disable-joystick \
+      --disable-radio \
+      --disable-radio-capture \
+      --disable-radio-v4l2 \
+      --disable-macosx-bundle \
+      --disable-rpath \
+      --disable-libbs2b \
+      --disable-direct3d \
+      --disable-corevideo \
+      --disable-cocoa \
+      --disable-coreaudio \
+      --extra-cflags="-I/usr/include/samba-4.0"
+
+  msg "Starting make..."
+  make
+}
+
+package() {
+  cd "${srcdir}/${_gitname}"
+
+  make -j1 DESTDIR="${pkgdir}" install
+
+  install -d ${pkgdir}/usr/share/doc/mpv/examples
+
+  # some extra useful stuff "make install" doesn't install
+  install -m644 ${srcdir}/${_gitname}/etc/{input,example,encoding-example-profiles}.conf "${pkgdir}/usr/share/doc/mpv/examples"
+  install -m644 ${srcdir}/${_gitname}/DOCS/{encoding.rst,tech-overview.txt} "${pkgdir}/usr/share/doc/mpv"
+  install -m755 ${srcdir}/${_gitname}/TOOLS/mpv_identify.sh "${pkgdir}/usr/bin"
+  install -Dm644 "${srcdir}/${_gitname}/etc/mplayer.xpm" "${pkgdir}/usr/share/pixmaps/mpv.xpm"
+
+  # file association
+  install -Dm644 "${srcdir}/mpv.desktop" "${pkgdir}/usr/share/applications/mpv.desktop"
+}
