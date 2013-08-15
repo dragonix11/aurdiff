@@ -1,0 +1,280 @@
+# Maintainer: gruppenpest <drgruppenpest@softhome.net>
+# Previous maintainer: OK <ok100.ok100.ok100@gmail.com>
+# Based on kernel-eee PKGBUILD by Dan McGee <dan@archlinux.org>
+
+# AUR workaround
+pkgname=linux-eee-ck
+
+true && pkgname=(linux-eee-ck linux-eee-ck-headers)
+_ckpatchversion=1
+_majorver=3.10
+_ckpatchname="patch-${_majorver}-ck${_ckpatchversion}"
+_srcname=linux-${_majorver}
+pkgver=3.10.6
+pkgrel=1
+_bfsver=0.440
+arch=('i686')
+license=('GPL2')
+makedepends=('kmod' 'inetutils' 'bc')
+options=('!strip')
+url="http://www.kernel.org"
+source=("http://www.kernel.org/pub/linux/kernel/v3.x/${_srcname}.tar.xz"
+        "http://www.kernel.org/pub/linux/kernel/v3.x/patch-${pkgver}.xz"
+        "http://ck.kolivas.org/patches/3.0/${_majorver}/${_majorver}-ck${_ckpatchversion}/${_ckpatchname}.bz2"
+        'change-default-console-loglevel.patch'
+        '61-eee-ssd.rules'
+        'kernelconfig'
+        'criu-no-expert.patch'
+        '3.10.6-logitech-dj.patch'
+        '3.10.6-reset-superseed-xhci-hcd.patch')
+
+md5sums=('4f25cd5bec5f8d5a7d935b3f2ccb8481'
+         'b41c06c1154592045cc2a9d88363de14'
+         '0c10baeb72b26ffa111dac8ee2eefe26'
+         '9d3c56a4b999c8bfbd4018089a62f662'
+         '6100b3e13c4c24ce3c887a1ae36ab7f1'
+	 '2e834ea6f0bcb964aa139ab707af9fc8'
+         'd50c1ac47394e9aec637002ef3392bd1'
+         '3ff40ca684cfe719723e627e2cef7cea'
+         '31f4d721494c4d5493ed90d9c504c5c9')
+
+prepare() {
+  # get into the linux source directory and start some magic
+  cd "${_srcname}"
+
+  # add upstream patch
+  patch -p1 -i "${srcdir}/patch-${pkgver}"
+
+  # set DEFAULT_CONSOLE_LOGLEVEL to 4 (same value as the 'quiet' kernel param)
+  # remove this when a Kconfig knob is made available by upstream
+  # (relevant patch sent upstream: https://lkml.org/lkml/2011/7/26/227)
+  patch -Np1 -i ${srcdir}/change-default-console-loglevel.patch
+
+	# allow criu without expert option set
+  # patch from fedora
+  patch -Np1 -i "${srcdir}/criu-no-expert.patch"
+  
+  # fix FS#35991 - [linux] 3.10.x renders Logitech Unified Receivers useless
+  patch -Np1 -i  "${srcdir}/3.10.6-logitech-dj.patch"
+
+  # fix FS#36296 - [linux] 3.10.3 reset SuperSpeed USB using xhci_hcd
+  patch -Np1 -i  "${srcdir}/3.10.6-reset-superseed-xhci-hcd.patch"
+
+  ### Patch source with ck patchset with BFS
+  # Fix double name in EXTRAVERSION
+  sed -i -re "s/^(.EXTRAVERSION).*$/\1 = /" "${srcdir}/${_ckpatchname}"
+  msg "Patching source with ck1 including BFS v0.440"
+  patch -Np1 -i "${srcdir}/${_ckpatchname}"
+
+  ### Clean tree and copy ARCH config over
+  msg "Running make mrproper to clean source tree"
+  make mrproper
+  cp ../kernelconfig ./.config
+
+  # set extraversion to pkgrel
+  sed -ri "s|^(EXTRAVERSION =).*|\1 -${pkgrel}|" Makefile
+
+  # don't run depmod on 'make install'. We'll do this ourselves in packaging
+  sed -i '2iexit 0' scripts/depmod.sh
+}
+
+build() {
+  cd "${_srcname}"
+  msg "Running make prepare for you to enable patched options of your choosing"
+  make prepare
+
+  # to modify kernel settings, uncomment the following line
+  # make menuconfig
+
+  # build!
+  make ${MAKEFLAGS} LOCALVERSION= bzImage modules || return 1
+}
+
+package_linux-eee-ck() {
+  _Kpkgdesc='Linux Kernel and modules for the Asus Eee PC 701, with Brain Fuck Scheduler v${_bfsver} and all the goodies in the ck${_ckpatchversion} patchset.'
+  pkgdesc="${_Kpkgdesc}"
+
+  provides=("linux-eee-ck=${pkgver}")
+  depends=('coreutils' 'module-init-tools')
+  optdepends=('crda: for wireless regulatory domain support'
+            'iw: for wireless configuration support')
+  replaces=('linux-uvc-eee-svn' 'madwifi-eee-svn')
+  install='linux-eee-ck.install'
+
+  KARCH=x86
+
+  # install our modules
+  cd $srcdir/$_srcname
+
+  # get kernel version
+  _kernver="$(make LOCALVERSION= kernelrelease)"
+
+  mkdir -p $pkgdir/{usr,lib/modules,boot}
+  make LOCALVERSION= INSTALL_MOD_PATH=$pkgdir modules_install || return 1
+
+  # remove the junk symlinks
+  cd $srcdir/$_srcname
+  rm $pkgdir/lib/modules/$_kernver/{build,source}
+
+  # set correct depmod command for install
+  sed \
+	-e  "s/KERNEL_NAME=.*/KERNEL_NAME=-ck/g" \
+	-e  "s/KERNEL_VERSION=.*/KERNEL_VERSION=${_kernver}/g" \
+	-i "${startdir}/linux-eee-ck.install"
+
+  # install the kernel
+  cp arch/x86/boot/bzImage $pkgdir/boot/vmlinuz-eee-ck
+
+  # udev rules for SSD drives/SD Cards, they is not rotational
+  mkdir -p $pkgdir/lib/udev/rules.d/
+  install -m644 $srcdir/61-eee-ssd.rules $pkgdir/lib/udev/rules.d/
+
+  # gzip -9 all modules
+  find "$pkgdir" -name '*.ko' -exec gzip -9 {} \;
+  # Now we call depmod...
+  depmod -b "$pkgdir" -F System.map "$_kernver"
+
+  # move module tree /lib -> /usr/lib
+  mv "$pkgdir/lib" "$pkgdir/usr"
+}
+
+package_linux-eee-ck-headers() {
+  _Hpkgdesc='Header files and scripts to build modules for linux-ck.'
+  pkgdesc="${_Hpkgdesc}"
+  depends=('linux-eee-ck') # added to keep kernel and headers packages matched
+  replaces=('kernel26-ck-headers')
+
+  install -dm755 "${pkgdir}/lib/modules/${_kernver}"
+
+  cd ${pkgdir}/lib/modules/${_kernver}
+  ln -sf ../../../usr/src/${_kernver} build
+
+  cd ${srcdir}/$_srcname
+  install -D -m644 Makefile \
+    ${pkgdir}/usr/src/linux-${_kernver}/Makefile
+  install -D -m644 kernel/Makefile \
+    ${pkgdir}/usr/src/linux-${_kernver}/kernel/Makefile
+  install -D -m644 .config \
+    ${pkgdir}/usr/src/linux-${_kernver}/.config
+  mkdir -p ${pkgdir}/usr/src/linux-${_kernver}/include
+
+  for i in acpi asm-generic config crypto drm generated keys linux math-emu \
+    media net pcmcia scsi sound trace uapi video xen; do
+    cp -a include/$i ${pkgdir}/usr/src/linux-${_kernver}/include/
+  done
+
+  # copy arch includes for external modules
+  mkdir -p ${pkgdir}/usr/src/linux-${_kernver}/arch/x86
+  cp -a arch/x86/include ${pkgdir}/usr/src/linux-${_kernver}/arch/x86/
+
+  # copy files necessary for later builds, like nvidia and vmware
+  cp Module.symvers ${pkgdir}/usr/src/linux-${_kernver}
+  cp -a scripts ${pkgdir}/usr/src/linux-${_kernver}
+
+  # fix permissions on scripts dir
+  chmod og-w -R "${pkgdir}/usr/src/linux-${_kernver}/scripts"
+  mkdir -p "${pkgdir}/usr/src/linux-${_kernver}/.tmp_versions"
+
+  mkdir -p "${pkgdir}/usr/src/linux-${_kernver}/arch/$KARCH/kernel"
+
+  cp arch/$KARCH/Makefile "${pkgdir}/usr/src/linux-${_kernver}/arch/$KARCH/"
+
+  if [ "$CARCH" = "i686" ]; then
+    cp arch/$KARCH/Makefile_32.cpu "${pkgdir}/usr/src/linux-${_kernver}/arch/$KARCH/"
+  fi
+  cp arch/$KARCH/kernel/asm-offsets.s "${pkgdir}/usr/src/linux-${_kernver}/arch/$KARCH/kernel/"
+
+  # add headers for lirc package
+  # pci
+  for i in bt8xx cx88 saa7134; do
+    mkdir -p "${pkgdir}/usr/src/linux-${_kernver}/drivers/media/pci/${i}"
+    cp -a drivers/media/pci/${i}/*.h "${pkgdir}/usr/src/linux-${_kernver}/drivers/media/pci/${i}"
+  done
+  # usb
+  for i in cpia2 em28xx pwc sn9c102; do
+    mkdir -p "${pkgdir}/usr/src/linux-${_kernver}/drivers/media/usb/${i}"
+    cp -a drivers/media/usb/${i}/*.h "${pkgdir}/usr/src/linux-${_kernver}/drivers/media/usb/${i}"
+  done
+  # i2c
+  mkdir -p "${pkgdir}/usr/src/linux-${_kernver}/drivers/media/i2c"
+  cp drivers/media/i2c/*.h  "${pkgdir}/usr/src/linux-${_kernver}/drivers/media/i2c/"
+  for i in cx25840; do
+    mkdir -p "${pkgdir}/usr/src/linux-${_kernver}/drivers/media/i2c/${i}"
+    cp -a drivers/media/i2c/${i}/*.h "${pkgdir}/usr/src/linux-${_kernver}/drivers/media/i2c/${i}"
+  done
+
+  # add docbook makefile
+  install -D -m644 Documentation/DocBook/Makefile \
+    "${pkgdir}/usr/src/linux-${_kernver}/Documentation/DocBook/Makefile"
+
+  # add dm headers
+  mkdir -p "${pkgdir}/usr/src/linux-${_kernver}/drivers/md"
+  cp drivers/md/*.h  "${pkgdir}/usr/src/linux-${_kernver}/drivers/md"
+
+  # add inotify.h
+  mkdir -p "${pkgdir}/usr/src/linux-${_kernver}/include/linux"
+  cp include/linux/inotify.h "${pkgdir}/usr/src/linux-${_kernver}/include/linux/"
+
+  # add wireless headers
+  mkdir -p "${pkgdir}/usr/src/linux-${_kernver}/net/mac80211/"
+  cp net/mac80211/*.h "${pkgdir}/usr/src/linux-${_kernver}/net/mac80211/"
+
+  # add dvb headers for external modules
+  # in reference to:
+  # http://bugs.archlinux.org/task/9912
+  mkdir -p "${pkgdir}/usr/src/linux-${_kernver}/drivers/media/dvb/dvb-core"
+  cp drivers/media/dvb-core/*.h "${pkgdir}/usr/src/linux-${_kernver}/drivers/media/dvb/dvb-core/"
+  # and...
+  # http://bugs.archlinux.org/task/11194
+  mkdir -p "${pkgdir}/usr/src/linux-${_kernver}/include/config/dvb/"
+  [[ -n $(ls include/config/dvb/*.h &>/dev/null) ]] && cp include/config/dvb/*.h "${pkgdir}/usr/src/linux-${_kernver}/include/config/dvb/"
+
+  # add dvb headers for http://mcentral.de/hg/~mrec/em28xx-new
+  # in reference to:
+  # http://bugs.archlinux.org/task/13146
+  mkdir -p "${pkgdir}/usr/src/linux-${_kernver}/drivers/media/dvb-frontends/"
+  cp drivers/media/dvb-frontends/lgdt330x.h "${pkgdir}/usr/src/linux-${_kernver}/drivers/media/dvb-frontends/"
+  cp drivers/media/i2c/msp3400-driver.h "${pkgdir}/usr/src/linux-${_kernver}/drivers/media/i2c/"
+
+  # add dvb headers
+  # in reference to:
+  # http://bugs.archlinux.org/task/20402
+  mkdir -p "${pkgdir}/usr/src/linux-${_kernver}/drivers/media/usb/dvb-usb"
+  cp drivers/media/usb/dvb-usb/*.h "${pkgdir}/usr/src/linux-${_kernver}/drivers/media/usb/dvb-usb/"
+  mkdir -p "${pkgdir}/usr/src/linux-${_kernver}/drivers/media/dvb-frontends"
+  cp drivers/media/dvb-frontends/*.h "${pkgdir}/usr/src/linux-${_kernver}/drivers/media/dvb-frontends/"
+  mkdir -p "${pkgdir}/usr/src/linux-${_kernver}/drivers/media/tuners"
+  cp drivers/media/tuners/*.h "${pkgdir}/usr/src/linux-${_kernver}/drivers/media/tuners/"
+
+  # add xfs and shmem for aufs building
+  mkdir -p "${pkgdir}/usr/src/linux-${_kernver}/fs/xfs"
+  mkdir -p "${pkgdir}/usr/src/linux-${_kernver}/mm"
+  cp fs/xfs/xfs_sb.h "${pkgdir}/usr/src/linux-${_kernver}/fs/xfs/xfs_sb.h"
+
+  # copy in Kconfig files
+  for i in `find . -name "Kconfig*"`; do 
+    mkdir -p "${pkgdir}"/usr/src/linux-${_kernver}/`echo ${i} | sed 's|/Kconfig.*||'`
+    cp ${i} "${pkgdir}/usr/src/linux-${_kernver}/${i}"
+  done
+
+  chown -R root.root "${pkgdir}/usr/src/linux-${_kernver}"
+  find "${pkgdir}/usr/src/linux-${_kernver}" -type d -exec chmod 755 {} \;
+
+  # strip scripts directory
+  find "${pkgdir}/usr/src/linux-${_kernver}/scripts"  -type f -perm -u+w 2>/dev/null | while read binary ; do
+  case "$(file -bi "${binary}")" in
+    *application/x-sharedlib*) # Libraries (.so)
+      /usr/bin/strip ${STRIP_SHARED} "${binary}";;
+    *application/x-archive*) # Libraries (.a)
+      /usr/bin/strip ${STRIP_STATIC} "${binary}";;
+    *application/x-executable*) # Binaries
+      /usr/bin/strip ${STRIP_BINARIES} "${binary}";;
+    esac 
+  done
+
+  # remove unneeded architectures
+  rm -rf "${pkgdir}"/usr/src/linux-${_kernver}/arch/{alpha,arc,arm,arm26,arm64,avr32,blackfin,c6x,cris,frv,h8300,hexagon,ia64,m32r,m68k,m68knommu,metag,mips,microblaze,mn10300,openrisc,parisc,powerpc,ppc,s390,score,sh,sh64,sparc,sparc64,tile,um,unicore32,v850,xtensa}
+
+# Global pkgdesc and depends are here so that they will be picked up by AUR
+pkgdesc='Linux Kernel and modules for the Asus Eee PC 701 with the ck1 patchset featuring the Brain Fuck Scheduler v0.440.'
+}

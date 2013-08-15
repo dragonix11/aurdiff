@@ -1,0 +1,92 @@
+# Maintainer: Dave Reisner <dreisner@archlinux.org>
+
+pkgname=systemd-git
+pkgver=206.128.g1acbb95
+pkgrel=1
+pkgdesc="system and service manager"
+arch=('i686' 'x86_64')
+url="http://www.freedesktop.org/wiki/Software/systemd"
+license=('GPL2' 'LGPL2.1' 'MIT')
+depends=('acl' 'dbus-core' 'glib2' 'hwids' 'kbd' 'kmod' 'libcap' 'libgcrypt' 'pam' 'util-linux' 'xz')
+makedepends=('docbook-xsl' 'git' 'gobject-introspection' 'gperf'
+             'gtk-doc' 'intltool' 'libxslt')
+provides=('systemd' 'libsystemd' 'nss-myhostname' 'systemd-sysvcompat' 'systemd-tools' 'udev=999')
+conflicts=('systemd' 'libsystemd' 'nss-myhostname' 'systemd-sysvcompat' 'systemd-tools' 'sysvinit' 'initscripts' 'udev')
+groups=('systemd')
+options=('!libtool' '!strip')
+backup=(etc/dbus-1/system.d/org.freedesktop.systemd1.conf
+        etc/dbus-1/system.d/org.freedesktop.hostname1.conf
+        etc/dbus-1/system.d/org.freedesktop.login1.conf
+        etc/dbus-1/system.d/org.freedesktop.locale1.conf
+        etc/dbus-1/system.d/org.freedesktop.machine1.conf
+        etc/dbus-1/system.d/org.freedesktop.timedate1.conf
+        etc/systemd/bootchart.conf
+        etc/systemd/journald.conf
+        etc/systemd/logind.conf
+        etc/systemd/system.conf
+        etc/systemd/user.conf
+        etc/udev/udev.conf)
+install='systemd.install'
+source=('git://anongit.freedesktop.org/systemd/systemd.git'
+        'initcpio-hook-udev'
+        'initcpio-install-udev'
+        'initcpio-install-systemd')
+md5sums=('SKIP'
+         'e99e9189aa2f6084ac28b8ddf605aeb8'
+         'fb37e34ea006c79be1c54cbb0f803414'
+         'fbea6190413f5e54a4d0784ca4a340e4')
+
+pkgver() {
+  cd 'systemd'
+  git describe | sed 's/^v//;s/-/./g'
+}
+
+build() {
+  cd 'systemd'
+
+  ./autogen.sh
+  ./configure \
+      --libexecdir=/usr/lib \
+      --localstatedir=/var \
+      --sysconfdir=/etc \
+      --enable-introspection \
+      --enable-gtk-doc \
+      --disable-audit \
+      --disable-ima \
+      --with-distro=arch \
+      --with-sysvinit-path= \
+      --with-sysvrcnd-path=
+
+  make
+}
+
+package() {
+  make -C "systemd" DESTDIR="$pkgdir" install
+
+  rm -r "$pkgdir/usr/lib/rpm/macros.d"
+
+  printf "d /run/console 0755 root root\n" >"$pkgdir/usr/lib/tmpfiles.d/console.conf"
+
+  for tool in runlevel reboot shutdown poweroff halt telinit; do
+    ln -s 'systemctl' "$pkgdir/usr/bin/$tool"
+  done
+  ln -s '../lib/systemd/systemd' "$pkgdir/usr/bin/init"
+
+  # fix .so links in manpage stubs
+  find "$pkgdir/usr/share/man" -type f -name '*.[[:digit:]]' \
+      -exec sed -ri '1s|^\.so (.*)\.([0-9]+)|.so man\2/\1.\2|' {} +
+
+  # don't write units to /etc by default
+  rm "$pkgdir/etc/systemd/system/getty.target.wants/getty@tty1.service"
+  rmdir "$pkgdir/etc/systemd/system/getty.target.wants"
+
+  # Replace dialout/tape/cdrom group in rules with uucp/storage/optical group
+  sed -i -e 's#GROUP="dialout"#GROUP="uucp"#g' \
+         -e 's#GROUP="tape"#GROUP="storage"#g' \
+         -e 's#GROUP="cdrom"#GROUP="optical"#g' "$pkgdir"/usr/lib/udev/rules.d/*.rules
+
+  # add mkinitcpio hooks
+  install -Dm644 "$srcdir/initcpio-install-systemd" "$pkgdir/usr/lib/initcpio/install/systemd"
+  install -Dm644 "$srcdir/initcpio-install-udev" "$pkgdir/usr/lib/initcpio/install/udev"
+  install -Dm644 "$srcdir/initcpio-hook-udev" "$pkgdir/usr/lib/initcpio/hooks/udev"
+}

@@ -1,0 +1,36 @@
+#Maintainer theNerd247 <noah.harvey247@gmail.com>
+
+pkgname=libstr
+pkgver=0.0.2
+pkgrel=3
+pkgdesc="An extension library for C standard string.h"
+arch=('i686' 'x86_64')
+url=https://www.github.com/theNerd247/libstr
+license=('GPL')
+source=("$url/raw/master/pkgs/$pkgname-$pkgver.tar.gz"
+				"$url/raw/master/patches/strinsbuff.patch"
+				"$url/raw/master/patches/strsub.patch")
+
+depends=('glibc')
+md5sums=('d01dcb15e301533606dcfd3e623683d7'
+				 'cbdb39daa5c68c204651ae7e6fbeb376'
+				 'ad3657c39dda9f3b4df5b8135ed8e79b')
+
+prepare()
+{
+	cd "$srcdir"	
+	patch $pkgname-$pkgver/src/str.c strinsbuff.patch
+	patch $pkgname-$pkgver/src/str.c strsub.patch
+}
+
+build()
+{
+	cd "$srcdir/$pkgname-$pkgver"
+	make
+}
+
+package()
+{
+	cd "$srcdir/$pkgname-$pkgver"
+	make DESTDIR="$pkgdir" install
+}

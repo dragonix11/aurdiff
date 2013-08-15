@@ -1,0 +1,54 @@
+# Contributor: Det <nimetonmaili at gmail a-dot com>
+# Based on [extra]'s thunderbird
+
+pkgname=thunderbird-beta-bin
+pkgver=24.0b1
+pkgrel=1
+pkgdesc="Standalone Mail/News reader - Bleeding edge binary version"
+arch=('i686' 'x86_64')
+license=('MPL' 'GPL' 'LGPL')
+url="https://www.mozilla.org/thunderbird"
+depends=('alsa-lib' 'cairo' 'dbus-glib' 'desktop-file-utils' 'fontconfig' 'freetype2' 'gtk2' 'hicolor-icon-theme' 'hunspell' 'libevent' 'libjpeg' 'libmng' 'libpng' 'libvpx' 'libxt' 'mozilla-common' 'nspr' 'nss' 'shared-mime-info' 'sqlite' 'startup-notification')
+optdepends=('libcanberra: for sound support')
+provides=("thunderbird=$pkgver")
+conflicts=('thunderbird-beta')
+install=$pkgname.install
+_arch=i686  # Workaround for the AUR Web interface Source parser
+[ "$CARCH" = 'x86_64' ] && _arch=x86_64
+source=("https://ftp.mozilla.org/pub/mozilla.org/thunderbird/releases/$pkgver/linux-$_arch/en-US/thunderbird-$pkgver.tar.bz2"
+        'thunderbird-beta.desktop'
+        'vendor.js')
+md5sums=(`curl -sL ${source/\/li*}/MD5SUMS | grep en-US | grep "$CARCH" | grep bz2 | cut -d " " -f1`
+         'f8a9b91202e8c85ad7b8f23fb82a4d7b'
+         '5a53179d14ae9631b7afe5e4d0fc0b25')
+# # Alternative mirror:
+# source[0]="http://releases.mozilla.org/pub/mozilla.org/thunderbird/releases/$pkgver/linux-$_arch/en-US/thunderbird-$pkgver.tar.bz2"
+
+package() {
+  msg2 "Creating directories"
+  # Create directories
+  install -d "$pkgdir"/{usr/bin,opt}
+
+  msg2 "Moving stuff in place"
+  # Install
+  cp -r thunderbird/ "$pkgdir"/opt/$pkgname-$pkgver/
+  cp vendor.js "$pkgdir"/opt/$pkgname-$pkgver/defaults/pref/
+  
+  # /usr/bin symlink
+  ln -s /opt/$pkgname-$pkgver/thunderbird "$pkgdir"/usr/bin/${pkgname/-bin}
+  
+  # Icons
+  for i in 16x16 22x22 24x24 32x32 48x48 256x256; do
+      install -Dm644 thunderbird/chrome/icons/default/default${i/x*/}.png "$pkgdir"/usr/share/icons/hicolor/$i/apps/${pkgname/-bin}.png
+  done
+  
+  # Desktop
+  install -Dm644 ${pkgname/-bin}.desktop "$pkgdir"/usr/share/applications/${pkgname/-bin}.desktop
+  
+  # Dictionaries
+  rm -rf "$pkgdir"/opt/$pkgname-$pkgver/dictionaries/
+  ln -sf /usr/share/hunspell/ "$pkgdir"/opt/$pkgname-$pkgver/dictionaries
+  
+  # Hyphenation
+  ln -sf /usr/share/hyphen/ "$pkgdir"/opt/$pkgname-$pkgver/hyphenation
+}

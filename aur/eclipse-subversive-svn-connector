@@ -1,0 +1,32 @@
+# Maintainer: Benjamin Robin <benjarobin>
+
+pkgname=eclipse-subversive-svn-connector
+pkgver=3.0.2.I20130808_1700
+pkgrel=1
+pkgdesc="Subversive SVN Connectors"
+arch=('any')
+url="http://www.polarion.com/products/svn/subversive.php"
+license=('EPL')
+depends=('eclipse-subversive')
+
+source=("$pkgname-$pkgver-feature.jar::http://community.polarion.com/projects/subversive/download/eclipse/3.0/update-site/features/org.polarion.eclipse.team.svn.connector_${pkgver//_/-}.jar" \
+        "$pkgname-$pkgver-plugin.jar::http://community.polarion.com/projects/subversive/download/eclipse/3.0/update-site/plugins/org.polarion.eclipse.team.svn.connector_${pkgver//_/-}.jar")
+
+noextract=($pkgname-$pkgver-{feature,plugin}.jar)
+
+md5sums=('9638f6cda43d94da72fa7b5645ed6ad8'
+         '05c9cf8f52330cc2acc2868cd3189c6e')
+
+package()
+{
+	_dest="$pkgdir/usr/share/eclipse/dropins/${pkgname/eclipse-}/eclipse"
+
+	# Feature(s)
+	install -d -m755 $_dest/features/org.polarion.eclipse.team.svn.connector_${pkgver//_/-}
+	cd $_dest/features/org.polarion.eclipse.team.svn.connector_${pkgver//_/-}
+	jar xf $srcdir/$pkgname-$pkgver-feature.jar
+	
+	# Plugin(s)
+	install -D -m644 $srcdir/$pkgname-$pkgver-plugin.jar $_dest/plugins/org.polarion.eclipse.team.svn.connector_${pkgver//_/-}.jar
+}
+

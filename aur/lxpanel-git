@@ -1,0 +1,34 @@
+# Maintainer: Jerome Leclanche <jerome.leclanche+arch@gmail.com>
+
+pkgname=lxpanel-git
+pkgver=0.5.10.152.gd5a916e
+pkgrel=1
+pkgdesc="Lightweight X11 desktop panel (part of LXDE)."
+arch=('i686' 'x86_64')
+url="http://lxde.org/"
+license=('GPL')
+depends=('gtk2' 'alsa-lib' 'menu-cache' 'lxmenu-data' 'libwnck')
+makedepends=('git' 'wireless_tools' 'docbook-xml' 'docbook-xsl')
+provides=('lxpanel')
+conflicts=('lxpanel')
+groups=('lxde-git')
+source=("git://github.com/lxde/lxpanel.git")
+sha256sums=('SKIP')
+_gitname="lxpanel"
+
+pkgver() {
+	cd "$srcdir/$_gitname"
+	echo "$(git describe --always | sed 's/-/./g')"
+}
+
+build() {
+	cd "$srcdir/$_gitname"
+	./autogen.sh
+	./configure --sysconfdir=/etc --prefix=/usr --enable-man
+	make
+}
+
+package() {
+	cd "$srcdir/$_gitname"
+	make DESTDIR="$pkgdir" install
+}

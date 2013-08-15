@@ -1,0 +1,23 @@
+# Maintainer: <kfgz at interia dot pl>
+
+pkgname=tpc
+pkgver=0.44rc2
+pkgrel=1
+pkgdesc="Tool for undervolting/overclocking Family 11h (K8L) and Family 10h (K10) AMD processors."
+arch=('i686' 'x86_64')
+url="https://code.google.com/p/turionpowercontrol/"
+license=('unknown')
+depends=('gcc-libs')
+install=tpc.install
+_pkgver="${pkgver:0:4}-${pkgver:4}"
+source=(https://turionpowercontrol.googlecode.com/files/${pkgname}-${_pkgver}-src.tar.gz)
+sha1sums=('bda793d1ce263e1e119ea8dc2a3556a07909b113')
+
+build() {
+  cd "${srcdir}"/${pkgname}-${_pkgver}-src
+  make 
+}
+
+package() {
+  install -Dm755 "${srcdir}"/${pkgname}-${_pkgver}-src/TurionPowerControl "${pkgdir}"/usr/bin/tpc
+}
