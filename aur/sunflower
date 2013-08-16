@@ -1,0 +1,31 @@
+# Maintainer: boenki <boenki at gmx dot de>
+# Contributor: Dan Serban
+# Contributor: Henrik Olsson
+
+pkgname=sunflower
+pkgver=0.1a_56
+pkgrel=2
+pkgdesc="Small, customizable twin-panel file manager"
+url="https://code.google.com/p/sunflower-fm/"
+arch=('any')
+license=('GPL3')
+depends=('python2-gnomekeyring')
+optdepends=('python2-notify: desktop notifications service'
+            'vte: integrated vte-based terminal'
+            'mutagen: audio-metadata support'
+            'gvfs: mount-management')
+conflicts=('sunflower-hg')
+options=(!strip !zipman)
+source=(https://sunflower-fm.googlecode.com/files/Sunflower-${pkgver//_/-}.tgz
+        sunflower)
+md5sums=('c9c580cba2e7a8f9756cfff93b767ab3'
+         '95b68d1631f9406d55bd772231b021e6')
+
+package() {
+  install -Dm755 sunflower "${pkgdir}/usr/bin/sunflower"
+  install -d "${pkgdir}/usr/share/sunflower"
+  cd Sunflower
+  cp -r * "${pkgdir}/usr/share/sunflower"
+  install -Dm644 Sunflower.desktop "${pkgdir}/usr/share/applications/sunflower.desktop"
+  install -Dm644 images/sunflower_64.png "${pkgdir}/usr/share/pixmaps/sunflower.png"
+}

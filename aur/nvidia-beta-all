@@ -1,0 +1,91 @@
+# Maintainer: Det
+# Contributor: Ng Oon-Ee
+# Based on nvidia-beta: https://aur.archlinux.org/packages/nvidia-beta/
+
+# Use Pacman's versions instead of the binaries'. Should only be used in case of long version numbers
+# (e.g. those with git-suffixes), as it takes a bit longer, due to needing to search the local repository.
+# "1" to enable.
+_pacman=0
+
+pkgname=nvidia-beta-all
+pkgver=325.15
+_EXTRAMODULES=$(find /usr/lib/modules -name version | sed 's|\/usr\/lib\/modules\/||; s|\/version||')
+pkgrel=1
+pkgdesc="NVIDIA drivers for all kernels (beta)"
+arch=('i686' 'x86_64')
+url="http://www.nvidia.com/"
+depends=('nvidia-libgl-beta' "nvidia-utils-beta=${pkgver}")
+makedepends=('linux-headers')
+conflicts=('nvidia-96xx' 'nvidia-173xx' 'nvidia')
+provides=('nvidia')
+license=('custom:NVIDIA')
+install=${pkgname}.install
+options=('!strip')
+
+if [ "$CARCH" = 'i686' ]; then
+    _arch='x86'
+    _pkg="NVIDIA-Linux-${_arch}-${pkgver}"
+    md5sums=('528fc538584de6446384b9cec3099d6c')
+elif [ "$CARCH" = 'x86_64' ]; then
+    _arch='x86_64'
+    _pkg="NVIDIA-Linux-${_arch}-${pkgver}-no-compat32"
+    md5sums=('63b2caa0cb128efa1a7808d7bddb2074')
+fi
+
+#source=("http://us.download.nvidia.com/XFree86/Linux-${_arch}/${pkgver}/${_pkg}.run")
+source=("ftp://download.nvidia.com/XFree86/Linux-${_arch}/${pkgver}/${_pkg}.run")
+
+# Source for the kernel release
+if [ ${_pacman} = 0 ]; then
+    _KERNELS=$(file -rk /boot/* | grep 'Linux kernel.*boot executable' | sed 's/.*version \([^ ]\+\).*/\1/')
+    sed 's/_pacman=1/_pacman=0/' -i "${startdir}/${install}"
+else
+    _packages=$(pacman -Qsq linux)
+    _KERNELS=$(pacman -Ql ${_packages} | grep /modules.alias.bin | sed 's/.*\/lib\/modules\/\(.*\)\/modules.alias.bin/\1/g')
+    sed 's/_pacman=0/_pacman=1/' -i "${startdir}/${install}"
+fi
+
+build() {
+    # Remove previous builds
+    if [ -d ${_pkg} ]; then
+        rm -rf ${_pkg}
+    fi
+
+    # Extract
+    sh ${_pkg}.run --extract-only
+    cd ${_pkg}/kernel
+
+    # Build module(s) by looping through all detected kernels
+    for _kernver in $_KERNELS; do
+        cd "${srcdir}/${_pkg}"
+        cp -r kernel "kernel-${_kernver}"
+        cd "kernel-${_kernver}"
+        msg "Building module for ${_kernver}..."
+
+        ## Patch
+        #_verstring=$(echo "${_kernver}" | cut -d '-' -f1 | tr -d .)
+
+        msg2 "Starting make module..."
+        make SYSSRC=/usr/lib/modules/"${_kernver}/build" module
+    done
+}
+
+package() {
+    # Install module(s) by looping through all detected kernels
+    for _kernver in $_KERNELS; do
+        cd "${srcdir}/${_pkg}/kernel-${_kernver}"
+        # Loop through all detected extramodules directories
+        for _moduledirs in $_EXTRAMODULES; do
+            # Check which extramodules directory corresponds with the built module
+            if [ $(cat "/usr/lib/modules/${_moduledirs}/version") = "${_kernver}" ]; then
+                install -D -m644 nvidia.ko \
+                    "${pkgdir}/usr/lib/modules/${_moduledirs}/nvidia.ko"
+                gzip "${pkgdir}/usr/lib/modules/${_moduledirs}/nvidia.ko"
+            fi
+        done
+    done
+
+    # Blacklist Nouveau
+    install -d "${pkgdir}/usr/lib/modprobe.d"
+    echo "blacklist nouveau" >> "${pkgdir}/usr/lib/modprobe.d/nvidia.conf"
+}

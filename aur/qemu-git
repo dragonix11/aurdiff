@@ -1,0 +1,64 @@
+# Maintainer:  Devin Cofer <ranguvar{AT]archlinux[DOT}us>
+# Contributor: Tobias Powalowski <tpowa@archlinux.org>
+# Maintainer: Frederic Bezies <fredbezies@gmail.com>
+
+pkgname=qemu-git
+_gitname=qemu
+pkgver=1.7.r28265.gf202039
+pkgrel=1
+pkgdesc="A generic and open source processor emulator which achieves a good emulation speed by using dynamic translation. Git version."
+arch=('i686' 'x86_64')
+license=('GPL2' 'LGPL2')
+url="http://wiki.qemu.org/Index.html"
+depends=('pixman' 'libjpeg' 'libpng' 'sdl' 'alsa-lib' 'nss' 'glib2'
+         'gnutls>=2.4.1' 'bluez4' 'vde2' 'util-linux' 'curl' 'libsasl'
+         'libgl' 'libpulse' 'libcap-ng' 'libaio' 'libseccomp' 'spice')
+makedepends=('git' 'texi2html' 'perl' 'python2' 'gtk3' 'vte3' 'dtc')
+conflicts=('qemu' 'kvm' 'kvm-git' 'qemu-spice')
+provides=('qemu' 'qemu-kvm' 'seabios' 'qemu-spice' 'libcacard')
+source=('git://git.qemu.org/qemu.git'
+        '65-kvm.rules'
+        'qemu.install')
+sha256sums=('SKIP'
+            '59b613f570db2bf6dac80cf93df2a356d691241f821c1c3503e012e2b3d6e95c'
+            '78ae4c98ab868e6c4e2ba03dd7f1e9ae2f73996758ed19ca99384fbd81d9970c')
+install='qemu.install'
+options=(!strip)
+
+pkgver() {
+	cd "${srcdir}/$_gitname"
+	echo "1.7.r$(git rev-list --count master).g$(git log -1 --format="%h")"
+}
+
+build()
+{
+	cd $_gitname
+        ./configure --prefix=/usr --sysconfdir=/etc \
+              --python=/usr/bin/python2 --smbd=/usr/bin/smbd \
+              --enable-docs --enable-mixemu --libexecdir=/usr/lib/qemu \
+              --audio-drv-list=alsa,sdl,pa \
+              --enable-gtk --with-gtkabi=3.0 --enable-linux-aio --enable-seccomp \
+              --enable-spice --disable-werror
+
+	make
+}
+package() {
+	cd $_gitname
+
+        make DESTDIR="${pkgdir}" libexecdir="/usr/lib/qemu" install
+        install -D -m644 "${srcdir}/65-kvm.rules" \
+                   "${pkgdir}/usr/lib/udev/rules.d/65-kvm.rules"
+  # bridge_helper needs suid
+  # https://bugs.archlinux.org/task/32565
+  chmod u+s "${pkgdir}/usr/lib/qemu/qemu-bridge-helper"
+  # add sample config
+  echo "allow br0" > ${pkgdir}/etc/qemu/bridge.conf.sample
+  # strip scripts directory
+    find "${pkgdir}/usr/src/linux-${_kernver}/scripts"  -type f -perm -u+w 2>/dev/null | while read binary ; do
+      case "$(file -bi "$binary")" in
+        *application/x-executable*) # Binaries
+        /usr/bin/strip $STRIP_BINARIES "$binary";;
+      esac
+    done
+}
+

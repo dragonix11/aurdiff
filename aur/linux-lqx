@@ -1,0 +1,328 @@
+# Maintainer: shivik <> PGP-Key: 761E423C
+# Contributor: Michael Duell <mail@akurei.me> PGP-Key: 6EE23EBE
+
+###########################################################################################################
+#                                          Patch and Build Options
+###########################################################################################################
+_custom="no"	# "m":	custom config via menuconfig
+		# "n":	custom config via nconfig
+		# "x":	custom config via xconfig
+		# "no":	nothing
+
+_config="pkg"	# "local":  make localmod config - compile only probed modules
+		# "nomod":  don't use modules(make localyesconfig)
+		# "old":    make with old config (/proc/config.gz)
+		# "pkg":    use this package's config
+
+pkgdesc='Linux Kernel and modules with Liquorix patches'
+__basekernel=3.10
+_minor=6
+pkgver=${__basekernel}.${_minor}
+pkgrel=1
+_kernelname=-lqx
+pkgname=linux${_kernelname}
+_lqxpatchname="${pkgver}-${pkgrel}.patch"
+arch=('i686' 'x86_64')
+license=('GPL2')
+groups=('base')
+url="http://liquorix.net/"
+if [ "$_custom" = "x" ]; then
+   makedepends=('qt4' 'kmod' 'inetutils' 'bc')
+else
+   makedepends=('kmod' 'inetutils' 'bc')
+fi
+options=(!strip)
+install='linux-lqx.install'
+#http://liquorix.net/sources/${__basekernel}/config.i386
+#http://liquorix.net/sources/${__basekernel}/config.amd64
+source=(http://www.kernel.org/pub/linux/kernel/v3.x/linux-${__basekernel}.tar.xz
+http://liquorix.net/sources/${_lqxpatchname}.gz
+http://liquorix.net/sources/${__basekernel}/config.i386
+http://liquorix.net/sources/${__basekernel}/config.amd64
+linux-lqx.preset)
+
+sha512sums=('5fb109fcbd59bf3dffc911b853894f0a84afa75151368f783a1252c5ff60c7a1504de216c0012be446df983e2dea400ad8eeed3ce04f24dc61d0ef76c174dc35'
+	    '5d12d27c0466c010f40944c9e7e9c988d2851fd0f01ab565f52fb6cde75aa5ad687c92bc796864f5e27c5e1d48a47a5ee64b0c3c296b96f840b6a0b91025dfc0'
+            '01682f9d8d8e8bb73bd30c712f06dead6b4211d4dc20882bd9368c2eecf4337597dc334ff2bd58b18feeb9584fa0741c94fd552a800b60ce2692f9217b2391de'
+            'ded6180bf59fb5f9026081a2db411533286a0c6eb31a65d579e8a7730c1dc44da3df3ec7f19770c79be1499e1786e7a61d1d808d9ba9a412096740d8b40566f3'
+            'fe4dcd7b5ec06ec3ec4aa631531469f58f6a7111e2d33affa98a1b8a8d230c5fa7e25ffdf770fe5ce61f249b0ec0ecd69df2858c4029acee0efaadff957858fe')
+
+build() {
+  KARCH=x86
+  #sed -i -re "s/^(.EXTRAVERSION).*$/\1 = /" "${_lqxpatchname}"
+  #sed -i -re "s/^(.SUBLEVEL).*$/\1 = /" "${_lqxpatchname}"
+  cd ${srcdir}/linux-${__basekernel}
+
+  # Add Liquorix patches
+  patch -Np1 -i ${srcdir}/$_lqxpatchname
+   
+  # Trying oldcfg if possible and if selected
+  if [ "$_config" = "old" ]; then
+    if [ -e /proc/config.gz ]; then
+      zcat /proc/config.gz > ./.config
+    else
+      echo "WARNING: There's no /proc/config.gz... You cannot use the old config. Aborting..."
+      exit 1
+    fi         
+  else
+    if [ "$CARCH" = "x86_64" ]; then
+      cat ../config.amd64 >./.config
+    else
+      cat ../config.i386 >./.config
+    fi
+  fi
+
+  if [ "${_kernelname}" != "" ]; then
+    sed -i "s|CONFIG_LOCALVERSION=.*|CONFIG_LOCALVERSION=\"${_kernelname}\"|g" ./.config
+    sed -i "s|CONFIG_LOCALVERSION_AUTO=.*|CONFIG_LOCALVERSION_AUTO=n|" ./.config
+  fi
+
+  # set extraversion to pkgrel
+  sed -ri "s|^(EXTRAVERSION =).*|\1 -${pkgrel}|" Makefile
+
+  # don't run depmod on 'make install'. We'll do this ourselves in packaging
+  sed -i '2iexit 0' scripts/depmod.sh
+
+  # set sublevel to kernel minor version
+  sed -ri "s|^(SUBLEVEL =).*|\1 ${_minor}|" Makefile
+
+  msg "Running make prepare"
+  make prepare
+
+### Optionally load needed modules for the make localmodconfig
+ # See http://aur.archlinux.org/packages.php?ID=41689
+ if [ $_config = "local" ]; then
+  msg "If you have modprobe_db installed, running it in recall mode now"
+  if [ -e /usr/bin/modprobed_db ]; then
+    [[ ! -x /usr/bin/sudo ]] && echo "Cannot call modprobe with sudo. Install via pacman -S sudo and configure to work with this user." && exit 1
+    sudo /usr/bin/modprobed_db recall
+ fi
+  msg "Running Steven Rostedt's make localmodconfig now"
+  make localmodconfig
+ else
+  yes "" | make config
+ fi
+
+ if [ $_config = "nomod" ]; then
+  msg "Running localYESconfig now"
+  make localyesconfig
+ else
+  yes "" | make config
+ fi
+
+  if [ $_custom = "m" ]; then
+    msg "Running make menuconfig"
+    make menuconfig
+  fi
+
+  if [ $_custom = "n" ]; then
+    msg "Running make nconfig"
+    make nconfig
+  fi
+
+  if [ $_custom = "x" ]; then
+    msg "Running make xconfig"
+    make xconfig
+  fi
+
+  # build!
+  make ${MAKEFLAGS} LOCALVERSION= bzImage modules
+
+}
+
+package_linux-lqx() {
+pkgdesc="Linux kernel and modules with Liquorix patches"
+depends=('coreutils' 'linux-firmware' 'mkinitcpio>=0.8')
+optdepends=('crda: to set the correct wireless channels of your country' 'nvidia-lqx: nVidia drivers for linux-lqx' 'linux-firmware: Firmware files for Linux')
+provides=("linux-lqx=${pkgver}" "linux-headers=${pkgver}")
+#uncomment this if lqx is your only kernel installed
+#provides=("linux-lqx=${pkgver}" "linux=${pkgver}" "linux-headers=${pkgver}")
+conflicts=('kernel26-lqx')
+replaces=('kernel26-lqx')
+backup=("etc/mkinitcpio.d/linux-lqx.preset")
+install=linux-lqx.install
+
+cd "${srcdir}/linux-${__basekernel}"
+
+KARCH=x86
+
+# get kernel version
+#_kernver="$(make kernelrelease)"
+_kernver="$(make LOCALVERSION= kernelrelease)"
+_basekernel=${_kernver%%-*}
+_basekernel=${_basekernel%.*}
+
+mkdir -p "${pkgdir}"/{lib/modules,lib/firmware,boot}
+make LOCALVERSION= INSTALL_MOD_PATH="${pkgdir}" modules_install
+cp arch/$KARCH/boot/bzImage "${pkgdir}/boot/vmlinuz-linux-lqx"
+
+# add vmlinux
+install -D -m644 vmlinux "${pkgdir}/usr/src/linux-${_kernver}/vmlinux"
+
+# install fallback mkinitcpio.conf file and preset file for kernel
+install -D -m644 "${srcdir}/linux-lqx.preset" "${pkgdir}/etc/mkinitcpio.d/linux-lqx.preset"
+
+# set correct depmod command for install
+sed \
+	-e  "s/KERNEL_NAME=.*/KERNEL_NAME=-lqx/g" \
+	-e  "s/KERNEL_VERSION=.*/KERNEL_VERSION=${_kernver}/g" \
+	-i "${startdir}/linux-lqx.install"
+sed \
+	-e "1s|'linux.*'|'linux-ck'|" \
+	-e "s|ALL_kver=.*|ALL_kver=\"/boot/vmlinuz-linux-lqx\"|g" \
+	-e "s|default_image=.*|default_image=\"/boot/initramfs-linux-lqx.img\"|g" \
+	-e "s|fallback_image=.*|fallback_image=\"/boot/initramfs-linux-lqx-fallback.img\"|g" \
+	-i "${pkgdir}/etc/mkinitcpio.d/linux-lqx.preset"
+
+# remove build and source links
+rm -f "${pkgdir}"/lib/modules/${_kernver}/{source,build}
+# remove the firmware
+rm -rf "${pkgdir}/lib/firmware"
+# gzip -9 all modules to save 100MB of space
+find "${pkgdir}" -name '*.ko' -exec gzip -9 {} \;
+# make room for external modules
+ln -s "../extramodules-${_basekernel}${_kernelname:lqx}" "${pkgdir}/lib/modules/${_kernver}/extramodules"
+# add real version for building modules and running depmod from post_install/upgrade
+mkdir -p "${pkgdir}/lib/modules/extramodules-${_basekernel}${_kernelname:lqx}"
+echo "${_kernver}" > "${pkgdir}/lib/modules/extramodules-${_basekernel}${_kernelname:lqx}/version"
+
+# Now we call depmod...
+depmod -b "$pkgdir" -F System.map "$_kernver"
+
+# move module tree /lib -> /usr/lib
+mv "$pkgdir/lib" "$pkgdir/usr"
+
+# kmod 92 stuff
+install -dm755 "${pkgdir}/usr/lib/modules/${_kernver}"
+
+# kmod 92 stuff
+cd "${pkgdir}/usr/lib/modules/${_kernver}"
+ln -sf ../../../src/linux-${_kernver} build
+
+cd "${srcdir}/linux-${_basekernel}"
+install -D -m644 Makefile \
+	"${pkgdir}/usr/src/linux-${_kernver}/Makefile"
+install -D -m644 kernel/Makefile \
+	"${pkgdir}/usr/src/linux-${_kernver}/kernel/Makefile"
+install -D -m644 .config \
+	"${pkgdir}/usr/src/linux-${_kernver}/.config"
+
+mkdir -p "${pkgdir}/usr/src/linux-${_kernver}/include"
+
+for i in acpi asm-generic config crypto drm generated keys linux math-emu \
+	media net pcmcia scsi sound trace uapi video xen; do
+	cp -a include/${i} "${pkgdir}/usr/src/linux-${_kernver}/include/"
+done
+
+	# copy arch includes for external modules
+	mkdir -p "${pkgdir}/usr/src/linux-${_kernver}/arch/x86"
+	cp -a arch/x86/include "${pkgdir}/usr/src/linux-${_kernver}/arch/x86/"
+
+	# copy files necessary for later builds, like nvidia and vmware
+	cp Module.symvers "${pkgdir}/usr/src/linux-${_kernver}"
+	cp -a scripts "${pkgdir}/usr/src/linux-${_kernver}"
+
+	# fix permissions on scripts dir
+	chmod og-w -R "${pkgdir}/usr/src/linux-${_kernver}/scripts"
+	mkdir -p "${pkgdir}/usr/src/linux-${_kernver}/.tmp_versions"
+
+	mkdir -p "${pkgdir}/usr/src/linux-${_kernver}/arch/${KARCH}/kernel"
+
+	cp arch/${KARCH}/Makefile "${pkgdir}/usr/src/linux-${_kernver}/arch/${KARCH}/"
+
+	if [ "${CARCH}" = "i686" ]; then
+		cp arch/${KARCH}/Makefile_32.cpu "${pkgdir}/usr/src/linux-${_kernver}/arch/${KARCH}/"
+	fi
+
+	cp arch/${KARCH}/kernel/asm-offsets.s "${pkgdir}/usr/src/linux-${_kernver}/arch/${KARCH}/kernel/"
+
+	# add headers for lirc package(pci,usb,i2c)
+	for i in bt8xx cx88 saa7134; do
+		mkdir -p "${pkgdir}/usr/src/linux-${_kernver}/drivers/media/pci/${i}"
+		cp -a drivers/media/pci/${i}/*.h "${pkgdir}/usr/src/linux-${_kernver}/drivers/media/pci/${i}"
+	done
+
+	for i in cpia2 em28xx pwc sn9c102; do
+		mkdir -p "${pkgdir}/usr/src/linux-${_kernver}/drivers/media/usb/${i}"
+		cp -a drivers/media/usb/${i}/*.h "${pkgdir}/usr/src/linux-${_kernver}/drivers/media/usb/${i}"
+	done
+
+	mkdir -p "${pkgdir}/usr/src/linux-${_kernver}/drivers/media/i2c"
+	cp drivers/media/i2c/*.h  "${pkgdir}/usr/src/linux-${_kernver}/drivers/media/i2c/"
+	for i in cx25840; do
+		mkdir -p "${pkgdir}/usr/src/linux-${_kernver}/drivers/media/i2c/${i}"
+		cp -a drivers/media/i2c/${i}/*.h "${pkgdir}/usr/src/linux-${_kernver}/drivers/media/i2c/${i}"
+	done
+
+	# add docbook makefile
+	install -D -m644 Documentation/DocBook/Makefile \
+		"${pkgdir}/usr/src/linux-${_kernver}/Documentation/DocBook/Makefile"
+
+	# add dm headers
+	mkdir -p "${pkgdir}/usr/src/linux-${_kernver}/drivers/md"
+	cp drivers/md/*.h "${pkgdir}/usr/src/linux-${_kernver}/drivers/md"
+
+	# add inotify.h
+	mkdir -p "${pkgdir}/usr/src/linux-${_kernver}/include/linux"
+	cp include/linux/inotify.h "${pkgdir}/usr/src/linux-${_kernver}/include/linux/"
+
+	# add wireless headers
+	mkdir -p "${pkgdir}/usr/src/linux-${_kernver}/net/mac80211/"
+	cp net/mac80211/*.h "${pkgdir}/usr/src/linux-${_kernver}/net/mac80211/"
+
+	# add dvb headers for external modules
+	# in reference to:
+	# http://bugs.archlinux.org/task/9912
+	mkdir -p "${pkgdir}/usr/src/linux-${_kernver}/drivers/media/dvb-core"
+	cp drivers/media/dvb-core/*.h "${pkgdir}/usr/src/linux-${_kernver}/drivers/media/dvb-core/"
+	# and...
+	# http://bugs.archlinux.org/task/11194
+	mkdir -p "${pkgdir}/usr/src/linux-${_kernver}/include/config/dvb/"
+	[[ -e include/config/dvb/ ]] && cp include/config/dvb/*.h "${pkgdir}/usr/src/linux-${_kernver}/include/config/dvb/" 
+
+	# add dvb headers for http://mcentral.de/hg/~mrec/em28xx-new
+	# in reference to:
+	# http://bugs.archlinux.org/task/13146
+	mkdir -p "${pkgdir}/usr/src/linux-${_kernver}/drivers/media/dvb-frontends/"
+	cp drivers/media/dvb-frontends/lgdt330x.h "${pkgdir}/usr/src/linux-${_kernver}/drivers/media/dvb-frontends/"
+	cp drivers/media/i2c/msp3400-driver.h "${pkgdir}/usr/src/linux-${_kernver}/drivers/media/i2c/"
+
+	# add dvb headers
+	# in reference to:
+	# http://bugs.archlinux.org/task/20402
+	mkdir -p "${pkgdir}/usr/src/linux-${_kernver}/drivers/media/usb/dvb-usb"
+	cp drivers/media/usb/dvb-usb/*.h "${pkgdir}/usr/src/linux-${_kernver}/drivers/media/usb/dvb-usb/"
+	mkdir -p "${pkgdir}/usr/src/linux-${_kernver}/drivers/media/dvb-frontends"
+	cp drivers/media/dvb-frontends/*.h "${pkgdir}/usr/src/linux-${_kernver}/drivers/media/dvb-frontends/"
+	mkdir -p "${pkgdir}/usr/src/linux-${_kernver}/drivers/media/tuners"
+	cp drivers/media/tuners/*.h "${pkgdir}/usr/src/linux-${_kernver}/drivers/media/tuners/"
+
+	# add xfs and shmem for aufs building
+	mkdir -p "${pkgdir}/usr/src/linux-${_kernver}/fs/xfs"
+	mkdir -p "${pkgdir}/usr/src/linux-${_kernver}/mm"
+	cp fs/xfs/xfs_sb.h "${pkgdir}/usr/src/linux-${_kernver}/fs/xfs/xfs_sb.h"
+
+	# copy in Kconfig files
+	for i in `find . -name "Kconfig*"`; do
+		mkdir -p "${pkgdir}"/usr/src/linux-${_kernver}/`echo ${i} | sed 's|/Kconfig.*||'`
+		cp ${i} "${pkgdir}/usr/src/linux-${_kernver}/${i}"
+	done
+
+	chown -R root.root "${pkgdir}/usr/src/linux-${_kernver}"
+	find "${pkgdir}/usr/src/linux-${_kernver}" -type d -exec chmod 755 {} \;
+
+	# strip scripts directory
+	find "${pkgdir}/usr/src/linux-${_kernver}/scripts" -type f -perm -u+w 2>/dev/null | while read binary ; do
+	case "$(file -bi "${binary}")" in
+		*application/x-sharedlib*) # Libraries (.so)
+			/usr/bin/strip ${STRIP_SHARED} "${binary}";;
+		*application/x-archive*) # Libraries (.a)
+			/usr/bin/strip ${STRIP_STATIC} "${binary}";;
+		*application/x-executable*) # Binaries
+			/usr/bin/strip ${STRIP_BINARIES} "${binary}";;
+	esac
+done
+
+# remove unneeded architectures
+rm -rf "${pkgdir}"/usr/src/linux-${_kernver}/arch/{alpha,arc,arm,arm26,arm64,avr32,blackfin,c6x,cris,frv,h8300,hexagon,ia64,m32r,m68k,m68knommu,metag,mips,microblaze,mn10300,openrisc,parisc,powerpc,ppc,s390,score,sh,sh64,sparc,sparc64,tile,unicore32,um,v850,xtensa}
+}

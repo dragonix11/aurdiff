@@ -1,0 +1,23 @@
+# Contributor: Joel Sevilleja Febrer Joel7987[at].gmail.com
+# Maintainer: Nikolay Bogoychev <nheart@gmail.com>
+
+pkgname=httpcomponents-core
+pkgver=4.3
+pkgrel=1
+pkgdesc="A HTTP/1.1 compliant HTTP agent implementation"
+arch=('i686' 'x86_64')
+url="http://hc.apache.org/"
+license="Apache"
+depends=('java-runtime')
+conflicts=('')
+source=(http://www.apache.org/dist/httpcomponents/httpcore/binary/${pkgname}-${pkgver}-bin.tar.gz)
+
+package() {
+	cd ${srcdir}/lib
+	mkdir -p ${pkgdir}/usr/share/java/${pkgname}
+	chmod +r *.jar
+	cp *.jar $pkgdir/usr/share/java/${pkgname}
+}
+
+
+md5sums=('6a54a455d7649978b3142695f3704937')

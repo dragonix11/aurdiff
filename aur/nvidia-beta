@@ -1,0 +1,66 @@
+# Maintainer: Det
+# Contributors: Ng Oon-Ee, Dan Vratil
+# Based on [extra]'s nvidia: https://www.archlinux.org/packages/extra/x86_64/nvidia/
+
+pkgname=nvidia-beta
+pkgver=325.15
+_major=$(uname -r | cut -d '.' -f-2)
+_extramodules=extramodules-${_major}-ARCH
+pkgrel=1
+pkgdesc="NVIDIA driver for linux (beta)"
+arch=('i686' 'x86_64')
+url="http://www.nvidia.com/"
+depends=('linux' 'nvidia-libgl-beta' "nvidia-utils-beta=${pkgver}")
+makedepends=('linux-headers')
+conflicts=('nvidia-96xx' 'nvidia-173xx' 'nvidia')
+provides=('nvidia')
+license=('custom:NVIDIA')
+install=${pkgname}.install
+options=('!strip')
+
+if [ "$CARCH" = "i686" ]; then
+    _arch='x86'
+    _pkg="NVIDIA-Linux-${_arch}-${pkgver}"
+    md5sums=('528fc538584de6446384b9cec3099d6c')
+elif [ "$CARCH" = "x86_64" ]; then
+    _arch='x86_64'
+    _pkg="NVIDIA-Linux-${_arch}-${pkgver}-no-compat32"
+    md5sums=('63b2caa0cb128efa1a7808d7bddb2074')
+fi
+
+#source=("http://us.download.nvidia.com/XFree86/Linux-${_arch}/${pkgver}/${_pkg}.run")
+source=("ftp://download.nvidia.com/XFree86/Linux-${_arch}/${pkgver}/${_pkg}.run")
+
+build() {
+    _kernver="$(cat /usr/lib/modules/${_extramodules}/version)"
+
+    # Remove previous builds
+    if [ -d ${_pkg} ]; then
+        rm -rf ${_pkg}
+    fi
+
+    # Extract
+    sh ${_pkg}.run --extract-only
+    cd ${_pkg}/kernel
+
+    ## Patch
+    #_verstring=$(echo "${_kernver}" | cut -d '-' -f1 | tr -d .)
+
+    # Build module
+    msg2 "Starting make module..."
+    make SYSSRC=/usr/lib/modules/"${_kernver}/build" module
+}
+
+package() {
+    # Install/compress module
+    install -D -m644 "${srcdir}/${_pkg}/kernel/nvidia.ko" \
+        "${pkgdir}/usr/lib/modules/${_extramodules}/nvidia.ko"
+    gzip "${pkgdir}/usr/lib/modules/${_extramodules}/nvidia.ko"
+
+    # Write $_extramodules to .install
+    sed -i "s/_extramodules='.*'/_extramodules='${_extramodules}'/" "${startdir}/${install}"
+
+    # Blacklist Nouveau
+    install -d "${pkgdir}/usr/lib/modprobe.d"
+    echo "blacklist nouveau" >> "${pkgdir}/usr/lib/modprobe.d/nvidia.conf"
+}

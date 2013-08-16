@@ -1,0 +1,34 @@
+# Maintainer: Kristian Rönnberg <kristian DOT ronnberg AT gmail DOT com>
+# Contributor: Kevin Peters <65bones AT gmail DOT com>
+
+pkgname=jstock
+pkgver=1.0.7e
+pkgrel=1
+pkgdesc="A stock market software that helps you make smart investment decision"
+arch=('any')
+url="http://jstock.sourceforge.net/"
+license=('GPL')
+depends=('jre7-openjdk')
+source=("http://downloads.sourceforge.net/${pkgname}/${pkgname}-${pkgver}-bin.zip"
+        "${pkgname}.desktop"
+        "${pkgname}.png"
+        "${pkgname}.sh")
+md5sums=('6c71ba4ea1b453d8a6b1203bdccefc4c'
+         '7a68e77a1dccdd89db242d799c9f2d8e'
+         'c2483790417a4ca80b7a65006f696679'
+         'c025a2cf0c187bb4b5fbb5114f15ac4a')
+
+package() {
+  cd "${srcdir}/${pkgname}"
+
+  # Install program files
+  mkdir -p "${pkgdir}/usr/share/${pkgname}"
+  cp -r * "${pkgdir}/usr/share/${pkgname}"
+
+  # Install a launcher
+  install -Dm755 ../${pkgname}.sh "${pkgdir}/usr/bin/${pkgname}"
+
+  # Install a desktop entry
+  install -Dm644 ../${pkgname}.png "${pkgdir}/usr/share/pixmaps/${pkgname}.png"
+  install -Dm644 ../${pkgname}.desktop "${pkgdir}/usr/share/applications/${pkgname}.desktop"
+}
