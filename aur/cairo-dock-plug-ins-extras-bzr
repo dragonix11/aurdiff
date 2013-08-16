@@ -1,0 +1,55 @@
+pkgname=cairo-dock-plug-ins-extras-bzr 
+pkgver=378 
+pkgrel=1 
+pkgbranch=cairo-dock-plug-ins-extras 
+pkgdesc="Extra plugins for cairo-dock, bzr version" 
+arch=('i686' 'x86_64') 
+url="http://www.glx-dock.org" 
+license=('GPL') 
+depends=('cairo-dock-plugins-bzr' 'python') 
+makedepends=('bzr') 
+optdepends=('python2' 'vala') 
+provides=(${pkgbranch}) 
+conflicts=(${pkgbranch}) 
+source=(bzr+lp:${pkgbranch}) 
+md5sums=('SKIP') 
+
+pkgver() { 
+ cd "$srcdir/$pkgbranch" 
+ bzr revno 
+} 
+
+build() { 
+  rm -rf "${srcdir}/${pkgbranch}-build"
+  cp -r "${srcdir}/${pkgbranch}" "${srcdir}/${pkgbranch}-build" 
+  cd "${srcdir}/${pkgbranch}-build" 
+
+  # generate .mo files 
+  ./make_locale.sh 0 
+
+  # removed useless files/dirs 
+  rm -rf locale.bak po .bzr .bzrignore *.sh 
+
+  # generate last-modif file to avoid auto-update 
+  curr_date=$(date +%Y%m%d) 
+  for i in */; do 
+    echo -n ${curr_date} > ${i}last-modif  
+  done 
+
+  ## TODO: force python2 ##  
+  # some applets are not compatible with python3/gtk3, force the use of python 2 
+  # for i in `cat Applets-python2.list`; do 
+  #   if [ -x $i/$i ]; then 
+  #     sed --follow-symlinks -i "1s/python/python2/"  $i/$i 
+  #   fi 
+  # done 
+} 
+
+package() { 
+  cd "${srcdir}/${pkgbranch}-build" 
+
+  cd_pluginsdatadir=$(pkg-config gldi --variable=pluginsdatadir) 
+
+  mkdir -p "${pkgdir}${cd_pluginsdatadir}/Dbus/" 
+  cp -r "${srcdir}/${pkgbranch}-build" "${pkgdir}${cd_pluginsdatadir}/Dbus/third-party" 
+}

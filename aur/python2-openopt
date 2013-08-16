@@ -1,0 +1,28 @@
+# Maintainer: Chris Oelmueller <chris.oelmueller@gmail.com>
+# Contributor: Linmiao Xu <linmiao.xu@gmail.com>
+# Contributor: Tnoo <archtnoo at tnoo dot net>
+
+pkgname=python2-openopt
+pkgver=0.509
+pkgrel=1
+arch=('any')
+url='http://www.openopt.org'
+license=('BSD')
+pkgdesc='Optimization library'
+depends=('python2' 'python2-numpy')
+conflicts=('python-openopt')
+source=("https://pypi.python.org/packages/source/o/openopt/openopt-${pkgver}.tar.gz")
+
+# Due to the huge amount of different package names in use, both `openopt` and `OpenOpt`
+# are hardcoded right now. I do not believe perusing bash magic or defining two new
+# variables would help readability or maintainability for one-time use here.
+
+package() {
+  cd "$srcdir/OpenOpt"
+
+  python2 setup.py install --prefix=/usr --root="$pkgdir/" --optimize=1
+  install -D -m 644 COPYING.txt "$pkgdir/usr/share/licenses/$pkgname/COPYING.txt"
+}
+
+md5sums=('2a4a9fa3ffbfafe8ec6dcc94c85c61ba')
+sha256sums=('35bad30b39513b22619bb01b935430897f77be073591f0d6dfd61cb882a1626f')

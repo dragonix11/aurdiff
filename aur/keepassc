@@ -1,0 +1,28 @@
+# Maintainer: lykaner <lykaner@posteo.net>
+# Contributor: lykaner <lykaner@posteo.net>
+pkgname=keepassc
+pkgver=1.6.0
+pkgrel=1
+pkgdesc="KeePassC is a curses-based password manager compatible to KeePass v.1.x and KeePassX"
+arch=(any)
+url="https://raymontag.github.com/keepassc"
+license=('GPL')
+depends=('python-kppy>=1.4.0' 'python>=3.3')
+optdepends=('xsel: copy usernames and password to clipboard'
+            'openssl: to create server certificates')
+makedepends=('git')
+source=(https://github.com/raymontag/keepassc/tarball/master)
+provides=('keepassc')
+conflicts=('keepassc-git')
+md5sums=('4227ad17479c502299920d44817a264f')
+
+build() {
+    cd $srcdir/raymontag-keepassc-850bc7a
+    python setup.py build
+}
+
+package() {
+    cd $srcdir/raymontag-keepassc-850bc7a
+    python setup.py install --root="$pkgdir/" --optimize=1
+}
+

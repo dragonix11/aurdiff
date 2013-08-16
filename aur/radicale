@@ -1,0 +1,24 @@
+# Maintainer: Moritz Lipp <mlq@pwmt.org>
+pkgname=radicale
+pkgver=0.8
+pkgrel=2
+pkgdesc="A Simple Calendar Server"
+arch=any
+url="http://www.radicale.org/"
+license=('GPL3')
+depends=('python')
+backup=('etc/radicale/config')
+source=(
+	http://pypi.python.org/packages/source/R/Radicale/Radicale-$pkgver.tar.gz
+	radicale.service
+)
+md5sums=('ad903ead8b910180f80652c0beaebaf6'
+         '50baf7d766c131287a03c6b0b8bd943f')
+
+package() {
+  cd "$srcdir/Radicale-$pkgver"
+  python setup.py install --prefix=/usr --root="$pkgdir"
+
+  install -m644 -D "$srcdir/Radicale-$pkgver/config" "$pkgdir/etc/radicale/config"
+  install -m644 -D "$srcdir/radicale.service" "$pkgdir/usr/lib/systemd/system/radicale.service"
+}

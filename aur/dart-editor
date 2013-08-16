@@ -1,0 +1,66 @@
+# Maintainer : T. Jameson Little <t.jameson.little@gmail.com>
+# Maintainer: Julien Nicoulaud <julien.nicoulaud@gmail.com>
+pkgname=dart-editor
+_pkgname=DartEditor
+pkgver=0.6.17.4_r26106
+pkgrel=1
+pkgdesc="Editor for the Dart programming language."
+arch=(i686 x86_64)
+url="http://www.dartlang.org/docs/editor/getting-started"
+license=(EPL)
+depends=('java-runtime>=6' 'gtk2' 'desktop-file-utils' 'gconf' 'libudev.so.0')
+makedepends=('unzip')
+backup=(opt/${pkgname}/${_pkgname}.ini)
+changelog=Changelog
+if [[ ${CARCH} = x86_64 ]]; then
+	source=("https://storage.googleapis.com/dart-editor-archive-integration/26106/darteditor-linux-64.zip")
+	md5sums=('8eb93e28e501242475ed97a5d0f999a5')
+else
+	source=("https://storage.googleapis.com/dart-editor-archive-integration/26106/darteditor-linux-32.zip")
+	md5sums=('611996013456d7ed2ab4588c3299a2f4')
+fi
+
+build() {
+  msg2 "Generate desktop application entry..."
+  cat > "${srcdir}"/${pkgname}.desktop << EOF
+[Desktop Entry]
+Version=${pkgver}
+Encoding=UTF-8
+Name=Dart editor
+Comment=${pkgdesc}
+Exec=/usr/bin/${pkgname}
+Icon=/opt/${pkgname}/icon.xpm
+Terminal=false
+Type=Application
+Categories=Development;
+EOF
+}
+
+package() {
+  msg2 "Install the assembly at /opt/${pkgname}..."
+  install -dm755           "${pkgdir}"/opt/${pkgname}
+  cp -a "${srcdir}"/dart/* "${pkgdir}"/opt/${pkgname}
+
+  msg2 "Fix permissions"
+  chmod -R +r "${pkgdir}"/opt/${pkgname}/dart-sdk
+  chmod -R +r "${pkgdir}"/opt/${pkgname}/chromium
+  chmod +x "${pkgdir}"/opt/${pkgname}/dart-sdk/bin/*
+
+  msg2 "Install links to the executables in /usr/bin..."
+  install -dm755                    "${pkgdir}"/usr/bin
+  ln -s /opt/${pkgname}/${_pkgname} "${pkgdir}"/usr/bin/${pkgname}
+  ln -s /opt/${pkgname}/${_pkgname} "${pkgdir}"/usr/bin/${_pkgname}
+
+  msg2 "Install links to the documentation resources in /usr/share/doc/${pkgname}..."
+  install -dm755                    "${pkgdir}"/usr/share/doc/${pkgname}
+  ln -s /opt/${pkgname}/samples     "${pkgdir}"/usr/share/doc/${pkgname}/
+  ln -s /opt/${pkgname}/about.html  "${pkgdir}"/usr/share/doc/${pkgname}/
+  ln -s /opt/${pkgname}/about_files "${pkgdir}"/usr/share/doc/${pkgname}/
+
+  msg2 "Install link to the config file in /etc..."
+  install -dm755                        "${pkgdir}"/etc
+  ln -s /opt/${pkgname}/${_pkgname}.ini "${pkgdir}"/etc/${pkgname}.ini
+
+  msg2 "Install desktop application entry in /usr/share/applications..."
+  install -Dm644 "${srcdir}"/${pkgname}.desktop "${pkgdir}"/usr/share/applications/${pkgname}.desktop
+}

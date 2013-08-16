@@ -1,0 +1,27 @@
+# Maintainer: Felix Yan <felixonmars@gmail.com>
+
+pkgname=python2-kombu
+pkgver=2.5.13
+pkgrel=1
+pkgdesc="AMQP Messaging Framework for Python 2.x"
+arch=('any')
+url="http://pypi.python.org/pypi/kombu/"
+license=('custom:BSD')
+depends=('python2' 'python2-anyjson')
+optdepends=("python2-librabbitmq: High performance AMQP transport written in C")
+makedepends=('python2-distribute')
+source=("http://pypi.python.org/packages/source/k/kombu/kombu-$pkgver.tar.gz")
+options=(!emptydirs)
+
+build() {
+  cd "$srcdir/kombu-$pkgver"
+  python2 setup.py build
+}
+
+package() {
+  cd "$srcdir/kombu-$pkgver"
+  python2 setup.py install --root="$pkgdir/"
+  install -D -m644 LICENSE "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
+}
+
+sha512sums=('518223192eba1b4c409a190ba0b163fe044d42adb6c91f826deb43b2478aaf945783b30acf2cf094c5b56b67a35e79d22ea7386b75b14708c51b13f9415a7283')
