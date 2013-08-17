@@ -1,0 +1,43 @@
+# Maintainer: Virgil Dupras <hsoft@hardcoded.net>
+pkgname=dupeguru-se
+pkgver=3.7.0
+pkgrel=1
+pkgdesc="Find duplicate files on your system"
+arch=(any)
+url="http://www.hardcoded.net/dupeguru/"
+license=('BSD')
+depends=('python' 'python-pyqt4')
+makedepends=(
+    python-pip
+    python-sphinx
+)
+source=(
+    http://download.hardcoded.net/$pkgname-src-$pkgver.tar.gz
+    dupeguru-se.desktop)
+md5sums=('32d6ce7cf3ce8652e9cb36225c2cfa35'
+         '63c05c9f51317102339a9ac33dd3b755')
+
+build() {
+  cd "$srcdir"
+  ./bootstrap.sh
+  source env/bin/activate
+  msg "Starting build..."
+  python configure.py --edition se
+  python build.py --clean
+}
+
+package() {
+  cd "$srcdir"
+  mkdir -p "${pkgdir}/usr/share/applications"
+  cp ${pkgname}.desktop "${pkgdir}/usr/share/applications"
+  
+  python package.py
+  cd "build/${pkgname}-arch"
+  
+  mkdir -p "$pkgdir/usr/share/${pkgname}"
+  cp -a * "$pkgdir/usr/share/${pkgname}/"
+  chmod a+x "$pkgdir/usr/share/${pkgname}/run.py"
+  
+  mkdir -p "$pkgdir/usr/bin"
+  ln -s ../share/${pkgname}/run.py "$pkgdir/usr/bin/${pkgname}"
+}

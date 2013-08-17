@@ -1,0 +1,38 @@
+# Maintainer: Calimero <calimeroteknik@free.fr>
+
+# You can change pkgbase back to linux if you want to replace the one from [core].
+#pkgbase=linux               # Build stock -ARCH kernel
+pkgbase=linux-aufs_friendly  # Build kernel with a different name
+
+pkgver=3.10.x
+pkgrel=1
+arch=('i686' 'x86_64')
+url='http://www.kernel.org/'
+license=('GPL2')
+pkgdesc='The aufs-compatible linux kernel and modules'
+makedepends=('rsync')
+_source=('aufs3-base.patch::http://sourceforge.net/p/aufs/aufs3-standalone/ci/aufs3.10/tree/aufs3-base.patch?format=raw'
+         'aufs3-standalone.patch::http://sourceforge.net/p/aufs/aufs3-standalone/ci/aufs3.10/tree/aufs3-standalone.patch?format=raw'
+         'add-aufs-patches.diff')
+_md5sums=('SKIP'
+          'SKIP'
+          '1fde769399fb1f252a8a0abf5d41d518')
+
+## Fetch linux sources from ABS & add patches + package name
+if [ ! -d core-linux ];then
+  rsync -mrtv --no-motd --no-p --no-o --no-g "rsync.archlinux.org::abs/${CARCH}/core/linux/" core-linux || exit 1
+  patch -Np0 -i add-aufs-patches.diff || exit 1
+  sed -i "s/^pkgbase=.*/pkgbase=${pkgbase}/" core-linux/PKGBUILD
+  mv core-linux/PKGBUILD{,.core} || exit 1
+fi
+
+# Hack for AUR
+pkgname="linux-aufs_friendly"
+
+## Bootstrap build
+cp core-linux/* .
+source PKGBUILD.core
+
+# Add AUFS patches' source URLs
+source+=("${_source[@]}")
+md5sums+=("${_md5sums[@]}")

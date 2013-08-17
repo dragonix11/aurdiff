@@ -1,0 +1,72 @@
+# Maintainer: willemw <willemw12@gmail.com>
+# Contributor: solid <patrick.schwalm (at) googlemail.com
+# Contributor: J. W. Birdsong <@gmail.com>
+
+
+# Select the backintime program versions to install.
+# 'common' installs 'backintime': the command line version.
+PROGRAMS="common gnome kde4"
+#PROGRAMS="common gnome"
+#PROGRAMS="common kde4"
+#PROGRAMS="common"
+
+
+_pkgname=backintime
+pkgname=$_pkgname-bzr
+pkgver=900
+pkgrel=1
+pkgdesc="Simple backup/snapshot system inspired by Flyback and TimeVault"
+url="http://backintime.le-web.org"
+license=('GPL')
+arch=('any')
+depends=('cron' 'python2-keyring' 'rsync')
+optdepends=('gloobus-preview: for gnome file preview'
+            'gnome-keyring: default keyring daemon'
+            'kdesdk-kompare: default backintime-kde diff tool'
+            'kdeutils-kwallet: alternative keyring daemon'
+            'meld: default backintime-gnome diff tool')
+makedepends=('bzr')
+provides=($_pkgname)
+conflicts=($_pkgname)
+source=($pkgname::bzr+https://code.launchpad.net/~bit-team/backintime/trunk)
+md5sums=('SKIP')
+
+for i in $PROGRAMS; do
+  case "$i" in
+    gnome) depends=( ${depends[@]} 'meld' 'gksu' 'pygtk' 'python2-gnomekeyring' 'python2-gobject2' 'python2-libgnome' 'python2-notify' ) ;;
+    kde) depends=( ${depends[@]} 'kdebindings-python2' 'kdesu' 'kdesdk-kompare' 'python2-pyqt4' ) ;;
+  esac
+done
+
+pkgver() {
+  cd $pkgname
+  bzr revno
+}
+
+prepare() {
+  cd $pkgname
+
+  sed -i -e "s|python |python2 |g" common/backintime gnome/backintime-gnome kde4/backintime-kde4
+  sed -i -e "s|python[ \t]*$|python2|" common/askpass.py
+
+  sed -i -e "s|^\(Name=Back In Time\)$|\1 (GNOME)|" gnome/backintime-gnome.desktop
+  sed -i -e "s|^Name=Back In Time (root)$|Name=Back In Time (GNOME, root)|" gnome/backintime-gnome-root.desktop
+  sed -i -e "s|^\(Name=Back In Time\)$|\1 (KDE)|" kde4/backintime-kde4.desktop
+  sed -i -e "s|^Name=Back In Time (root)$|Name=Back In Time (KDE, root)|" kde4/backintime-kde4-root.desktop
+}
+
+build() {
+  for i in $PROGRAMS; do
+    cd "$srcdir/$pkgname/$i"
+    ./configure --kdesu --no-check
+    make 
+  done
+}
+
+package() {
+  for i in $PROGRAMS; do
+    cd "$srcdir/$pkgname/$i"
+    make DESTDIR="$pkgdir" install 
+  done
+}
+

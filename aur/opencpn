@@ -1,0 +1,34 @@
+# ---------------------------------------------------------------
+# Maintainer: Øyvind 'Mr.Elendig' Heggstad <mrelendig at har-ikkje dot net>
+# Original contributor: Travis Fickett <tfickett AT ufl DOT edu>
+# Original Maintainer: Anders Lund <anders at alweb dot dk>
+# ---------------------------------------------------------------
+# Adopted temporarily by Bruno Rodriguez (brunorro) on 2013-06-20 
+# - Just changed the pkgver, the source and the md5sums to make
+#   it work. If you can make it better, adopt it !
+# ---------------------------------------------------------------
+
+pkgname=opencpn
+pkgver=3.2.2
+pkgrel=1
+pkgdesc="Open Source Chart Plotting / Marine Navigation"
+arch=('i686' 'x86_64')
+license=("GPL2")
+depends=('wxgtk' 'gpsd' 'portaudio' 'tinyxml' 'hicolor-icon-theme')
+makedepends=('cmake')
+url=("http://www.opencpn.org")
+install=opencpn.install
+source=("http://downloads.sourceforge.net/project/opencpn/opencpn/$pkgver/OpenCPN-$pkgver-Source.tar.gz")
+sha1sums=('7395a97e50c2a47adce5bd9f62bf56cea1e41746')
+ 
+build() {
+  cd "OpenCPN-${pkgver}-Source"
+  cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr
+  make
+}
+
+package() {
+  cd "OpenCPN-${pkgver}-Source"
+  make DESTDIR="$pkgdir" install
+}
+
