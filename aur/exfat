@@ -3,10 +3,10 @@
 pkgname=exfat
 pkgver=1.2.4
 pkgrel=1
-# By default, this build the modules for the currently running kernel.
-# To change this, change the next line to the kernel name you want to build for.
+# By default, this builds modules for the currently running kernel.
+# To change this, change the next line to the name of the kernel you want to build for.
 _kernver=$(uname -r)
-pkgdesc="Native module for exfat"
+pkgdesc="Native kernel module for exfat"
 arch=('i686' 'x86_64')
 url="http://opensource.samsung.com/"
 license=('GPL')
@@ -19,7 +19,7 @@ source=("${pkgname}_${pkgver}.zip"
         "3.9-compat.patch"
         "3.10-compat.patch")
 sha256sums=('4cb39c4f44b7a68cc391596384744a32f948ba659697542ff771764b215810f3'
-            'bd88447ca0664d2509dc53b8393c53341274f0814f3a75909b6872a4602beddc'
+            'ddc89bccd6b9b6c74a726f1623beaced757772f35794e47f0772562cef7b85d5'
             '41ef7b3de12f2bcc02246b2ddfb50100dfab327ec2b61916a09935cbe075a0bb')
 
 prepare() {

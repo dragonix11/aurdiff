@@ -1,0 +1,26 @@
+pkgname=lewm-git
+_gitname=lewm
+pkgver=0.9.37.g8845202
+pkgrel=1
+pkgdesc="commandline get keepassx password"
+arch=('any')
+url="http://github.com/cdede/lewm/"
+license=('GPL3')
+depends=('python-kppy' )
+makedepends=('git' )
+
+source=('git+https://github.com/cdede/lewm.git')
+sha256sums=('SKIP')
+
+pkgver() {
+  cd $_gitname
+  git describe --always | sed 's|-|.|g'
+}
+build() {
+  cd $_gitname
+  python setup.py build
+}
+package() {
+  cd $_gitname
+  python setup.py install --root="$pkgdir/" --optimize=1
+}
