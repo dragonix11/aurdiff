@@ -1,0 +1,40 @@
+# Maintainer: Perttu Luukko <"perttu.luukko" followed by "@iki.fi">
+# Contributor: Jaroslav Lichtblau <dragonlord@aur.archlinux.org>
+# Contributor: Sergey Mamonov <mrqwer88 (at) gmail (dot) com>
+
+# This is a PKGBUILD for ADOM prereleases restricted only to Indiegogo campaign donors.
+# Please fill in the username and password you received by email for the download link to work.
+
+_username=
+_password=
+
+DLAGENTS=("http::/usr/bin/wget --user ${_username} --password ${_password} %u")
+
+pkgname=adom-restricted
+pkgver=1.2.0_pre15
+pkgrel=1
+pkgdesc="A roguelike game with a quest-centric, plot driven structure"
+arch=('i686' 'x86_64')
+conflicts=('adom')
+provides=('adom')
+depends=('ncurses')
+url="http://www.adom.de/"
+license=('custom: "adom"')
+sha1sums=('' '51d28fe3f0420cd354113fd7ceb2a1a7abf1b069')
+if [ "$CARCH" = x86_64 ]
+ then
+  _arch_link=64
+  sha1sums[0]='3422b1575a05fd419c3037ede796a17bd3fedab9'
+ else
+  _arch_link=32
+  sha1sums[0]='7db7203286cc8e1b1c3a8b58d6d20ef374e62df8'
+fi
+
+source=(http://www.ancardia.com/secure/download/current/adom_linux_debian_${_arch_link}_${pkgver}.tar.gz LICENSE)
+
+package() {
+  cd ${srcdir}/adom
+
+  install -m755 -D adom ${pkgdir}/usr/bin/adom
+  install -m644 -D ${srcdir}/LICENSE ${pkgdir}/usr/share/licenses/adom/LICENSE
+}

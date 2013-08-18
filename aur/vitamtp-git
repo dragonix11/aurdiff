@@ -1,0 +1,47 @@
+# Maintainer: codestation <codestation404@gmail.com>
+
+pkgname=vitamtp-git
+pkgver=20130725
+pkgrel=2
+pkgdesc="Library to interact with Vita's USB MTP protocol"
+arch=("i686" "x86_64")
+url="https://github.com/yifanlu/VitaMTP"
+license=('GPL')
+depends=('libusb' 'libxml2')
+options=('!libtool')
+source=(vitamtp.patch)
+md5sums=('a0ee8bb1435be6a8bc734529ea0bd6dd')
+
+_gitroot="git://github.com/yifanlu/VitaMTP.git"
+_gitname="vitamtp"
+
+build() {
+  cd "${srcdir}"
+  msg "Connecting to Git server...."
+
+  if [ -d $_gitname ]; then
+    cd $_gitname && git pull origin
+  else
+    git clone $_gitroot $_gitname
+  fi
+
+  msg "Git checkout done or server timeout"
+  msg "Starting make..."
+
+  rm -rf "${srcdir}/${_gitname}-build"
+  git clone "${srcdir}/${_gitname}" "${srcdir}/${_gitname}-build"
+
+  cd "${srcdir}/${_gitname}-build"
+
+  patch -Np1 -i ../vitamtp.patch
+
+  ./autogen.sh
+  ./configure --prefix=/usr
+  make
+}
+
+package() {
+  cd "${srcdir}/${_gitname}-build"
+  make DESTDIR="${pkgdir}" install
+  install -Dm644 debian/vitamtp1.udev "$pkgdir/usr/lib/udev/rules.d/80-psvita.rules"
+}

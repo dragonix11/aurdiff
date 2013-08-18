@@ -1,0 +1,28 @@
+# Maintainer: Joris Steyn <jorissteyn@gmail.com>
+# Contributor: Bersam <bersam.k@gmail.com>
+pkgname=php-dbus
+pkgver=0.1.1
+pkgrel=2
+pkgdesc="Extension for interaction with DBUS"
+arch=('any')
+url="http://pecl.php.net/package/DBus"
+license=(GPL)
+depends=('php')
+source=(http://pecl.php.net/get/dbus-${pkgver}.tgz)
+md5sums=('18505c41fb1ca2a2b5024c50c0de719f')
+
+build() {
+  cd "$srcdir"/dbus-$pkgver/
+
+  phpize
+  ./configure --prefix=/usr
+  make
+}
+
+package() {
+  cd "$srcdir"/dbus-$pkgver/
+
+  make INSTALL_ROOT="$pkgdir" install
+}
+
+# vim:set ts=2 sw=2 et:

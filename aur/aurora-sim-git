@@ -1,0 +1,69 @@
+pkgname=aurora-sim-git
+pkgver=20662
+pkgrel=1
+pkgdesc="An Open Source Virtual World Server derived from OpenSim (git)"
+arch=(i686 x86_64)
+license=("BSD")
+depends=(mono p7zip)
+makedepends=(git doxygen)
+conflicts=(aurora-sim)
+provides=(aurora-sim)
+optdepends=("mariadb: To use Aurora alongside MySQL instead of SQLite")
+url="http://aurora-sim.org"
+source=("${pkgname%-git}::git+https://github.com/aurora-sim/Aurora-Sim.git"
+"git+https://github.com/aurora-sim/Aurora-Sim-Optional-Modules.git"
+"aurora-sim.sh"
+"aurora-grid-server.sh"
+"aurora-server.sh"
+"console-combiner.sh"
+"aurora-web-server.sh"
+"aurora-asset-server.sh"
+"aurora-avatar-server.sh"
+"aurora-inventory-server.sh")
+backup=("srv/aurora-sim/shutdown_commands.txt")
+md5sums=('SKIP'
+         'SKIP'
+         '351e0918bb4723ebc487acc881ec752e'
+         'a78feca6f21fdc5921f5ad854f8ad4e8'
+         'cc617297c59890f9776ea52d9549dca0'
+         '7cdd7a6a26c2b704c24ab56f1d3d952b'
+         '8870d242ca4121ad8bac34ebc1630659'
+         'bd89a0757036a0697708a1d2af8a1245'
+         '4f766b0edc35f9c6e6b71c2eed755764'
+         '2d2391b16d0dfbb1d2cffd461f3a0275')
+
+pkgver () {
+	cd "$srcdir/${pkgname%-git}"
+	echo $(git rev-list --count master)
+}
+
+build() {
+	cd "$srcdir/${pkgname%-git}"
+	cp -r "$srcdir/Aurora-Sim-Optional-Modules/"* "./addon-modules/"
+	chmod +x *.sh
+	./runprebuild.sh
+	xbuild Aurora.sln
+	./doxygen.sh
+}
+
+package() {
+	cd $srcdir/${pkgname%-git}
+	mkdir -p "$pkgdir/srv/aurora-sim" "$pkgdir/usr/share/doc/aurora-sim"
+	cp -r AuroraDocs/* "$pkgdir/usr/share/doc/aurora-sim/"
+	cp -r bin/* "$pkgdir/srv/aurora-sim/"
+	cd "$pkgdir/srv/aurora-sim"
+	for file in `find . -name '*.pdb'`; do
+		pdb2mdb ${file%.pdb}.dll
+	done
+	find . -name '*.bat' -o -name '*.pdb' -o -name '*.dylib' -o -name '.gitignore' -o -name '*.sh' |
+		xargs -rtl1 rm
+	rm {7za,Prebuild}.exe
+	install -Dm755 "$srcdir/aurora-sim.sh" "$pkgdir/usr/bin/aurora-sim"
+	install -m755 "$srcdir/aurora-grid-server.sh" "$pkgdir/usr/bin/aurora-grid-server"
+	install -m755 "$srcdir/aurora-server.sh" "$pkgdir/usr/bin/aurora-server"
+	install -m755 "$srcdir/console-combiner.sh" "$pkgdir/usr/bin/console-combiner"
+	install -m755 "$srcdir/aurora-web-server.sh" "$pkgdir/usr/bin/aurora-web-server"
+	install -m755 "$srcdir/aurora-asset-server.sh" "$pkgdir/usr/bin/aurora-asset-server"
+	install -m755 "$srcdir/aurora-avatar-server.sh" "$pkgdir/usr/bin/aurora-avatar-server"
+	install -m755 "$srcdir/aurora-inventory-server.sh" "$pkgdir/usr/bin/aurora-inventory-server"
+}

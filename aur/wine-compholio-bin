@@ -1,0 +1,44 @@
+# Maintainer: Your Name <youremail@domain.com>
+pkgname=wine-compholio-bin
+pkgver=1.7
+pkgrel=1
+epoch=
+pkgdesc="The Compholio Edition is a special build of the popular Wine software (netflix patches)"
+arch=("i686" "x86_64")
+url="https://launchpad.net/~ehoover/+archive/compholio/+sourcepub/3427319/+listing-archive-extra"
+license=('GPL')
+groups=()
+[ "$CARCH" = 'x86_64' ] && depends=("lib32-gstreamer0.10-base")
+[ "$CARCH" = 'i686' ] && depends=("gstreamer0.10-base")
+optdepends=()
+provides=()
+conflicts=()
+replaces=()
+backup=()
+options=()
+install=
+changelog=
+_name="wine-compholio.deb"
+source=("$_name::https://launchpad.net/~ehoover/+archive/compholio/+files/wine-compholio_1.7.0~saucy1_i386.deb")
+
+#prepare() {
+#}
+
+build() {
+        cd "$srcdir/"
+        bsdtar -xf data.tar.lzma -C "$srcdir/"
+}
+
+#check() {
+#	cd "$srcdir/$pkgname-$pkgver"
+#	make -k check
+#}
+
+package() {
+        mv "$srcdir/opt" "$pkgdir"
+        mv "$srcdir/usr" "$pkgdir"
+}
+#pkgver() {
+#        #TODO
+#}
+md5sums=('7b992cf5f0c3db4cc6aa9273af477c1b')

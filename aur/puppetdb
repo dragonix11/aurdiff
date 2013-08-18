@@ -1,0 +1,56 @@
+# Puppetdb: Installer: Arch
+# Maintainer: Niels Abspoel <aboe76 (at) Gmail (dot) com>
+
+# RC style, reserved for later use
+#pkgname=puppetdb
+#_rc=8
+#_pkgver=3.0.0
+#pkgver=${_pkgver}_rc${_rc}
+
+pkgname=puppetdb
+pkgver=1.4.0
+pkgrel=1
+pkgdesc="Puppet data warehouse; it manages storage and retrieval of all platform-generated data"
+arch=("any")
+url="http://puppetlabs.com/projects/puppetdb/"
+license=("APACHE")
+depends=("ruby" "ruby-facter" "puppet" "leiningen" "jdk7-openjdk" "git" "logrotate")
+makedepends=('rpmextract')
+options=(emptydirs)
+provides=("puppetdb")
+conflicts=()
+install=puppetdb.install
+backup=('etc/puppetdb/conf.d/config.ini' 'etc/puppetdb/conf.d/database.ini' 'etc/puppetdb/conf.d/jetty.ini' 'etc/puppetdb/conf.d/repl.ini' 'etc/puppetdb/log4j.properties')
+source=(http://yum.puppetlabs.com/fedora/f19/products/x86_64/puppetdb-${pkgver//_/-}-${pkgrel}.fc19.noarch.rpm
+puppetdb.service)
+
+md5sums=('12badc997101ce6ecbda48c3f8493a3a'
+'2a8c9e486bf0c39bbd0803a3f51c5eac')
+
+package () {
+msg "Preparing install"
+# move extracted rpm dirs to $pkgdir
+  cp -R "$srcdir"/{etc,usr,var} "$pkgdir"/
+  mv "$pkgdir"/usr/sbin/ "$pkgdir"/usr/bin
+  
+# Systemd file
+  install -Dm 644 $srcdir/puppetdb.service $pkgdir/usr/lib/systemd/system/puppetdb.service
+
+# Create the "puppetdb" group, if it is missing, and set the
+  # primary group of the "puppetdb" user to this group.
+  getent group puppetdb &> /dev/null || groupadd -r puppetdb &>/dev/null
+  # Create the "puppetdb" user
+  getent passwd puppetdb  &> /dev/null || useradd -r -d /usr/share/puppetdb -s /sbin/nologin -c "Puppet StoredConfigs daemon" -g puppetdb puppetdb &>/dev/null
+
+# correct files 
+  /bin/chmod 755 "$pkgdir"/etc/puppetdb
+  /bin/chown -R puppetdb:puppetdb "$pkgdir"/etc/puppetdb/*
+  /bin/chmod -R 640 "$pkgdir"/etc/puppetdb/*
+  /bin/chmod -R ug+X "$pkgdir"/etc/puppetdb/*
+  /bin/chgrp puppetdb "$pkgdir"/var/log/puppetdb
+  /bin/chmod 755 "$pkgdir"/var/log/puppetdb
+  /bin/chown -R puppetdb:puppetdb "$pkgdir"/var/log/puppetdb
+  /bin/chown -R puppetdb:puppetdb "$pkgdir"/var/lib/puppetdb
+
+}
+# vim: set ft=sh ts=2 sw=2 et:
