@@ -1,0 +1,19 @@
+# Maintainer: 3ED <krzysztof1987 at gmail>
+ 
+pkgname=seamonkey-i18n-nl
+pkgver=2.20
+pkgrel=1
+_lang=nl
+pkgdesc="Dutch language pack for SeaMonkey"
+arch=('any')
+license=('MPL')
+url="http://www.seamonkey-project.org/"
+depends=("seamonkey>=${pkgver}")
+source=(ftp://ftp.mozilla.org/pub/seamonkey/releases/${pkgver}/langpack/seamonkey-${pkgver}.${_lang}.langpack.xpi)
+noextract=(seamonkey-${pkgver}.${_lang}.langpack.xpi)
+sha1sums=('5b68ebc307c3a276833e60c264f5c41cd499cec0')
+
+package() {
+  install -Dm644 "${srcdir}/seamonkey-${pkgver}.${_lang}.langpack.xpi" \
+    "${pkgdir}/usr/lib/seamonkey-${pkgver}/extensions/langpack-${_lang}@seamonkey.mozilla.org.xpi"
+}

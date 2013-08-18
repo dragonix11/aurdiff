@@ -1,0 +1,29 @@
+# Maintainer: Daniel YC Lin <dlin.tw at gmail>
+
+pkgname=tmux-mem-cpu-load-git
+pkgver=v2.2.1
+pkgrel=1
+pkgdesc="CPU, RAM memory, and load monitor for use with tmux"
+url="https://github.com/thewtex/tmux-mem-cpu-load"
+arch=('i686' 'x86_64' 'sh4')
+license=('APACHE')
+depends=(gcc-libs)
+makedepends=('cmake>=2.6')
+source=('repo::git+https://github.com/thewtex/tmux-mem-cpu-load')
+md5sums=('SKIP')
+
+pkgver() {
+  cd repo
+  git describe --always | sed 's|-|.|g'
+}
+build() {
+  cd repo
+  cmake .
+  make
+}
+package() {
+  cd repo
+  mkdir -p $pkgdir/usr/bin
+  cp tmux-mem-cpu-load $pkgdir/usr/bin
+}
+# vim:et sw=2 ts=2 ai

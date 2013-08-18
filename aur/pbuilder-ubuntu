@@ -1,0 +1,28 @@
+#Maintainer: Jan Dolinar <dolik.rce@gmail.com>
+#Contributor: A. Klitzing <aklitzing@gmail.com>
+
+pkgname=pbuilder-ubuntu
+pkgver=0.215ubuntu2
+pkgrel=1
+pkgdesc="personal package builder for Debian packages"
+arch=(any)
+url="https://launchpad.net/ubuntu/+source/pbuilder"
+license=('GPL')
+depends=('debootstrap' 'dpkg' 'coreutils' 'wget' 'debianutils' 'perl-timedate')
+provides=('pbuilder')
+conflicts=('pbuilder')
+source=(http://archive.ubuntu.com/ubuntu/pool/main/p/pbuilder/pbuilder_${pkgver}_all.deb) 
+backup=('etc/pbuilder/pbuilderrc')
+md5sums=('864814dad6278cad53ed00a969127f26')
+
+package() {
+  ar x pbuilder_${pkgver}_all.deb
+  tar xzf data.tar.gz -C "$pkgdir"
+  
+  cp "$pkgdir/usr/share/pbuilder/pbuilderrc" "$pkgdir/etc/pbuilder/pbuilderrc"
+
+  # move the executables to /usr/bin
+  mkdir -p /usr/bin
+  mv "$pkgdir/usr/sbin"/* "$pkgdir/usr/bin/"
+  rmdir "$pkgdir/usr/sbin"
+}

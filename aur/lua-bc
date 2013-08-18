@@ -1,0 +1,36 @@
+# Maintainer: mimasgpc@free.fr
+
+pkgname=lua-bc
+pkgver=20120420
+pkgrel=1
+url=http://www.tecgraf.puc-rio.br/~lhf/ftp/lua/
+source=(http://www.tecgraf.puc-rio.br/~lhf/ftp/lua/5.2/lbc.tar.gz patch.diff)
+depends=(lua)
+pkgdesc="Big-number library for Lua 5.2 based on GNU bc 1.06"
+arch=('i686' 'x86_64')
+license=('GPL' 'Public Domain')
+
+prepare() {
+  cd bc
+  patch -i ../patch.diff
+}
+
+build() {
+  cd bc
+  make so
+}
+
+check() {
+  cd bc
+  make test
+}
+
+package()
+{
+  cd bc
+  install -m0755 -D bc.so "$pkgdir/usr/lib/lua/5.2/bc.so"
+  install -m0644 -D README "$pkgdir/usr/share/doc/lua-bc/README"
+}
+
+md5sums=('cbe56578065b1f6c7bc9b14b3dfbaf19'
+         '651f4785a9cafc7d9eba1fbaba989ab1')

@@ -1,0 +1,202 @@
+pkgname=bin32-firefox-i18n
+pkgver=23.0.1
+pkgrel=1
+pkgdesc="Language packs for bin32-firefox"
+arch=('x86_64')
+license=('MPL')
+url="http://www.mozilla.com/projects/firefox"
+depends=('bin32-firefox')
+install=i18n.install
+
+_url=http://ftp.mozilla.org/pub/mozilla.org/firefox/releases/$pkgver/linux-i686/xpi
+source=($_url/ach.xpi
+        $_url/af.xpi
+        $_url/ak.xpi
+        $_url/ar.xpi
+        $_url/as.xpi
+        $_url/ast.xpi
+        $_url/be.xpi
+        $_url/bg.xpi
+        $_url/bn-BD.xpi
+        $_url/bn-IN.xpi
+        $_url/br.xpi
+        $_url/bs.xpi
+        $_url/ca.xpi
+        $_url/cs.xpi
+        $_url/csb.xpi
+        $_url/cy.xpi
+        $_url/da.xpi
+        $_url/de.xpi
+        $_url/el.xpi
+        $_url/en-GB.xpi
+        $_url/en-US.xpi
+        $_url/en-ZA.xpi
+        $_url/eo.xpi
+        $_url/es-AR.xpi
+        $_url/es-CL.xpi
+        $_url/es-ES.xpi
+        $_url/es-MX.xpi
+        $_url/et.xpi
+        $_url/eu.xpi
+        $_url/fa.xpi
+        $_url/ff.xpi
+        $_url/fi.xpi
+        $_url/fr.xpi
+        $_url/fy-NL.xpi
+        $_url/ga-IE.xpi
+        $_url/gd.xpi
+        $_url/gl.xpi
+        $_url/gu-IN.xpi
+        $_url/he.xpi
+        $_url/hi-IN.xpi
+        $_url/hr.xpi
+        $_url/hu.xpi
+        $_url/hy-AM.xpi
+        $_url/id.xpi
+        $_url/is.xpi
+        $_url/it.xpi
+        $_url/ja.xpi
+        $_url/kk.xpi
+        $_url/km.xpi
+        $_url/kn.xpi
+        $_url/ko.xpi
+        $_url/ku.xpi
+        $_url/lg.xpi
+        $_url/lij.xpi
+        $_url/lt.xpi
+        $_url/lv.xpi
+        $_url/mai.xpi
+        $_url/mk.xpi
+        $_url/ml.xpi
+        $_url/mr.xpi
+        $_url/nb-NO.xpi
+        $_url/nl.xpi
+        $_url/nn-NO.xpi
+        $_url/nso.xpi
+        $_url/or.xpi
+        $_url/pa-IN.xpi
+        $_url/pl.xpi
+        $_url/pt-BR.xpi
+        $_url/pt-PT.xpi
+        $_url/rm.xpi
+        $_url/ro.xpi
+        $_url/ru.xpi
+        $_url/si.xpi
+        $_url/sk.xpi
+        $_url/sl.xpi
+        $_url/son.xpi
+        $_url/sq.xpi
+        $_url/sr.xpi
+        $_url/sv-SE.xpi
+        $_url/ta-LK.xpi
+        $_url/ta.xpi
+        $_url/te.xpi
+        $_url/th.xpi
+        $_url/tr.xpi
+        $_url/uk.xpi
+        $_url/vi.xpi
+        $_url/zh-CN.xpi
+        $_url/zh-TW.xpi
+        $_url/zu.xpi)
+
+noextract=(${source[@]##*/})
+
+md5sums=(
+    'ce13065a7e9e9d4446888ee7ef5ddf8f'
+    'dcac67abc13b8c021b8323771e5f1ea1'
+    'a78b91cc71c47673a826625422e384f6'
+    '5c0f3e8cf6f6507de088bdfa34ee9a77'
+    'e9bbce41ea75d72e2345c59d38b044be'
+    'ec8e63a0e22d788c9e00619bb3fc758d'
+    '04124f2e8215b8733ceadbd73c47d355'
+    'ccc0e453067ec6845f2ba9058e4705c4'
+    '7c8f73f8b6bc5ad98cad534fa8e18ec8'
+    '91c0a04c2ea34a4c076adfaa2c9aa2e7'
+    'b7b0efd757a862c1de0136444ed380a1'
+    'c4f2f9c05ad51d6030b5a74ea0fab327'
+    '61e92c2fdb17f965fdb7d6d9a2681791'
+    'bd7cc65df902d0351146bea773c9062d'
+    '0acfdf2b71df4066388acdd79c47b043'
+    '011822d5c45a553ec1932d17e5b98a13'
+    '87d7f8ba6c79515c2d1254928e4bdd1c'
+    '898bfa8ac55e2b079b4ff9fdc1463547'
+    'd8c4b686cebabc619248fd46d9c146e9'
+    '8e84c3305c4ed2f3f8169711cbe46542'
+    '814a4cad0a36ed64c4719249b866bf7b'
+    '0c465e939582bd14204ae31a98c73e40'
+    'cda45c3204fcd2ef1ea661d0ca6db050'
+    'e22b5e2adae39119cab1b1e30de13d22'
+    '00c1922fcea714bb4f02a8a53b60b35d'
+    'd0baf1e6bb1428807ed2d0a127c6d818'
+    '7a3113eea76e5b081ea3598c986aebc7'
+    'd61cff3456d6d800864a199d6ebc8d95'
+    '8e7924805f1577f0051b9c548ac67302'
+    '0e9bb561e55a8f8e3b45c1b810b810fe'
+    '5acf0b435d9aea6925f6ae40aedfc0f3'
+    '99fd57cacfce5bd55ecfa3dee11f071e'
+    'a826caedba18ca77fd29bdcda6b4addc'
+    'fd0f12c826abc4de0849a851a9a0fc06'
+    'ea682722cdc901f5b642c10f6fa2a74c'
+    '5a756b1d8af284c0306e261f03317a8b'
+    'b4c3174c34827312db783ec439e7affd'
+    '54966169b17c065bba64df4e3008f56f'
+    'b83e1ebb51360717985a9ec558a08747'
+    'cf97fb769d5160d4273831deab304c16'
+    '1e73cce4cbfd71b62e63a693d77fe5c8'
+    'a4273b60047317f403cb481bbfdabbdb'
+    '64540c992392c00703b94397fb447037'
+    'c5ab004fb39b278d8b84688153744012'
+    '426fd93daf6c86e8cae15cedc06672a0'
+    '75bbcd02af8cbb536f0911c0ed73a452'
+    'c4a6ba719e682affdd3a2ed1c5d8a764'
+    'd4f071dc1db52f214db866a2b59033c7'
+    '50b97be30d6ca07a211a3d36e45182e2'
+    'c70a25a87ebae6d0ed0a5c6656330ebb'
+    '76d2c91cdc5ac06c004a6412073a79eb'
+    '58f5b7522f73aa3f6e2fbc11e660af35'
+    '7fb56cc65d73ed2fbb4d64ca60e026b2'
+    '61d385dc556ea7816925363646649d34'
+    '3a0de25b8d22907084d1ab962cda64ce'
+    'e6c61a2bcb5a493b18e3d0172bfc47c6'
+    '4ff91d7241cac953768de9edca66b9cb'
+    'f05095bc29fc9cf90dfeaba5ea18b2b7'
+    '441d5423b39947065e25e530e5a26456'
+    '1e9293b50eb5a965d24d984671b1711b'
+    'e9d85681ec1ade3dd2ee6980f7112d7f'
+    '483438479406e8e3627954710f3137f9'
+    '8e45a4b81de058c845e021e52cfddcda'
+    'ccf0c138f30b52b35525972cf3859cb3'
+    '1f50dc9ebe9b712e9d6c329181f09c9c'
+    'c31f0a1b126fa4b8aa9d951ddcb6c13d'
+    '9a1275bded5d05cdb96ed9509604f843'
+    'c8fb3ec81f6d7c75b3eec5e90040f204'
+    '530563b333619a10d02fd9aa04b861d0'
+    '9cf91a3ff557663e1020897e253e93f1'
+    'f9e38e26f05a1df9fee7a55da23d8b33'
+    '00244eee906c5227c632051c58814f0b'
+    '84190d7cb82b4803a64b69f530dd70a6'
+    'e50935ba3e1aad6ef6558036d3ff85ce'
+    '52e34ca4050c487332b3042ea2820dba'
+    'afc80ceb7a5502389189375d490fceff'
+    '0aec93d7cea57652e46d89009e34001d'
+    '38b5a753e3abf6b24662122eef645ee5'
+    '8fda2efb64db0040685734835f403050'
+    '0b0bcdfeed58d87b8a5edb06d4d56089'
+    '80a3418a4700f143045b0d6f1e3f1f5f'
+    '7487dbb9fa40f12fba54b1ebcc3225b4'
+    '2de8daa56fd16de06c988b19c6ad77f6'
+    '0ccf9695fbff6495318e27c16ff7d4a8'
+    '93097d91dc8247ba61d211f0d708bcf1'
+    '9f475138083874ff6ec984ed2052a5eb'
+    'c72916961d93588d1a314e81c2c85422'
+    '52dc0bb01a6f4c481f80a39d93ae8279'
+    'c279af205a0669588ee91fce877cabe3'
+)
+
+build() {
+  cd ${srcdir}
+  install -d ${pkgdir}/usr/lib32/bin32-firefox/extensions
+  for i in *.xpi; do
+    install -m644 $i ${pkgdir}/usr/lib32/bin32-firefox/extensions
+  done
+}

@@ -1,0 +1,40 @@
+# Maintainer: speps <speps at aut dot archlinux dot org>
+
+pkgname=plowshare-git
+pkgver=0.2408.10e1bf0
+pkgrel=1
+pkgdesc="Command-line downloader and uploader for Rapidshare, Mediafire and other file sharing websites."
+arch=('any')
+url="http://code.google.com/p/plowshare/"
+license=('GPL')
+depends=('curl' 'recode' 'js185')
+makedepends=('git')
+optdepends=('bash-completion: enable bash auto completion'
+            'libcaca: ascii display for no X server'
+            'tiv: ascii display for no X server'
+            'aview: ascii display for no X server')
+provides=('plowshare')
+conflicts=('plowshare')
+replaces=('plowshare-svn')
+source=("$pkgname::git+https://code.google.com/p/plowshare/")
+md5sums=('SKIP')
+
+pkgver() {
+  cd "$pkgname"
+  echo 0.$(git rev-list --count HEAD).$(git rev-parse --short HEAD)
+}
+
+package() {
+  cd "$pkgname"
+  DESTDIR="$pkgdir/" PREFIX=/usr ./setup.sh install
+
+  # bash completion script
+  install -Dm644 etc/plowshare.completion \
+    "$pkgdir/usr/share/bash-completion/completions/plowshare"
+
+  # set CDIR for bash completion
+  sed -i "s|local/||" \
+    "$pkgdir/usr/share/bash-completion/completions/plowshare"
+}
+
+# vim:set ts=2 sw=2 et:

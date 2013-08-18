@@ -1,0 +1,19 @@
+# Maintainer: 3ED <krzysztof1987 at gmail>
+ 
+pkgname=seamonkey-i18n-pt-pt
+pkgver=2.20
+pkgrel=1
+_lang=pt-PT
+pkgdesc="Portuguese (Portugal) language pack for SeaMonkey"
+arch=('any')
+license=('MPL')
+url="http://www.seamonkey-project.org/"
+depends=("seamonkey>=${pkgver}")
+source=(ftp://ftp.mozilla.org/pub/seamonkey/releases/${pkgver}/langpack/seamonkey-${pkgver}.${_lang}.langpack.xpi)
+noextract=(seamonkey-${pkgver}.${_lang}.langpack.xpi)
+sha1sums=('14eaa05d569524f8c0354b57fb108de34ddcf822')
+
+package() {
+  install -Dm644 "${srcdir}/seamonkey-${pkgver}.${_lang}.langpack.xpi" \
+    "${pkgdir}/usr/lib/seamonkey-${pkgver}/extensions/langpack-${_lang}@seamonkey.mozilla.org.xpi"
+}

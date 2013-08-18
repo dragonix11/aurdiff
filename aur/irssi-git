@@ -1,0 +1,47 @@
+#  Maintainer: sudokode <sudokode@gmail.com>
+# Contributor: Bartłomiej Piotrowski <nospam@bpiotrowski.pl>
+# Contributor: Zariel <c.bannister@gmail.com>
+
+pkgname=irssi-git
+pkgver=4205.776ce86
+pkgrel=1
+pkgdesc="Modular text mode IRC client with Perl scripting"
+arch=('i686' 'x86_64')
+url="http://irssi.org/"
+license=('GPL')
+depends=('glib2' 'openssl')
+makedepends=('git' 'lynx')
+optdepends=('perl-libwww: for the scriptassist script')
+conflicts=('irssi')
+provides=('irssi') 
+backup=('etc/irssi.conf')
+options=('!libtool')
+source=("$pkgname::git://git.irssi.org/irssi")
+sha256sums=('SKIP')
+
+pkgver() {
+  cd $pkgname
+
+  echo "$(git rev-list --count HEAD).$(git rev-parse --short HEAD)"
+}
+
+build() {
+  cd $pkgname
+
+  ./autogen.sh \
+        --prefix=/usr \
+        --enable-ipv6 \
+        --with-proxy \
+        --sysconfdir=/etc \
+        --with-perl-lib=vendor
+
+  make
+}
+
+package() {
+  cd $pkgname
+
+  make DESTDIR="$pkgdir" install
+}
+
+# vim:set ts=2 sw=2 et:

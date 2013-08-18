@@ -1,0 +1,44 @@
+# Contributor: Martin Blumenstingl <martin.blumenstingl [AT] googlemail.com>
+
+pkgname=cantata-svn
+pkgver=3195
+pkgdesc="A KDE client for the music player daemon (MPD)."
+pkgrel=1
+arch=('i686' 'x86_64')
+url="http://code.google.com/p/cantata/"
+license=('GPL3')
+install='cantata.install'
+makedepends=('cmake' 'automoc4' 'subversion')
+depends=('kdebase-runtime')
+optdepends=('libmusicbrainz5' 'cdparanoia' 'libcddb' 'mpg123')
+conflicts=('cantata')
+provides=('cantata')
+source=("$pkgname::svn+http://cantata.googlecode.com/svn/trunk/")
+sha1sums=('SKIP')
+
+pkgver() {
+  cd ../${pkgname}
+  svnversion | tr -d [A-z]
+}
+
+build() {
+  if [ ! -d "${srcdir}/cantata-build" ]
+  then
+    mkdir "${srcdir}/cantata-build"
+  fi
+
+  cd "${srcdir}/cantata-build"
+
+  cmake ../${pkgname} \
+        -DCMAKE_INSTALL_PREFIX=$(kde4-config --prefix) \
+        -DCMAKE_BUILD_TYPE=Debug \
+        -DENABLE_PHONON=ON
+
+  make
+}
+
+package() {
+  cd "${srcdir}/cantata-build"
+
+  make DESTDIR="${pkgdir}" PREFIX="$(kde4-config --prefix)" install
+}

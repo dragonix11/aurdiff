@@ -1,0 +1,70 @@
+# Maintainer: Tom Kuther <gimpel@sonnenkinder.org>
+
+pkgname=snapper-git
+_gitname=snapper
+pkgver=0.1.5.git.727.a32335a
+pkgrel=1
+pkgdesc="A tool for managing BTRFS and LVM snapshots. It can create, diff and restore snapshots and provides timelined auto-snapping."
+provides=('snapper')
+conflicts=('snapper')
+arch=('i686' 'x86_64')
+url="http://snapper.io"
+license=('GPL2')
+depends=('btrfs-progs' 'libxml2' 'dbus')
+makedepends=('boost' 'lvm2' 'libxslt' 'docbook-xsl' 'pam')
+backup=('etc/conf.d/snapper')
+source=('snapper::git+https://github.com/openSUSE/snapper.git'
+        'btrfs-master.patch')
+md5sums=('SKIP'
+         '34af4113b6a39030c27ecdb81a3ff457')
+install=snapper.install
+
+pkgver() {
+  cd $_gitname
+  echo $(cat VERSION).git.$(git rev-list --count HEAD).$(git rev-parse --short master)
+}
+
+build() {
+  cd $_gitname
+
+  # rename cron scripts
+  sed -i -e 's@suse.de-@@g' scripts/Makefile.am
+  # fix config location in cron scripts
+  sed -i -e 's@/etc/sysconfig/@/etc/conf.d/@g' scripts/snapper-{daily,hourly}
+
+  # boost fixlets - Arch doesn't use -mt suffix
+  sed -i -e 's@lboost_thread-mt@lboost_thread@g' snapper/Makefile.am
+  sed -i -e 's@lboost_system-mt@lboost_system@g' snapper/Makefile.am
+
+  # fix pam plugin install location
+  sed -i -e 's@shell echo /@shell echo /usr/@g' pam/Makefile.am
+  # Arch all in /usr/bin
+  sed -i -e 's@/usr/sbin@/usr/bin@g' data/org.opensuse.Snapper.service
+
+  # https://github.com/openSUSE/snapper/issues/19
+  [[ -n `pacman -Q|grep btrfs-progs-git` ]] && patch -p1 < $srcdir/btrfs-master.patch
+
+  aclocal
+  libtoolize --force --automake --copy
+  autoheader
+  automake --add-missing --copy
+  autoconf
+  ./configure --prefix=/usr \
+              --sbindir=/usr/bin \
+              --with-conf=/etc/conf.d \
+              --disable-zypp \
+              --disable-silent-rules \
+              --disable-ext4 \
+              --enable-xattrs
+  make
+}
+
+package() {
+  cd $_gitname
+  make DESTDIR=${pkgdir} install
+  rm -f ${pkgdir}/usr/lib/security/pam_snapper.la ${pkgdir}/usr/lib/libsnapper.la
+  mkdir ${pkgdir}/etc/conf.d
+  install -D -m 644 data/sysconfig.snapper ${pkgdir}/etc/conf.d/snapper
+}
+
+# vim:set ts=2 sw=2 et:
