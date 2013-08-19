@@ -1,0 +1,55 @@
+# Maintainer: Sven-Hendrik Haase <sh@lutzhaase.com>
+# Crontributor: hauptmech
+# Contributor: figo.zhang
+# Contributor: lubosz
+
+pkgname=pcl
+pkgver=1.7.0
+pkgrel=1
+pkgdesc="A comprehensive open source library for n-D Point Clouds and 3D geometry processing"
+arch=('x86_64' 'i686')
+url='http://www.pointclouds.org'
+license=('BSD')
+depends=('flann' 'vtk' 'qhull')
+makedepends=('cmake' 'eigen3' 'boost' 'openni2')
+optdepends=('openmpi' 'cuda' 'openni2')
+source=("https://github.com/PointCloudLibrary/pcl/archive/pcl-${pkgver}.tar.gz")
+md5sums=('e2ac2d2e72825d991c6d194f9586b5d8')
+
+build() {
+	cd $srcdir/pcl-pcl-$pkgver
+
+    [[ -d build ]] && rm -r build
+	mkdir -p build && cd build
+
+    # -DBUILD_gpu_people=OFF \ Disable until CUDA npp detection is fixed in cmake
+    cmake .. \
+        -DCMAKE_BUILD_TYPE=Release \
+        -DCMAKE_INSTALL_PREFIX=/usr \
+        -DBUILD_CUDA=ON \
+        -DBUILD_cuda_io=ON \
+        -DBUILD_cuda_apps=ON \
+        -DBUILD_GPU=ON \
+        -DBUILD_gpu_surface=ON \
+        -DBUILD_gpu_tracking=ON \
+        -DBUILD_apps=ON \
+        -DBUILD_app_3d_rec_framework=ON \
+        -DBUILD_app_cloud_composer=ON \
+        -DBUILD_app_in_hand_scanner=ON \
+        -DBUILD_app_modeler=ON \
+        -DBUILD_app_point_cloud_editor=ON \
+        -DBUILD_examples=OFF \
+        -DBUILD_global_tests=OFF \
+        -DBUILD_simulation=ON \
+        -DBUILD_surface_on_nurbs=ON
+
+	make
+}
+
+package() {
+  cd $srcdir/pcl-pcl-$pkgver/build
+
+  make DESTDIR=$pkgdir install
+
+  install -Dm644 ../LICENSE.txt "${pkgdir}/usr/share/licenses/${pkgname}/LICENSE"
+}

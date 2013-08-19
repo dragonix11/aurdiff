@@ -1,0 +1,40 @@
+# Contributor: Nickolay Stepanenko <nixtrian at gmail dot com>
+pkgname=mcabber-module-eventcmd-ng-hg
+replaces=mcabber-module-eventcmd-ng-git
+provides=mcabber-module-eventcmd-ng-git
+conflicts=mcabber-module-eventcmd-ng-git
+pkgver=26.9de74f509d0f
+pkgrel=1
+pkgdesc="Another approach for eventcmd. It passes arguments to script as environment variables, so, you can use '$jid' instead of '$1'"
+url="http://wiki.mcabber.com/index.php/Modules"
+license=(GPL)
+arch=('i686' 'x86_64')
+depends=('mcabber>=0.10.0')
+makedepends=("cmake" "mercurial" "mcabber>=0.10.0")
+
+_hgroot="http://hg.isbear.org.ua/isbear/"
+_hgrepo="mcabber-eventcmd-ng"
+
+md5sums=(SKIP)
+source=("hg+http://hg.isbear.org.ua/isbear/${_hgrepo}")
+
+pkgver(){
+cd $_hgrepo
+echo $(hg identify -n).$(hg identify -i)
+}
+build() {
+
+   
+	cp -rf $srcdir/$_hgrepo $srcdir/$_hgrepo-build
+	
+
+
+   msg "Building $pkgname ..."
+	cd $srcdir/$_hgrepo-build
+	
+	cmake -DMCABBER_INCLUDE_DIR=/usr/include/mcabber -DCMAKE_INSTALL_PREFIX=/usr .
+	make || return 1
+	DESTDIR=$pkgdir make install
+
+	rm -r $srcdir/$_hgrepo-build
+}

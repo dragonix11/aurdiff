@@ -1,0 +1,25 @@
+# Maintainer: rnons <remotenonsense at gmail dot com>
+
+pkgname=mikidown-git
+_githubuser=rnons
+pkgver=20130819
+pkgrel=1
+pkgdesc="A note taking application featuring markdown syntax"
+arch=('any')
+url="https://rnons.github.com/mikidown"
+license=('MIT')
+depends=('git'
+         'python'
+		 'pyqt'
+		 'python-markdown'
+         'python-whoosh')
+optdepends=('python-pygments: for code block syntax highlighting')
+_gitroot="https://github.com/rnons/mikidown.git"
+_gitname="mikidown"
+
+package(){
+	cd "$srcdir"
+    git clone --depth 1 $_gitroot
+	cd "$srcdir/$_gitname"
+	python setup.py install --root="$pkgdir"
+}

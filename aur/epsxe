@@ -1,0 +1,147 @@
+# Maintainer: Alexej Magura <agm2819*gmail*>
+# Contributor: Swen Simon <swsimon at gmail dot com>
+#
+
+pkgname=epsxe
+pkgver=1.9.0
+pkgrel=10
+pkgdesc="Enhanced PSX emulator"
+url="http://epsxe.com"
+arch=('i686' 'x86_64')
+
+[ "$CARCH" == "i686" ] && depends=(gtk perl libtinfo sdl_ttf)
+[ "$CARCH" == "x86_64" ] && depends=(lib32-gtk lib32-ncurses lib32-libxt perl libtinfo lib32-sdl_ttf)
+
+makedepends=('unzip')
+license=('unknown')
+install=epsxe.install
+options=(!strip)
+
+source=(epsxe.desktop epsxe.png)
+
+md5sums=('087234e20ae9147f83df24b69fc93bca' 'eb0c46b8ae1355c589792f6be1835e47')
+
+_e190url='http://www.epsxe.com/files/epsxe190lin.zip'
+_e160url='http://www.epsxe.com/files/epsxe160lin.zip'
+_e152url='http://www.epsxe.com/files/epsxe152lin.zip'
+
+_e190sum='3eea56cf74f9ee81a28dfd018be051da'
+_e160sum='32704cfc77939b9a1bd047f22b70eca2'
+_e152sum='5834f34cb904b08d95abda057eff3981'
+
+prepare () {
+
+    cd $srcdir 
+
+    for things in $_e190url $_e160url $_e152url
+    do
+	_things="$(echo $things | sed 's:^.*/::')"
+
+	if [[ -f "$_things" ]]; then
+
+	    true
+	else
+
+	    wget "$things" && (md5sum "$_things" | grep "$_e190sum" -q) || (md5sum "$_things" | grep "$_e160sum" -q) || (md5sum "$_things" | grep "$_e152sum" -q) && true || (rm "$things" && return 1);
+	
+	fi
+
+    done
+
+    # extract archives
+    unzip -qqo -d 1.9.0 epsxe190lin.zip
+    unzip -qqo -d 1.6.0 epsxe160lin.zip
+    unzip -qqo -d 1.5.2 epsxe152lin.zip
+
+    # create the perl frontends
+    for version in $(ls -1 | sed '/[0-9]\.[0-9]\.[0-9]/!d')
+    do
+	#echo $version
+
+	if [[ $version = '1.9.0' ]]; then
+	    _dst="epsxe.plx";
+	else 
+	    _dst="epsxe-${version}.plx";
+	fi
+
+	echo "#!/usr/bin/perl" > $_dst && \
+	    echo >> $_dst && \
+	    \
+	    echo -n '$pkgname = ' >> $_dst && \
+	    \
+	    echo "'$pkgname';" >> $_dst && \
+	    \
+	    echo -n '$pkgver = ' >> $_dst && \
+	    \
+	    echo "'$version';" >> $_dst && \
+	    \
+	    echo -n '$pkgpath = ' >> $_dst && \
+	    \
+	    echo '"/opt/$pkgname/$pkgver";' >> $_dst && \
+	    \
+	    echo >> $_dst && \
+	    \
+	    echo "system(\"cd \$pkgpath && ./\$pkgname\");" >> $_dst
+
+    done
+    
+    find "$srcdir" -name '*.me' -delete
+
+}
+
+package () {
+    
+    
+    install -d $pkgdir/usr/bin
+    install -d $pkgdir/opt/$pkgname/{plugins,bios,memcards}
+
+    for versions in '1.5.2' '1.6.0' '1.9.0'
+    do 
+	install -d $pkgdir/opt/$pkgname/$versions/{cfg,cheats,patches,snap,sstates}
+
+	cd $srcdir/$versions
+
+	install -Dm 644 "docs/epsxe_linux_en.txt" \
+	    "$pkgdir/usr/share/doc/$pkgname/README-$versions"
+
+	install -Dm 755 'epsxe' \
+	    "$pkgdir/opt/$pkgname/$versions/$pkgname"
+	install -Dm 644 'keycodes.lst' \
+	    "$pkgdir/opt/$pkgname/$versions/keycodes.lst"
+
+	for item in $(cd cheats && find . -name '*.cht' -print)
+	do
+	    install -Dm 644 "cheats/$item" \
+		"$pkgdir/opt/$pkgname/$versions/cheats/$item"
+	done
+
+	for things in plugins bios memcards cfg
+	do
+	    if [[ -d "$pkgdir/opt/$pkgname/$versions/$things" ]]; then
+
+		rm -rf "$pkgdir/opt/$pkgname/$versions/$things"
+	    fi
+
+	    ln -sf /opt/$pkgname/$things -T $pkgdir/opt/$pkgname/$versions/$things
+
+	done
+
+	if [[ $versions = $pkgver ]]; then
+
+	    install -m 755 "$srcdir/${pkgname}.plx" \
+		"$pkgdir/usr/bin/$pkgname";
+	else
+	    
+	    install -m 755 "$srcdir/$pkgname-${versions}.plx" \
+		"$pkgdir/usr/bin/$pkgname-$versions"
+
+	fi
+
+    done
+
+
+    install -Dm 644 "$srcdir/epsxe.png" "$pkgdir/usr/share/pixmaps/${pkgname}.png"
+
+    install -Dm 644 "$srcdir/epsxe.desktop" "$pkgdir/usr/share/applications/${pkgname}.desktop"
+
+}

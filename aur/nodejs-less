@@ -1,0 +1,28 @@
+# Author: Alexis Sellier <self@cloudhead.net>
+# Contributor: The Core Less Team
+# Maintainer: cloudhead <self@cloudhead.net>
+# Maintainer: agatronic <luke.a.page@gmail.com>
+_npmname=less
+_npmver=1.4.2
+pkgname=nodejs-less # All lowercase
+pkgver=1.4.2
+pkgrel=1
+pkgdesc="Leaner CSS"
+arch=(any)
+url="http://lesscss.org"
+license=(Apache v2)
+depends=('nodejs' )
+optdepends=()
+source=(http://registry.npmjs.org/$_npmname/-/$_npmname-$_npmver.tgz)
+noextract=($_npmname-$_npmver.tgz)
+sha1sums=(b7deefe98a3a87bee364411b3df2d1efe5a412d0)
+
+package() {
+  cd $srcdir
+  local _npmdir="$pkgdir/usr/lib/node_modules/"
+  mkdir -p $_npmdir
+  cd $_npmdir
+  npm install -g --prefix "$pkgdir/usr" $_npmname@$_npmver
+}
+
+# vim:set ts=2 sw=2 et:

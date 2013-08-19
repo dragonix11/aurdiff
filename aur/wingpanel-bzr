@@ -1,0 +1,45 @@
+# Maintainer: Alucryd <alucryd at gmail dot com>
+# Contributor: Ner0 <darkelfdarkelf666@yahoo.co.uk>
+# Contributor: flamelab <panosfilip@gmail.com>
+
+pkgname=wingpanel-bzr
+pkgver=133
+pkgrel=2
+pkgdesc="A super sexy space-saving top panel"
+arch=('i686' 'x86_64')
+url="https://launchpad.net/wingpanel"
+license=('GPL3')
+depends=('granite-bzr' 'libindicator3')
+optdepends=('indicator-pantheon-session-bzr: Pantheon session indicator')
+makedepends=('bzr' 'cmake' 'vala0.16')
+provides=("${pkgname%-*}")
+conflicts=("${pkgname%-*}")
+install=${pkgname%-*}.install
+source=("bzr+lp:${pkgname%-*}")
+sha256sums=('SKIP')
+
+pkgver() {
+  cd "${srcdir}"/${pkgname%-*}
+
+  bzr revno
+}
+
+build() {
+  cd "${srcdir}"/${pkgname%-*}
+
+  if [[ -d build ]]; then
+    rm -rf build
+  fi
+  mkdir build && cd build
+
+  cmake .. -DCMAKE_INSTALL_PREFIX=/usr -DGSETTINGS_COMPILE=OFF -DVALA_EXECUTABLE=/usr/bin/valac-0.16
+  make
+}
+
+package() {
+  cd "${srcdir}"/${pkgname%-*}/build
+
+  make GCONF_DISABLE_MAKEFILE_SCHEMA_INSTALL=1 DESTDIR="${pkgdir}" install
+}
+
+# vim: ts=2 sw=2 et:

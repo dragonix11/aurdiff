@@ -1,0 +1,46 @@
+
+# Maintainer: Gwenn Gueguen <gwenn+aur@demisel.net>
+pkgname=lcmc
+pkgver=1.5.8
+pkgrel=1
+epoch=0
+pkgdesc="Linux Cluster Management Console"
+arch=(any)
+url="http://lcmc.sourceforge.net/"
+license=('GPL')
+groups=()
+depends=(java-runtime libxtst)
+makedepends=()
+checkdepends=()
+optdepends=()
+provides=()
+conflicts=()
+replaces=()
+backup=()
+options=()
+install=
+changelog=Changelog
+source=("http://downloads.sourceforge.net/$pkgname/${pkgname^^*}-$pkgver.jar"
+    'lcmc'
+    'lcmc.png'
+    'lcmc.desktop')
+noextract=(${pkgname^^*}-$pkgver.jar)
+
+sha1sums=('5a57ea9682235ae004cba35bfd75f14c19f8d6fe'
+          '22b0359c3b9f8ff958d263d8cde20dce41a84148'
+          '84f8ab9b450c9e51d828435f12e72cfc851af0cf'
+          '939cfffdea09bc23ed7ccc1b155634969bd71d6f')
+
+package() {
+  cd "$srcdir"
+  install -d $pkgdir/usr/bin
+  install -m 0755 -t $pkgdir/usr/bin lcmc
+  install -d $pkgdir/usr/lib/${pkgname}
+  install -t $pkgdir/usr/lib/${pkgname} ${pkgname^^*}-$pkgver.jar
+  install -d $pkgdir/usr/share/icons/hicolor/48x48/apps
+  install -t $pkgdir/usr/share/icons/hicolor/48x48/apps ${pkgname}.png
+  install -d $pkgdir/usr/share/applications
+  install -t $pkgdir/usr/share/applications ${pkgname}.desktop
+}
+
+# vim:set ts=2 sw=2 et:
