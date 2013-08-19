@@ -1,0 +1,35 @@
+# Maintainer : Jonas Heinrich <onny@project-insanity.org>
+# Contributor: Jonas Heinrich <onny@project-insanity.org>
+        
+pkgname=python-libtorrent-rasterbar
+pkgver=0.16.11
+pkgrel=1
+pkgdesc="Python 3 bindings for the libtorrent library"
+url="http://www.rasterbar.com/products/libtorrent/"
+arch=('i686' 'x86_64')
+license=('BSD')
+depends=('boost-libs' 'geoip' 'python' 'libtorrent-rasterbar')
+makedepends=('boost')
+options=('!libtool' '!emptydirs')
+source=(http://libtorrent.googlecode.com/files/libtorrent-rasterbar-$pkgver.tar.gz)
+sha512sums=('2e058e3eae7eeb6229c40428415313c52f5a85bc79a8ec7f6d495ee14c99f871792c7109c081638533dfdd7961ad78d9d8592eedb864fee9f311aff434737a8a')
+        
+build() {
+  cd libtorrent-rasterbar-$pkgver
+  ./configure --prefix=/usr \
+      --enable-python-binding \
+      --with-libgeoip=system \
+      --with-boost-python=boost_python3
+
+  # patch for a critical bug affecting 32bit systems https://bugs.archlinux.org/task/33429
+  sed -i '/all_categories/s/0x7fffffff/0xfffffff/' include/libtorrent/alert.hpp
+
+  cd bindings/python
+  make
+}
+
+package() {
+  cd libtorrent-rasterbar-$pkgver/bindings/python
+  make DESTDIR="$pkgdir" install
+  install -D "${srcdir}/libtorrent-rasterbar-${pkgver}/COPYING" "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
+}

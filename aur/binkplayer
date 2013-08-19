@@ -1,0 +1,28 @@
+# Contributor: Hugo Lobo <hugo_alobo@hotmailcom>
+
+pkgname=binkplayer
+pkgver=2.2c
+pkgrel=1
+pkgdesc="Bink Video Player"
+url="http://www.radgametools.com"
+source=(http://www.radgametools.com/down/Bink/BinkLinuxPlayer.7z)
+md5sums=('55b224a6b9383f1d32fe21a13749cc18')
+license=('custom')
+arch=('i686' 'x86_64')
+makedepends=('')
+
+
+if [ "$CARCH" = "x86_64" ]; then
+depends=('lib32-sdl_mixer' 'lib32-openal')
+else
+depends=('sdl_mixer' 'openal')
+fi
+
+package() {
+  mkdir -p "$pkgdir/usr/bin"
+  cp "$srcdir/BinkPlayer" "$pkgdir/usr/bin/binkplayer"
+  chmod +x "$pkgdir/usr/bin/binkplayer"
+}
+ 
+
+ 

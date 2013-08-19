@@ -1,0 +1,35 @@
+# Maintainer: sekret
+pkgname=marble
+pkgver=1.6
+_kdever=4.11.0
+pkgrel=1
+pkgdesc="a virtual globe and world atlas"
+arch=('i686' 'x86_64')
+url="http://marble.kde.org"
+license=('LGPL2.1' 'GPL')
+depends=('qtwebkit')
+makedepends=('cmake')
+optdepends=(
+'phonon: Voice navigation (sound or human speakers)'
+'qextserialport: Reading from serial port in APRS plugin'
+'quazip: reading and displaying .kmz files'
+'shapelib: reading and displaying .shp files'
+'gpsd: position information'
+'libwlocate: Position information based on neighboring WLAN networks'
+)
+provides=('kdeedu-marble')
+conflicts=('kdeedu-marble')
+install=$pkgname.install
+source=(http://download.kde.org/stable/$_kdever/src/marble-$_kdever.tar.xz)
+
+build() {
+ cd "$pkgname-$_kdever"
+ cmake -DCMAKE_BUILD_TYPE=Release -DQTONLY=TRUE -DCMAKE_INSTALL_PREFIX=/usr
+ make
+}
+
+package() {
+ cd "$pkgname-$_kdever"
+ make DESTDIR="$pkgdir/" install
+}
+md5sums=('eca5754be00129542a15d64d19693c1a')

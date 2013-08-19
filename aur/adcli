@@ -1,0 +1,30 @@
+# Maintainer: Mantas M. <grawity@gmail.com>
+pkgname=adcli
+pkgver=0.7.3
+pkgrel=1
+pkgdesc="DBus service for configuring kerberos and other online identities."
+arch=(i686 x86_64)
+url="http://freedesktop.org/software/realmd/"
+license=(GPL3)
+depends=(krb5 openldap)
+makedepends=(intltool xmlto)
+source=("http://www.freedesktop.org/software/realmd/releases/$pkgname-$pkgver.tar.gz"
+        "http://www.freedesktop.org/software/realmd/releases/$pkgname-$pkgver.tar.gz.sig")
+sha1sums=('ea16490c78207176f19a3adbaa44624128a95a0c'
+          'SKIP')
+
+build() {
+  cd "$pkgname-$pkgver"
+  ./configure \
+    --prefix=/usr           \
+    --sbindir=/usr/bin      \
+    --sysconfdir=/etc       ;
+  make
+}
+
+package() {
+  cd "$pkgname-$pkgver"
+  make DESTDIR="$pkgdir" install
+} 
+
+# vim: ts=2:sw=2:et

@@ -1,0 +1,34 @@
+# Contributer: giacomogiorgianni@gmail.com 
+
+pkgname=newbreeze
+_name=NewBreeze
+pkgver=1.2.1
+pkgrel=2
+pkgdesc="Fast and light-weight File Manager (QT4)"
+arch=('i686' 'x86_64')
+url="http://qt-apps.org/content/show.php/NewBreeze?content=154427"
+license=('LGPL')
+depends=('qt4' 'imagemagick' 'libtar' 'libzip' 'qtwebkit' 'file' 'bzip2')
+makedepends=('make')
+#install=${pkgname}.install
+#changelog=$pkgname.changelog
+source=("http://opendesktop.org/CONTENT/content-files/154427-$_name.tar.xz" "$pkgname.desktop")
+md5sums=("d2809b62031feee8efe4ae5b784efb55" "c9376de27f779834bcd931affdf2ae3d")
+
+build() {
+  cd $srcdir/$_name
+  #lrelease $_name.pro
+  qmake-qt4 PREFIX=/usr
+  find . -type f | xargs -n 5 touch
+  sed "19s|-lQtCore|-lQtCore -lz|" -i Makefile
+  make clean && make
+}
+
+package() {
+   cd "${srcdir}/$_name"
+	mkdir -p "${pkgdir}/usr/bin" "${pkgdir}/usr/share/applications"
+	install -p -m755 "$pkgname" "${pkgdir}/usr/bin/$pkgname"
+	install -p -m644 "${startdir}/$pkgname.desktop" "${pkgdir}/usr/share/applications/"
+	install -Dm644 $srcdir/$_name/icons/$pkgname.png  "$pkgdir/usr/share/pixmaps/$pkgname.png"
+	
+}
