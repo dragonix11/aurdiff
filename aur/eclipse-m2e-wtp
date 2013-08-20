@@ -1,0 +1,61 @@
+# Maintainer: David Morgan <dmorgan81[at]gmail[dot]com>
+# Contributor: Dieter Hsu <dieterplex[at]gmail[dot]com>
+# Contributor: Andrew Oppenlander <andrew.oppenlander[at]gmail[dot]com>
+pkgname=eclipse-m2e-wtp
+pkgver=1.0.0
+_builddate=20130613
+_buildtime=0136
+_pkgver="${pkgver}.${_builddate}-${_buildtime}"
+pkgrel=1
+pkgdesc="Maven Integration for Eclipse Web Tools Platform"
+arch=('i686' 'x86_64')
+url="http://www.eclipse.org/m2e-wtp/"
+license=('EPL')
+depends=('eclipse>=4.3' 'eclipse-m2e>=1.1')
+_url="http://download.eclipse.org/m2e-wtp/releases/kepler/${pkgver}/${_pkgver}/m2e-wtp"
+
+source=(
+    "${_url}/features/org.sonatype.m2e.mavenarchiver.feature_0.15.0.201207090125-signed-20130612210623.jar"
+    "${_url}/features/org.eclipse.m2e.wtp.feature_${_pkgver}.jar"
+    "${_url}/features/org.eclipse.m2e.wtp.jaxrs.feature_${_pkgver}.jar"
+    "${_url}/features/org.eclipse.m2e.wtp.jsf.feature_${_pkgver}.jar"
+    "${_url}/plugins/org.sonatype.m2e.mavenarchiver_0.15.0.201207090125-signed-20130612210623.jar"
+    "${_url}/plugins/org.eclipse.m2e.wtp.overlay.ui_${_pkgver}.jar"
+    "${_url}/plugins/org.eclipse.m2e.wtp.overlay_${_pkgver}.jar"
+    "${_url}/plugins/org.eclipse.m2e.wtp_${_pkgver}.jar"
+    "${_url}/plugins/org.eclipse.m2e.wtp.jaxrs_${_pkgver}.jar"
+    "${_url}/plugins/org.eclipse.m2e.wtp.jsf_${_pkgver}.jar")
+noextract=(${source[@]##*/})
+
+package() {
+  _dest=${pkgdir}/usr/share/eclipse/dropins/m2e-wtp/eclipse
+  install -dm755 ${_dest}/plugins || return 1
+
+  for url in ${source[@]}
+  do 
+    _file="${url##*/}"
+    _type="${url%/*}"
+    _type="${_type##*/}"
+
+    #install -Dm644 ${_file} ${_dest}/${_type}/${_file} || return 1
+    if [ ${_type} == 'features' ]; then
+        install -dm755 ${_dest}/features/${_file/.jar} 
+        cd ${_dest}/features/${_file/.jar}
+        jar xf ${srcdir}/${_file} || return 1
+    else
+        install -Dm644 ${srcdir}/${_file} ${_dest}/plugins || return 1
+    fi
+  done     
+}
+# vim:set ts=4 sw=4 et:
+
+md5sums=('372e1f29d0fc5477a6abbe559d4ef26c'
+         '561813a5cbe476ca9d49d58b65303b77'
+         '4527c7d7175ed66d41c5c97781880297'
+         'c5945d29c9f2edb8024a756c349f4f55'
+         'b41e1a16f05728aadf8ac85086fc79fc'
+         '8c67b0836ed54dfc6ede59fca80362de'
+         '6cf3b1faabbc326c7c85d00a4b589879'
+         'a40e8d78d79a405dfbe3a8be19215a48'
+         '66b86dd89d5fb8dcca8c0340735c8de7'
+         '47fa90d69d3dab6d8af888b562338036')
