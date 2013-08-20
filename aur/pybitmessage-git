@@ -1,0 +1,63 @@
+# Maintainer: Andreas Wagner <AndreasBWagner@pointfree.net>
+# Maintainer: Andy Weidenbaum <archbaum@gmail.com>
+# Contributor: Asta <gatien.bovyn@gmail.com>
+# Contributor: ptrv <mail@petervasil.net>
+
+pkgname=pybitmessage-git
+_gitname='PyBitmessage'
+_realname='pybitmessage'
+pkgver=7772484
+pkgrel=2
+pkgdesc="Bitcoin inspired P2P encrypted messenger"
+arch=('any')
+depends=('hicolor-icon-theme' 'python2' 'python2-pyqt' 'qt4')
+makedepends=('git')
+optdepends=('python2-gevent')
+url="https://github.com/Bitmessage/PyBitmessage"
+license=('MIT')
+source=(git+https://github.com/Bitmessage/PyBitmessage
+        pybitmessage.sh
+        qt-init.2.patch)
+sha256sums=('SKIP'
+            'c20eeeffd4931d8bcd50de5e6e1a974323ebbd3f5ad1d34483c6adeb3b5f3ae1'
+            'd77c8441ffedbd6a7bc03c767287e5a77b01856e0910729037b87433db0dad86')
+provides=('pybitmessage')
+conflicts=('pybitmessage')
+
+pkgver() {
+  cd $_gitname
+  git describe --always | sed 's|-|.|g'
+}
+
+prepare() {
+  cd $_gitname
+
+  msg 'Patching init to find translations...'
+  patch src/bitmessageqt/__init__.py < ${srcdir}/qt-init.2.patch
+
+  msg 'Fixing Python version...'
+  find . -type f -print0 | xargs -0 sed -i 's#/usr/bin/python#/usr/bin/python2#g'
+  find . -type f -print0 | xargs -0 sed -i 's#/usr/bin/env python#/usr/bin/env python2#g'
+}
+
+package() {
+  cd $_gitname
+
+  msg 'Installing shared files...'
+  mkdir -p "$pkgdir"/usr/share/${_realname}
+  cp -R src/* "$pkgdir"/usr/share/${_realname}
+
+  msg 'Installing desktop icons...'
+  install -D -m644 desktop/${_realname}.desktop "${pkgdir}/usr/share/applications/${_realname}.desktop"
+  install -D -m644 src/images/can-icon-24px.png "${pkgdir}/usr/share/icons/hicolor/24x24/apps/${_realname}.png"
+  install -D -m644 desktop/can-icon.svg "${pkgdir}/usr/share/icons/hicolor/scalable/apps/${_realname}.svg"
+  install -D -m644 desktop/can-icon.svg "${pkgdir}/usr/share/pixmaps/${_realname}.svg"
+
+  msg 'Installing executable...'
+  install -D -m755 ${srcdir}/pybitmessage.sh "${pkgdir}/usr/bin/pybitmessage"
+
+  msg 'Cleaning up pkgdir...'
+  find "$pkgdir" -type d -name .git -exec rm -r '{}' +
+  find "$pkgdir" -type f -name .gitignore -exec rm -r '{}' +
+}
+

@@ -1,0 +1,39 @@
+# Contributor: fauno <fauno@kiwwwi.com.ar>
+# Based on monkeysphere-git from
+# Contributor: Olivier Mehani <shtrom-arch@ssji.net>
+# $Id: PKGBUILD 264 2010-11-10 00:57:53Z shtrom $
+pkgname=monkeysphere
+pkgver=0.36
+pkgrel=1
+pkgdesc="Leverage the OpenPGP web of trust for OpenSSH and Web authentication"
+arch=('any')
+url="http://web.monkeysphere.info/"
+license=('GPL3')
+depends=('gnupg' 'lockfile-progs' 'perl-crypt-openssl-rsa' 'perl-digest-sha1')
+source=(http://archive.monkeysphere.info/debian/pool/${pkgname}/m/${pkgname}/${pkgname}_${pkgver}.orig.tar.gz
+        binmerge.patch)
+install=monkeysphere.install
+
+prepare() {
+  cd "$srcdir/$pkgname-$pkgver"
+
+  patch -Ni "${srcdir}/binmerge.patch"
+}
+
+# Checks fail
+#check() {
+#  cd "$srcdir/$pkgname-$pkgver"
+#
+#  make test
+#}
+
+package() {
+  cd "$srcdir/$pkgname-$pkgver"
+
+  make DESTDIR="$pkgdir/" install
+  mkdir -p $pkgdir/var/lib/monkeysphere
+}
+sha1sums=('c4f950346040f7703cb4c6e8b32022f4361d0c9d'
+          '780c2e203980558316b0714c4b2a3ad49be3ea27')
+sha256sums=('6ae4edeff2cc29b6913346e15b61500ea7cc06d761a9f42e67de83b7d2607be7'
+            'e49a1097296b06090010ce5344588f5e4917aeb06a118de920fc58411d2a7cf7')

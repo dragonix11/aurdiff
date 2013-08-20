@@ -1,0 +1,40 @@
+# Maintainer: Alessio Sergi <asergi at archlinux dot us>
+
+pkgname=glances-git
+pkgver=1.7.1_4_g5ab2094
+pkgrel=1
+pkgdesc="A cross-platform curses-based monitoring tool"
+arch=('any')
+url="https://github.com/nicolargo/glances"
+license=('LGPL3')
+depends=('python2-psutil' 'python2-setuptools')
+makedepends=('git')
+optdepends=('hddtemp: HDD temperature monitoring support'
+            'python2-jinja: HTML output'
+            'python2-sensors: temperature monitoring support')
+provides=('glances')
+conflicts=('glances')
+source=('git://github.com/nicolargo/glances.git')
+md5sums=('SKIP')
+
+pkgver() {
+  cd glances
+  git describe --always | sed 's#-#_#g;s#v##'
+}
+
+prepare() {
+  cd glances
+  sed -i 's/env python/&2/' {setup,glances/glances}.py
+}
+
+build() {
+  cd glances
+  python2 setup.py build
+}
+
+package() {
+  cd glances
+  python2 setup.py install --root="$pkgdir" --optimize=1
+}
+
+# vim:set ts=2 sw=2 et:

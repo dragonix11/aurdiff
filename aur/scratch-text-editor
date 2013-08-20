@@ -1,0 +1,45 @@
+# Maintainer: Alucryd <alucryd at gmail dot com>
+# Contributor: Ner0 <darkelfdarkelf666@yahoo.co.uk>
+
+pkgname=scratch-text-editor
+pkgver=2.0
+pkgrel=1
+pkgdesc="A text editor written in Vala"
+arch=('i686' 'x86_64')
+url="https://launchpad.net/scratch"
+license=('GPL3')
+depends=('gtksourceview3' 'libpeas' 'pantheon-files' 'python2-chardet' 'vte3' 'webkitgtk3' 'libzeitgeist')
+makedepends=('cmake' 'gobject-introspection' 'vala')
+optdepends=('zeitgeist: Zeitgeist support')
+install=${pkgname}.install
+source=("https://launchpad.net/${pkgname%%-*}/2.x/2.0/+download/${pkgname%%-*}-${pkgver}.tar.gz")
+sha256sums=('7b07b58de56f20e815930e45934653a93248b452ca6667a848a603233969a9b6')
+
+prepare() {
+  cd ${pkgname%%-*}
+
+  sed -i 's/gtkspell-3.0/gtkspell3-3.0/' plugins/spell/CMakeLists.txt
+  sed -i '/add_subdirectory (spell)/d' plugins/CMakeLists.txt
+  sed -i 's|^#!.*python$|#!/usr/bin/python2|' $(grep -rl '^#!.*python')
+}
+
+build() {
+  cd ${pkgname%%-*}
+
+  if [[ -d build ]]; then
+    rm -rf build
+  fi
+  mkdir build && cd build
+
+  cmake .. -DCMAKE_INSTALL_PREFIX=/usr -DGSETTINGS_COMPILE=OFF
+  make
+}
+
+package() {
+  cd ${pkgname%%-*}/build
+
+  make DESTDIR="${pkgdir}" GCONF_DISABLE_MAKEFILE_SCHEMA_INSTALL=1 install
+  chmod +x "${pkgdir}"/usr/share/scratch/scripts/*.py
+}
+
+# vim: ts=2 sw=2 et:

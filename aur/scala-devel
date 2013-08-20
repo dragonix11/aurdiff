@@ -1,0 +1,36 @@
+# Maintainer: William Robertson <nullptr@gmail.com>
+# Loosely based off of the stable scala PKGBUILD, minus the build step.
+
+pkgbase=scala-devel
+pkgname=(scala-devel)
+pkgver=2.10.2
+_real_pkgver=2.10.2
+pkgrel=2
+pkgdesc="A Java-interoperable language with object-oriented and functional features (development version)."
+arch=('any')
+url="http://www.scala-lang.org"
+license=('custom')
+depends=('java-runtime')
+conflicts=(scala)
+source=("http://www.scala-lang.org/files/archive/scala-${_real_pkgver}.tgz")
+md5sums=('e1466a5cbd7dd5e13b54dc7fc57dbdd1')
+
+package()
+{
+    cd ${srcdir}/scala-${_real_pkgver}
+
+    install -d -m 755 ${pkgdir}/usr/{bin,share} \
+        ${pkgdir}/usr/share/man/man1 \
+        ${pkgdir}/usr/share/scala/{bin,lib}
+
+    cp -r {lib,misc} ${pkgdir}/usr/share/scala/
+    cp -r man ${pkgdir}/usr/share/
+    install -m 755 bin/{fsc,scala,scalac,scalap,scaladoc} ${pkgdir}/usr/share/scala/bin
+    install -D -m 0644 doc/LICENSE ${pkgdir}/usr/share/licenses/${pkgname}/LICENSE
+
+    ln -s ../share/scala/bin/fsc ${pkgdir}/usr/bin/fsc
+    ln -s ../share/scala/bin/scala ${pkgdir}/usr/bin/scala
+    ln -s ../share/scala/bin/scalac ${pkgdir}/usr/bin/scalac
+    ln -s ../share/scala/bin/scalap ${pkgdir}/usr/bin/scalap
+    ln -s ../share/scala/bin/scaladoc ${pkgdir}/usr/bin/scaladoc
+}

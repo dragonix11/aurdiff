@@ -1,0 +1,39 @@
+# Maintainer: Mr_Men <tetcheve (at) gmail dot com>
+# Contributors: Stefan Husmann, tomk, Dan Serban
+
+pkgname=dukto-svn
+pkgver=110
+pkgrel=1
+pkgdesc="A simple, fast and multi-platform file transfer tool for LAN users"
+arch=(i686 x86_64)
+url=http://code.google.com/p/dukto/
+license=(GPL)
+depends=(qt4)
+makedepends=(subversion)
+
+_svntrunk=http://dukto.googlecode.com/svn/trunk/
+_svnmod=dukto-read-only
+
+build()
+{
+  svn co ${_svntrunk} ${_svnmod}
+  cd $srcdir/dukto-read-only
+  sed -i "47i#include <unistd.h>" qtsingleapplication/qtlocalpeer.cpp
+  qmake-qt4 dukto.pro
+  make
+  install -Dm755 dukto "${pkgdir}"/usr/bin/dukto
+  mkdir -p "${pkgdir}"/usr/share/pixmaps
+  install -Dm644 dukto.png "${pkgdir}"/usr/share/pixmaps/dukto.png
+  mkdir -p "${pkgdir}"/usr/share/applications
+  DESKTOPFILE="${pkgdir}"/usr/share/applications/dukto.desktop
+  echo "[Desktop Entry]" > "${DESKTOPFILE}"
+  echo "Name=Dukto" >> "${DESKTOPFILE}"
+  echo "Icon=dukto.png" >> "${DESKTOPFILE}"
+  echo "GenericName=Transfer files across the LAN" >> "${DESKTOPFILE}"
+  echo "Comment=Transfer files across the LAN" >> "${DESKTOPFILE}"
+  echo "Exec=dukto" >> "${DESKTOPFILE}"
+  echo "Terminal=false" >> "${DESKTOPFILE}"
+  echo "Type=Application" >> "${DESKTOPFILE}"
+  echo "Categories=Network;Application;" >> "${DESKTOPFILE}"
+}
+

@@ -1,0 +1,26 @@
+# Contributor: Francois Boulogne <fboulogne at april dot org>
+# Maintainer: Francois Boulogne <fboulogne at april dot org>
+
+pkgname=python-lmfit
+pkgver=0.7.2
+pkgrel=2
+pkgdesc="Least-Squares Minimization with Constraints for Python"
+arch=('any')
+url="http://cars9.uchicago.edu/software/python/lmfit/"
+license=('BSD')
+depends=('python' 'python-numpy' 'python-scipy')
+makedepends=('python-setuptools')
+source=(http://pypi.python.org/packages/source/l/lmfit/lmfit-${pkgver}.tar.gz)
+md5sums=("02ba890cf48d9671bda946cf44553f21")
+
+build() {
+  cd "$srcdir/lmfit-$pkgver"
+  python setup.py build
+}
+
+package(){
+  cd "$srcdir/lmfit-$pkgver"
+  python setup.py install --root="${pkgdir}"
+}
+
+# vim:ts=2:sw=2:et:
