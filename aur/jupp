@@ -1,0 +1,36 @@
+# Maintainer: Christian Neukirchen <chneukirchen@gmail.com>
+# Contributor: JohannesSM64 <johannes.a.langoy@gmail.com>
+pkgname=jupp
+pkgver=3.1jupp25
+pkgrel=1
+pkgdesc="An enhanced, portable version of joe, forked in 2004."
+url="https://mirbsd.org/jupp.htm"
+license=('custom:GPLv1')
+depends=('glibc' 'ncurses')
+arch=('i686' 'x86_64')
+conflicts=('joe')
+source=("http://www.mirbsd.org/MirOS/dist/jupp/joe-$pkgver.tgz")
+
+md5sums=('6ac1279158de1451f8f9b83416478698')
+sha256sums=('8ec3f98658b3cc47db19e831fea8d252ce7f35b4566a21d1dfe0664a7d36e459')
+
+backup=('etc/joe/jupprc' 
+        'etc/joe/joerc' 
+	'etc/joe/jmacsrc'
+	'etc/joe/rjoerc'
+	'etc/joe/jstarrc'
+	'etc/joe/jpicorc')
+
+build() {
+	cd "$srcdir/$pkgname"
+	
+	sh configure --prefix=/usr --sysconfdir=/etc \
+	             --disable-dependency-tracking --disable-termidx
+	make
+}
+
+package() {
+	cd "$srcdir/$pkgname"
+	make "DESTDIR=$pkgdir" install
+	install -D -m644 COPYING "${pkgdir}/usr/share/licenses/${pkgname}/LICENSE"
+}

@@ -1,0 +1,46 @@
+# Maintainer: Gustavo Alvarez <sl1pkn07@gmail.com>
+
+pkgname=opensc-opendnie-git
+pkgver=0.13.0.119.gf77a629
+pkgrel=1
+pkgdesc="Access smart cards that support cryptographic operations. with OpenDNIe driver (Spanish ID card). (GIT version)"
+arch=('i686' 'x86_64')
+url="http://www.opensc-project.org/opensc"
+license=("LGPL")
+backup=(etc/opensc.conf)
+depends=('pinentry' 'ccid')
+makedepends=('git' 'docbook-xsl' 'openssl')
+provides=('opensc' 'opensc-opendnie')
+conflicts=('opensc')
+options=('!libtool')
+
+source=('opensc-opendnie::git://github.com/OpenDNIe/OpenSC.git#branch=opendnie'
+        'opensc.conf.in-dnie.diff')
+
+md5sums=('SKIP'
+         '310549e94083bb1290c585b1c03b2bbe')
+_gitroot="opensc-opendnie"
+
+pkgver() {
+  cd "${_gitroot}"
+  echo "$(git describe --always | tr - .)"
+}
+
+prepare () {
+  cd "${_gitroot}"
+  patch -Np0 -i "${srcdir}/opensc.conf.in-dnie.diff"
+  sed 's|        |\t|g' -i etc/opensc.conf.in
+}
+
+build() {
+  cd "${_gitroot}"
+  ./bootstrap
+  _sheetdir=(/usr/share/xml/docbook/xsl-stylesheets-*)
+  ./configure --prefix=/usr --enable-man --enable-pcsc --enable-sm --enable-dnie-ui --enable-doc --sysconfdir=/etc --with-xsl-stylesheetsdir="${_sheetdir}"
+  make
+}
+
+package() {
+  cd "${_gitroot}"
+  make DESTDIR="${pkgdir}" install
+}

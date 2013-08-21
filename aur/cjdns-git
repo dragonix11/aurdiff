@@ -1,0 +1,73 @@
+# Maintainer: Prurigro
+# Contributor: Prurigro
+# Contributor: Werecat
+# Contributor: Xyne
+
+_pkgname=cjdns
+pkgname=${_pkgname}-git
+pkgver=0.3.1475
+pkgrel=1
+pkgdesc="A routing engine designed for security, scalability, speed and ease of use."
+url="https://github.com/cjdelisle/${_pkgname}"
+license=('GPL3')
+makedepends=('git')
+optdepends=('python2: required by the python cjdnsadmin utilities'
+             'cmake: speed up the build process by skipping the need to compile cmake'
+             'libnacl: speed up the build process by skipping the need to compile cnacl'
+             'cjdns-git-sysvinit: support for sysvinit style init (rc.d)')
+arch=('i686' 'x86_64' 'armv6h' 'armv7h')
+install=${pkgname}.install
+
+source=("git://github.com/cjdelisle/${_pkgname}.git#branch=master")
+sha256sums=('SKIP')
+
+pkgver() {
+    cd "${srcdir}/${_pkgname}"
+    git describe --always | sed 's|-|.|g;s|[^\.]*\.||;s|\.[^\.]*$||'
+}
+
+prepare() {
+    cd "${srcdir}/${_pkgname}"
+
+    ## Clean previous builds and resync
+    ./clean
+
+    ## Set occurances of python to python2 due to a naming conflict between Debian and Archlinux
+    find "${srcdir}/${_pkgname}"/contrib/python -type f -exec sed -i 's@/usr/bin/python\s*$@/usr/bin/python2@;s@/usr/bin/env\ python@/usr/bin/env\ python2@' {} \+
+}
+
+build() {
+    cd "${srcdir}"/${_pkgname}
+
+    ##  Disable Arch's generic makepkg optimizations (set via /etc/makepkg.conf) in favour of those specified by cjdns
+    unset MAKEFLAGS
+    unset CFLAGS
+    unset CPPFLAGS
+
+    ##  Build using the ./do script
+    NO_DEBUG=1 ./do
+}
+
+## Package creation helper functions
+_package_cjdns() {
+    install -D -m755 "${srcdir}"/${_pkgname}/build/admin/angel/cjdroute2 "${pkgdir}"/usr/bin/cjdroute
+    install -D -m755 "${srcdir}"/${_pkgname}/build/admin/angel/${_pkgname} "${pkgdir}"/usr/bin/${_pkgname}
+    install -D -m644 "${srcdir}"/${_pkgname}/contrib/systemd/${_pkgname}.service "${pkgdir}"/usr/lib/systemd/system/${_pkgname}.service
+    install -D -m755 "${srcdir}"/${_pkgname}/contrib/bash/i_am_stupid.sh "${pkgdir}"/usr/bin/cjdns-recoverconfig
+    install -D -m755 "${srcdir}"/${_pkgname}/scripts/${_pkgname}.sh "${pkgdir}"/usr/bin/${_pkgname}.sh
+}
+_package_pyutils() {
+    install -D -m644 "${srcdir}"/${_pkgname}/contrib/python/cjdnsadmin/cjdnsadmin.py "${pkgdir}"/usr/lib/$(python2-config --libs | grep -o -E python2.*)/cjdnsadmin/cjdnsadmin.py
+    install -D -m644 "${srcdir}"/${_pkgname}/contrib/python/cjdnsadmin/bencode.py "${pkgdir}"/usr/lib/$(python2-config --libs | grep -o -E python2.*)/cjdnsadmin/bencode.py
+    install -D -m644 "${srcdir}"/${_pkgname}/contrib/python/cjdnsadmin/__init__.py "${pkgdir}"/usr/lib/$(python2-config --libs | grep -o -E python2.*)/cjdnsadmin/__init__.py
+    install -D -m755 "${srcdir}"/${_pkgname}/contrib/python/cjdnslog "${pkgdir}"/usr/bin/cjdns-log
+    install -D -m755 "${srcdir}"/${_pkgname}/contrib/python/dumptable "${pkgdir}"/usr/bin/cjdns-dumptable
+    install -D -m755 "${srcdir}"/${_pkgname}/contrib/python/findnodes "${pkgdir}"/usr/bin/cjdns-findnodes
+    install -D -m755 "${srcdir}"/${_pkgname}/contrib/python/pingAll.py "${pkgdir}"/usr/bin/cjdns-pingAll
+}
+
+## Package creation function: comment out a helper function to remove its associated functionality
+package() {
+    _package_cjdns ## Core binaries (cjdns and cjdroute), a systemd service file and a config recovery script written in bash
+    _package_pyutils ## Miscellaneous python2-based cjdns admin port utility scripts and libraries
+}
