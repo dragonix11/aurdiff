@@ -1,0 +1,45 @@
+# Maintainer: Raymond Smith <raymondbarrettsmith at gmail dot com>
+pkgname=goldencheetah
+pkgver=3.0.0
+pkgrel=3
+pkgdesc="A set of analysis tools for cycling performance"
+arch=('x86_64' 'i686')
+url="http://goldencheetah.org/"
+license=('GPL2')
+depends=('qt4' 'qtwebkit')
+makedepends=('git' 'clucene' 'libical' 'desktop-file-utils')
+source=(git://github.com/GoldenCheetah/GoldenCheetah.git#branch=release_${pkgver}
+        goldencheetah.desktop)
+sha256sums=('SKIP'
+            '8b22984b3f058a77f207aecfeb8738b87ec389f1c3a4142f72c0024c53c8ea61')
+_gitname=GoldenCheetah
+
+build() {
+  cd "${srcdir}/${_gitname}"
+  cp qwt/qwtconfig.pri.in qwt/qwtconfig.pri
+  cp src/gcconfig.pri.in src/gcconfig.pri
+  # change executable name
+  sed -i "s|#\(APP_NAME =.*\)|\1${pkgname}|" src/gcconfig.pri
+  # uncomment QMAKE_LRELEASE and change name of binary
+  sed -i "s|#\(QMAKE_LRELEASE.*\)|\1-qt4|" src/gcconfig.pri
+  # uncomment -O3 optimization flag
+  sed -i "s|#\(QMAKE_CXXFLAGS += -O3\)|\1|" src/gcconfig.pri
+  # use default paths for flex and bison
+  sed -i "27,33 s|^#||" src/gcconfig.pri
+  # Use libical for diary view (calendars)
+  sed -i "s|#\(ICAL_INSTALL =.*\)|\1 /usr|" src/gcconfig.pri
+  # Use clucene for search function
+  sed -i "s|#\(CLUCENE_\)|\1|" src/gcconfig.pri
+  sed -i "s|\(CLUCENE_INCLUDE =\).*|\1 /usr/lib|" src/gcconfig.pri
+  qmake-qt4
+  make
+}
+
+package() {
+  install -Dm755 ${srcdir}/${_gitname}/src/${pkgname} \
+    ${pkgdir}/usr/bin/${pkgname}
+  desktop-file-install --dir="${pkgdir}/usr/share/applications" \
+    "${srcdir}/${pkgname}.desktop"
+}
+
+# vim:set ts=2 sw=2 et tw=0:

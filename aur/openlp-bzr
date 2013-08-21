@@ -1,0 +1,60 @@
+# Maintainer: Garrett <floft.net/contact>
+pkgname=openlp-bzr
+pkgver=2286
+pkgrel=1
+pkgdesc="Church presentation software (development version)."
+arch=('any')
+url='http://openlp.org/'
+provides=('openlp')
+conflicts=('openlp')
+license=('GPLv2')
+makedepends=('bzr' 'qt5-tools')
+depends=('qt4' 'python2' 'python2-pyqt4' 'python2-setuptools' 'phonon'
+    'python2-chardet' 'python2-lxml' 'python2-beautifulsoup4' 'python2-pyicu'
+    'python2-sqlalchemy' 'python2-sip' 'python2-pysqlite-legacy'
+    'python2-pyenchant' 'python2-mako' 'python2-alembic' 'python2-pyodbc'
+    'python2-xdg')
+optdepends=('libreoffice-impress: display impress presentations'
+            'vlc: play multimedia')
+install=openlp.install
+source=(openlp.sh)
+md5sums=('56908c5e7807fe2a384aa55de3735f32')
+sha1sums=('d40794631c19688eb1971eadeb108c5a2cc69506')
+
+_bzrtrunk=lp:openlp
+_bzrmod=openlp
+
+package() {
+  cd "$srcdir"
+  
+  if [ ! -d "./$_bzrmod" ]; then
+    bzr co "$_bzrtrunk" "$_bzrmod"
+  else
+    bzr up "$_bzrmod"
+  fi
+  
+  [ -d "./$_bzrmod-build" ] && rm -rf "./$_bzrmod-build"
+  cp -r "./$_bzrmod" "./$_bzrmod-build"
+  
+  cd "$srcdir/$_bzrmod-build"
+  python2 setup.py build
+  python2 setup.py install --root="$pkgdir/" --optimize=1
+  mv "$pkgdir/usr/bin/openlp"{.pyw,}
+  
+  echo "$pkgver" > "$pkgdir/usr/lib/python2.7/site-packages/openlp/.version"
+
+  install -Dm0755 "$srcdir/openlp.sh" "$pkgdir/etc/profile.d/openlp.sh"
+  install -Dm0644 "resources/openlp.desktop" "$pkgdir/usr/share/applications/openlp.desktop"
+  install -Dm0644 "resources/images/openlp-logo.svg" "$pkgdir/usr/share/pixmaps/openlp.svg"
+  install -Dm0644 "resources/images/openlp-logo-48x48.png" "$pkgdir/usr/share/pixmaps/openlp.png"
+
+  #translations
+  tsrcdir="resources/i18n"
+  tdestdir="$pkgdir/usr/share/$pkgname/i18n"
+  mkdir -p "$tdestdir"
+  cd "$tsrcdir"
+  
+  for file in *.ts; do
+    lconvert -i "$file" -o "$tdestdir/${file%%ts}qm"
+  done
+}

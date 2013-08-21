@@ -1,0 +1,28 @@
+# Maintainer: Roberto Alfieri <roberto@alfieri.eu>
+
+pkgname=vim-pathogen-git
+_gitname=vim-pathogen
+pkgver=2.2.8_g1270dce
+pkgrel=1
+pkgdesc="A vim plugin for managing your runtimepath"
+arch=('any')
+url="http://github.com/tpope/vim-pathogen"
+license=('GPL')
+groups=('vim-plugins')
+depends=('vim')
+makedepends=('git')
+provides=('vim-pathogen')
+conflicts=('vim-pathogen')
+install=vimdoc.install
+source=('git://github.com/tpope/vim-pathogen')
+md5sums=('SKIP')
+
+pkgver() {
+  cd $_gitname
+  git describe --always | sed 's/^v//;s/-/_/g'
+}
+
+package() {
+  cd $_gitname
+  install -Dm755 autoload/pathogen.vim "$pkgdir"/usr/share/vim/vimfiles/autoload/pathogen.vim
+}

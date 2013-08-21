@@ -1,0 +1,31 @@
+# Maintainer: Alex Zose <alexander.zosimidis[at]gmail[dot]com>
+pkgname=taskunifier
+pkgver=4.0.3
+pkgrel=1
+pkgdesc="A task management software based on the well-known GTD (getting things done) methodology."
+url="http://www.taskunifier.com/"
+arch=('any')
+license=('BSD')
+depends=('java-environment' 'bash')
+optdepends=()
+makedepends=()
+conflicts=()
+replaces=()
+backup=()
+source=("http://downloads.sourceforge.net/project/taskunifier/binaries/TaskUnifier_4_0_3/TaskUnifier_4_0_3_linux.tar.gz"
+	"taskunifier.desktop")
+md5sums=('ad45f3b64630f3e67c2c33da32448a10'
+	 'f25858686360b4b15c45445fb1666944')
+ 
+ build() {
+  sed -i 's/`dirname \$0`/\/opt\/TaskUnifier/' ${srcdir}/TaskUnifier/TaskUnifier.sh
+ }
+ 
+ package() {
+  mkdir ${pkgdir}/opt
+  mkdir -p ${pkgdir}/usr/bin
+  mkdir -p ${pkgdir}/usr/share/applications
+  cp -R ${srcdir}/TaskUnifier ${pkgdir}/opt
+  mv ${pkgdir}/opt/TaskUnifier/TaskUnifier.sh ${pkgdir}/usr/bin
+  install -m755 taskunifier.desktop ${pkgdir}/usr/share/applications
+ }

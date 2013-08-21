@@ -1,0 +1,54 @@
+# Maintainer: Yaohan Chen <yaohan.chen@gmail.com>
+# Contributor: spider-mario <spidermario@free.fr>
+# Contributor: p2k <Patrick.Schneider@uni-ulm.de>
+# Contributor: Schtroumpfette <fpeterschmitt@voila.fr>
+pkgname=dofus
+pkgver=2.14.0
+pkgrel=1
+pkgdesc="A manga inspired, Massively Multiplayer Online Role-playing Game (MMORPG) for Adobe AIR (beta version)."
+url="http://www.dofus.com/"
+license=("custom:Dofus License")
+arch=('i686' 'x86_64')
+source=(http://dl.ak.ankama.com/games/linux/dofus.tar.gz
+        air-generic-launcher.sh)
+md5sums=('1490a70b3a2530be1fb65fc043126628'
+         'f179eaa5e6e6674b1853cf826fc33c3a')
+install=dofus.install
+
+depends=('ankama-transition>=3.5-6' 'adobe-air-sdk')
+if [ "$CARCH" == "x86_64" ];then
+  depends+=('lib32-gtk2' 'lib32-libxt' 'lib32-libjpeg6' 'lib32-libpng12'
+            'lib32-openssl098' 'lib32-libldap' 'lib32-nss' 'lib32-libxslt'
+            'lib32-dbus-glib' 'lib32-alsa-lib')
+else
+  depends+=('gtk2' 'libxt' 'libjpeg6' 'libpng12' 'openssl098' 'nss' 'libxslt' 'alsa-lib')
+fi
+
+prepare() {
+  cd "$srcdir"
+  msg2 "Modifying transition configuration to use adl-based launchers"
+  cat <<'END' >> "opt/ankama/dofus/transition.conf"
+
+# Use adl instead of Air binaries on Arch Linux
+bypass_air_installation = true
+
+dofus.reg.path = "${root}/share/reg/bin/air-generic-launcher.sh"
+
+launcher.command = """
+"${root}/bin/air-generic-launcher.sh" --lang=${i18n.lang} --update-server-port=${service_port} --updater_version=v2
+"""
+END
+}
+
+package() {
+  cd "$srcdir"
+  msg2 "Installing main applications..."
+  cp -r usr opt "$pkgdir"
+  chgrp -R games "$pkgdir/opt/ankama/dofus"
+  chmod -R g+w "$pkgdir/opt/ankama/dofus"
+
+  msg2 "Installing adl based launchers..."
+  install air-generic-launcher.sh $pkgdir/opt/ankama/dofus/bin/
+  install air-generic-launcher.sh $pkgdir/opt/ankama/dofus/share/reg/bin/
+}
+# vim:set ts=2 sw=2 et:
