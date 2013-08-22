@@ -1,0 +1,43 @@
+# Maintainer: Kovivchak Evgen <oneonfire@gmail.com>
+
+pkgname='tor-browser-ru'
+pkgver='2.3.25_12'
+_realpkgver='2.3.25-12-dev'
+_language='ru'
+pkgrel='1'
+pkgdesc='Lets you use Tor with Firefox (+ Torbutton, NoScript, HTTPS-Everywhere) without the need to configure anything. Russian version.'
+url='https://www.torproject.org/projects/torbrowser.html.en'
+arch=('x86_64' 'i686')
+license=('GPL')
+depends=('java-runtime')
+install='tor-browser-ru.install'
+if [[ "$CARCH" == 'i686' ]]; then
+	source=("https://www.torproject.org/dist/torbrowser/linux/tor-browser-gnu-linux-${CARCH}-${_realpkgver}-${_language}.tar.gz")
+	sha256sums=('085924dd4246bba1029414d2619dd608f4d51041a56aebc9a093317211bdf5d5')
+else
+	source=("https://www.torproject.org/dist/torbrowser/linux/tor-browser-gnu-linux-${CARCH}-${_realpkgver}-${_language}.tar.gz")
+	sha256sums=('846aece4487f0bc750e6dc7e412f1921fc7616c18cf3fb083ab73da6977b95ec')
+fi
+source+=("${pkgname}.desktop"
+		"${pkgname}.png"
+		"${pkgname}.sh")
+sha256sums+=('f504d644bfe386fe1abe05486ee1c8054d3fafbc9845f40816b512b665e21a13'
+			'17fc2f5784d080233aca16e788d62ab6fe3e57cf781b123cfe32767de97d6d3b'
+			'41491ffb657362214bf0f5101c149b9bb6bcaf24dde9882554b30d12ad0a2874')
+options=('!strip' 'emptydirs')
+
+package() {
+	cd ${srcdir}/tor-browser_ru
+
+	install -d ${pkgdir}/opt/${pkgname}/ ${pkgdir}/usr/bin/
+
+	# Any way to use install here?
+	cp -a * ${pkgdir}/opt/${pkgname}/
+
+	# Other files
+	install -Dm644 ../${pkgname}.desktop ${pkgdir}/usr/share/applications/${pkgname}.desktop
+	install -Dm644 ../${pkgname}.png ${pkgdir}/usr/share/pixmaps/${pkgname}.png
+	install -Dm755 ../${pkgname}.sh ${pkgdir}/usr/bin/${pkgname}
+}
+
+# vim:set ts=2 sw=2 et:

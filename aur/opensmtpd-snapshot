@@ -1,0 +1,57 @@
+# Maintainer: Hugo Osvaldo Barrera <hugo@osvaldobarrera.com.ar>
+
+pkgname=opensmtpd-snapshot
+_pkgname=opensmtpd
+pkgver=201308201232p1
+pkgrel=1
+pkgdesc='A FREE implementation of the server-side SMTP protocol. Latest snapshot.'
+arch=('i686' 'x86_64')
+url="http://www.opensmtpd.org/portable.html"
+license=('BSD')
+depends=('libevent')
+conflicts=('sendmail' 'postfix' 'opensmtpd')
+provides=('opensmtpd')
+replaces=('opensmtpd-portable')
+options=(!strip)
+backup=("etc/mail/smtpd.conf" "etc/mail/aliases" "etc/mail/virtual" "etc/mail/secrets")
+source=(http://www.opensmtpd.org/archives/${_pkgname}-${pkgver}.tar.gz
+        smtpd.service
+        smtpd.conf.patch)
+sha256sums=('419fb0f2109ce4c155919cac163b8ac3b50578d19b723caf946a76199b636dea'
+            '0adc453279896b74e957b7fcead43555cb0db285b68c207e890aadd658113d70'
+            'ed80a119604fe1fd848c587a3f86411edc71af80aea8fcb12ea17b810011c9e2')
+install="${pkgname}.install"
+depends=('libevent' 'sqlite')
+
+build() {
+  cd "${srcdir}/${_pkgname}-${pkgver}"
+
+  ./configure --prefix=/usr \
+              --sysconfdir=/etc/mail \
+              --sbindir=/usr/bin \
+              --with-pam
+  make
+}
+
+package() {
+  cd "$srcdir/$_pkgname-${pkgver}"
+  make DESTDIR="${pkgdir}/" install
+  install -Dm644 LICENSE "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
+  install -Dm644 README.md "$pkgdir/usr/share/doc/$pkgname/README.md"
+
+  install -dm711 "$pkgdir/var/spool/smtpd"
+  install -Dm 644 "$srcdir/smtpd.service" "${pkgdir}/usr/lib/systemd/system/smtpd.service"
+
+  install -dm 700 "${pkgdir}/etc/mail"
+
+  # Install empty db files
+  install -Dm644 /dev/null "$pkgdir/etc/mail/aliases"
+  install -Dm644 /dev/null "$pkgdir/etc/mail/virtual"
+  install -Dm640 /dev/null "$pkgdir/etc/mail/secrets"
+
+  cd "$pkgdir/etc/mail/"
+  #makemap aliases
+  #makemap virtual
+  #makemap secrets
+}
+

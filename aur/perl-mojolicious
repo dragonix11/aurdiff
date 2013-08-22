@@ -1,0 +1,50 @@
+# Contributor: John D Jones III <j[nospace]n[nospace]b[nospace]e[nospace]k[nospace]1972 -_AT_- the domain name google offers a mail service at ending in dot com>
+# Generator  : CPANPLUS::Dist::Arch 1.25
+
+pkgname='perl-mojolicious'
+pkgver='4.26'
+pkgrel='1'
+pkgdesc="Real-time web framework"
+arch=('any')
+license=('PerlArtistic' 'GPL')
+options=('!emptydirs')
+depends=('perl')
+makedepends=()
+url='http://search.cpan.org/dist/Mojolicious'
+source=('http://search.cpan.org/CPAN/authors/id/A/AM/AMS/Mojolicious-4.26.tar.gz')
+md5sums=('82ec57b12df4000838054d1cc844fda3')
+sha512sums=('deb4c6d623ddd91a8caee812bf802b4577228d7c8e77c57c02373913d99ad21397abb7001641fc8c08c153f312605be8e2c22ac1eb41bc84b5441892fd9c7ec7')
+_distdir="Mojolicious-4.26"
+
+build() {
+  ( export PERL_MM_USE_DEFAULT=1 PERL5LIB=""                 \
+      PERL_AUTOINSTALL=--skipdeps                            \
+      PERL_MM_OPT="INSTALLDIRS=vendor DESTDIR='$pkgdir'"     \
+      PERL_MB_OPT="--installdirs vendor --destdir '$pkgdir'" \
+      MODULEBUILDRC=/dev/null
+
+    cd "$srcdir/$_distdir"
+    /usr/bin/perl Makefile.PL
+    make
+  )
+}
+
+check() {
+  cd "$srcdir/$_distdir"
+  ( export PERL_MM_USE_DEFAULT=1 PERL5LIB=""
+    make test
+  )
+}
+
+package() {
+  cd "$srcdir/$_distdir"
+  make install
+
+  find "$pkgdir" -name .packlist -o -name perllocal.pod -delete
+}
+
+# Local Variables:
+# mode: shell-script
+# sh-basic-offset: 2
+# End:
+# vim:set ts=2 sw=2 et:

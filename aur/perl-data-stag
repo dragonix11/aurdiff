@@ -1,0 +1,50 @@
+# Contributor: John D Jones III <j[nospace]n[nospace]b[nospace]e[nospace]k[nospace]1972 -_AT_- the domain name google offers a mail service at ending in dot com>
+# Generator  : CPANPLUS::Dist::Arch 1.25
+
+pkgname='perl-data-stag'
+pkgver='0.13'
+pkgrel='1'
+pkgdesc="Structured Tags datastructures"
+arch=('any')
+license=('PerlArtistic' 'GPL')
+options=('!emptydirs')
+depends=('perl-io-string')
+makedepends=()
+url='http://search.cpan.org/dist/Data-Stag'
+source=('http://search.cpan.org/CPAN/authors/id/C/CM/CMUNGALL/Data-Stag-0.13.tar.gz')
+md5sums=('d87658c6e8b15a06a929a77e94bf2781')
+sha512sums=('a1b1573f7e8a3406a599830e02b945727c21438a780a972991f5aac48622f32ebe43c403aa2c251c636365aa1c13ea4df8102ab84533babab2342de2a3188ed4')
+_distdir="Data-Stag-0.13"
+
+build() {
+  ( export PERL_MM_USE_DEFAULT=1 PERL5LIB=""                 \
+      PERL_AUTOINSTALL=--skipdeps                            \
+      PERL_MM_OPT="INSTALLDIRS=vendor DESTDIR='$pkgdir'"     \
+      PERL_MB_OPT="--installdirs vendor --destdir '$pkgdir'" \
+      MODULEBUILDRC=/dev/null
+
+    cd "$srcdir/$_distdir"
+    /usr/bin/perl Makefile.PL
+    make
+  )
+}
+
+check() {
+  cd "$srcdir/$_distdir"
+  ( export PERL_MM_USE_DEFAULT=1 PERL5LIB=""
+    make test
+  )
+}
+
+package() {
+  cd "$srcdir/$_distdir"
+  make install
+
+  find "$pkgdir" -name .packlist -o -name perllocal.pod -delete
+}
+
+# Local Variables:
+# mode: shell-script
+# sh-basic-offset: 2
+# End:
+# vim:set ts=2 sw=2 et:

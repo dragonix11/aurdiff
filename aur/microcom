@@ -1,0 +1,22 @@
+pkgname=microcom
+pkgver=2013.06
+pkgrel=1
+pkgdesc="terminal emulator"
+arch=('i686' 'x86_64')
+license=('GPL')
+url='http://git.pengutronix.de/?p=tools/microcom.git'
+source=('git://git.pengutronix.de/git/tools/microcom.git#commit=2f5ea6d425377ab1ac59733a4efc35c5b55655df'
+	'microcom.patch')
+md5sums=('SKIP'
+         '3369616ecc4f13bb27f9ec91a534750d')
+
+build() {
+	cd "${srcdir}/${pkgname}"
+	patch < "${srcdir}/microcom.patch"
+	make
+}
+
+package() {
+	cd "${srcdir}/${pkgname}"
+	install -Dm755 microcom "${pkgdir}/usr/bin/microcom"
+}
