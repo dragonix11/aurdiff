@@ -1,0 +1,23 @@
+# Dmitri -- <dimusixus@gmail.com>
+pkgname=pulsar
+pkgver=0.92
+pkgrel=7
+pkgdesc="Cloud player vk.com"
+arch=(any)
+url="http://forum.ubuntu.ru/index.php?topic=203220.0"
+license=('custom')
+depends=('boost' 'qt4' 'libqxt' 'qt-gstreamer' 'gstreamer0.10-ugly-plugins')
+source=('http://ppa.launchpad.net/yuberion/pulsar/ubuntu/pool/main/p/pulsar/pulsar_0.92-7.tar.gz')
+md5sums=('8329119c1ba1aa4a2739db0967245b4a')
+
+
+build() {
+    cd $srcdir/$pkgname/src
+    qmake-qt4
+    make
+}
+
+package() {
+  cd "$srcdir/$pkgname/src"
+  make INSTALL_ROOT="${pkgdir}" install
+}

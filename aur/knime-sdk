@@ -1,0 +1,51 @@
+# Maintainer: Fabien Dubosson <fabien dot dubosson at gmail dot com>
+pkgname=knime-sdk
+_pkgname=eclipse_knime
+pkgver=2.8.1
+pkgrel=1
+pkgdesc="Software Development Kit for Knime"
+arch=('any')
+url="http://www.knime.org/"
+license=('custom')
+depends=('java-environment' 'cairo')
+optdepends=(
+    'bash: Required for some nodes'
+    'python: Required for some nodes'
+    )
+provides=("${pkgname}")
+conflicts=("${pkgname}")
+options=('!emptydirs')
+md5sums=(
+    '21a3b27be425f9c32cf7707fe225bb0a'
+    'a277038bcf71106fd6f0df8549caae17'
+    '9e93e4def16f04f7808bddb48da3c009'
+    )
+
+_arch=x86
+if [ "$CARCH" = "x86_64" ]; then
+	md5sums[0]='6ee048aae1203e381dc635718d3aeb10'
+	_arch="$CARCH"
+fi
+
+source=(
+    "http://www.knime.org/knime_downloads/linux/${_pkgname}_${pkgver}.linux.gtk.${_arch}.tar.gz"
+    'knime.sh'
+    'LICENSE'
+    )
+
+package() {
+	cd "${srcdir}/${_pkgname}_${pkgver}"
+
+	# Install files
+	rm -r "jre/"
+	rm "libcairo-swt.so"
+	install -m755 -d "${pkgdir}/usr/share/${pkgname}/"
+	cp -av * "${pkgdir}/usr/share/${pkgname}/"
+	ln -s "/usr/lib/libcairo.so" "${pkgdir}/usr/share/${pkgname}/libcairo-swt.so"
+
+	# Install executable
+	install -D -m755 "${srcdir}/knime.sh" "${pkgdir}/usr/bin/${pkgname}"
+
+	# Install license
+	install -D -m644 "${srcdir}/LICENSE" "${pkgdir}/usr/share/licenses/${pkgname}/LICENSE"
+}

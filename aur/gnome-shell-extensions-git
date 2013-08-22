@@ -1,0 +1,36 @@
+# Maintainer: Yosef Or Boczko <yoseforb@gmail.com.com>
+
+_pkgname=gnome-shell-extensions
+pkgname=$_pkgname-git
+pkgver=3.9.90
+pkgrel=1
+_realver=3.9.90
+pkgdesc="Modify and extend GNOME Shell functionality and behavior"
+arch=(i686 x86_64)
+url="http://live.gnome.org/GnomeShell"
+license=(GPL2)
+depends=("gnome-shell=${_realver}" 'gnome-desktop' 'libgtop')
+makedepends=('intltool' 'gnome-common' 'git')
+options=('!libtool' '!emptydirs')
+groups=('gnome')
+install=$_pkgname.install
+conflicts=("$_pkgname")
+provides=("$_pkgname=$_realver")
+source=('git://git.gnome.org/gnome-shell-extensions')
+sha256sums=('SKIP')
+
+pkgver() {
+  cd "$srcdir/$_pkgname"
+  git describe --always | sed 's|-|.|g'
+}
+
+build() {
+  cd "$srcdir/$_pkgname"
+  ./autogen.sh --prefix=/usr --enable-extensions=all --disable-schemas-compile
+  make
+}
+
+package() {
+  cd "$srcdir/$_pkgname"
+  make DESTDIR="${pkgdir}" install
+}

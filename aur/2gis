@@ -1,0 +1,59 @@
+# Contributor: stanislaw <i@archuser.pp.ru>
+# Contributor: wido <widomaker2k7@gmail.com>
+# Contributor: Nebulosa <nebulosa2007 na yandekse>
+# Contributor: max1m <mr[dot]mxm86[at]gmail[dot]com>
+
+pkgname=2gis
+pkgver=3.13.8.1
+pkgrel=1
+pkgdesc="Geographic Information System (GIS) for some Russian and Ukrainian cities."
+arch=('i686' 'x86_64')
+url="http://help.2gis.ru/linux/"
+license=('Adware')
+if [ "${CARCH}" = 'x86_64' ]; then
+depends=('wine>=1.1.24' 'lib32-libldap' 'lib32-libxml2' )
+elif [ "${CARCH}" = 'i686' ]; then
+depends=('wine>=1.1.24' 'libxml2' )
+fi
+install=2gis.install
+
+source=("http://download.2gis.ru/arhives/2GISShell-${pkgver}.orig.zip"
+
+	"2gis_16.png"
+	"2gis_32.png"
+	"2gis_48.png"
+	"2gis_64.png"
+	"2gis_128.png"
+	"2gis_256.png"
+
+	"2gis-launch"
+	"2gis.desktop"
+	"LICENSE.ru"
+	"LICENSE.ua")
+md5sums=('7a066a63ac38320aa1a787c93bfdcca0'
+
+	'd3373a56317579a607f2fcb75afc4dc2'
+	'2d825c64c30306d0ef8052e3838bae83'
+	'924f0b6968ac765feea5d3334a33e40e'
+	'fb84fbb9a70e5dd3c6f74c30f79ad4f3'
+	'34f9a10357b7a4e36e92eb96bdab20ba'
+	'be71c7b8799a7267a368e6457eec4bba'
+
+	'd444c77bbc94c687d8edbee794f8f115'
+	'5da78116da466a791741f4c9c29839b7'
+	'415c638aa454ab03b1977c5156888e14'
+	'841a50883a42fe12688e84f66bd26caf')
+
+package() {
+  install -d $pkgdir/opt/2gis
+  install -D -m644 -t $pkgdir/opt/2gis $srcdir/2gis/3.0/grym.exe
+  install -d $pkgdir/opt/2gis/Plugins
+  install -D -m644 -t $pkgdir/opt/2gis/Plugins $srcdir/2gis/3.0/Plugins/*.*
+  install -D -m644 LICENSE.ru $pkgdir/usr/share/licenses/2gis/LICENSE.ru
+  install -D -m644 LICENSE.ua $pkgdir/usr/share/licenses/2gis/LICENSE.ua
+  for size in 16 32 48 64 128 256; do
+    install -D -m644 2gis_${size}.png $pkgdir/usr/share/icons/hicolor/${size}x${size}/apps/2gis.png
+  done
+  install -D -m644 2gis.desktop $pkgdir/usr/share/applications/2gis.desktop
+  install -D -m777 2gis-launch $pkgdir/usr/bin/2gis
+}

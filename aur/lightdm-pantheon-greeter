@@ -1,0 +1,36 @@
+#Mantainer: M0Rf30
+#Contributor: faidoc
+pkgname=lightdm-pantheon-greeter
+pkgver=1.0.2	
+pkgrel=0
+_rel=r213
+pkgdesc="LightDM greeter from the ElementaryOS team written in Vala "
+arch=('i686' 'x86_64')
+url="https://launchpad.net/pantheon-greeter"
+license=('GPL')
+groups=('lightdm')
+depends=('granite-bzr' 'libindicator3' 'clutter-gtk' 'lightdm' 'gdk-pixbuf' 'gnome-settings-daemon')
+optdepends=('onboard' 'indicator-sound-gtk2' 'indicator-power' 'numlockx')
+makedepends=('cmake' 'vala')
+provides=('pantheon-greeter')
+install=${pkgname}.install
+source=("http://ppa.launchpad.net/elementary-os/daily/ubuntu/pool/main/p/pantheon-greeter/pantheon-greeter_$pkgver-0~${_rel}+pkg22~saucy1.tar.gz")
+
+build(){
+  cd "$srcdir"/recipe*
+  [ -d build ] && rm -rf build
+  mkdir build
+  cd build
+  CFLAGS="$CFLAGS -lm -Wno-deprecated-declarations"
+  cmake .. -DCMAKE_INSTALL_PREFIX=/usr
+  make ${MAKEFLAGS}
+}
+
+package(){
+	cd "${srcdir}"/recipe*
+	cd build
+	make DESTDIR="${pkgdir}" install
+}
+
+
+md5sums=('be871b99a034957636c16f4709573865')

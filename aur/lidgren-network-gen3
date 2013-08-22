@@ -1,0 +1,57 @@
+pkgname=lidgren-network-gen3
+pkgver=2013.05.07
+pkgrel=1
+pkgdesc="Lidgren networking library generation 3"
+arch=(i686 x86_64)
+license=("MIT")
+depends=(monogame)
+makedepends=(mono dos2unix)
+conflicts=(lidgren-network-gen3-base)
+provides=(lidgren-network-gen3-base)
+url="http://code.google.com/p/lidgren-network-gen3"
+source=("http://lidgren-network-gen3.googlecode.com/files/lidgren-network-gen3-${pkgver//./-}.zip"
+"Lidgren.Network.snk"
+"use-monogame-for-xna.diff"
+"lidgren.pc.in"
+"lidgren-xna.pc.in")
+md5sums=('81d10cea52d48608e0fa0cf9bdf4daf1'
+         '1afa03d9408df2bb6af10bba740be9b8'
+         '2d7588b1c197e50fa63623330254ee64'
+         '80e3b340597cc94fcd3eaa2c36274770'
+         '78a78e2c85ce36df914e73a7941c3736')
+         
+prepare() {
+  cd "$srcdir/Lidgren-network-gen3"
+  find . -type f -exec dos2unix {} \;
+  patch -Np0 "Lidgren XNA Extensions/Lidgren XNA Extensions/Lidgren XNA Extensions.csproj" \
+    < "$srcdir/use-monogame-for-xna.diff"
+}
+         
+build() {
+	cd "$srcdir/Lidgren-network-gen3/Lidgren XNA Extensions"
+	xbuild "Lidgren XNA Extensions.sln"
+	cd "Lidgren XNA Extensions/bin/Debug"
+	rm {MonoGame.Framework,Tao.Sdl}.dll
+	for file in `find . -name '*.dll'`; do
+		monodis $file --output=${file%.dll}.il
+	done
+	for file in `find . -name '*.il'`; do
+		ilasm /dll /key:$srcdir/Lidgren.Network.snk $file
+	done
+}
+
+package() {
+	cd "$srcdir/Lidgren-network-gen3/Lidgren XNA Extensions/Lidgren XNA Extensions/bin/Debug"
+	find . -name '*.dll' -o -name '*.mdb' -o -name '*.config' |
+		xargs -rtl1 -I {} install -Dm644 {} "$pkgdir/usr/lib/lidgren-network/"{}
+	mkdir -p "$pkgdir/usr/share/doc/lidgren-network"
+	cp -r "$srcdir/Lidgren-network-gen3/Lidgren.Network/Documentation/"* "$pkgdir/usr/share/doc/lidgren-network/"
+	find "$pkgdir/usr/lib/lidgren-network/" -name '*.dll' | xargs -rtl1 -I {} gacutil -i {} -root "$pkgdir/usr/lib"
+	find "$pkgdir/usr/lib/lidgren-network/" -name '*.dll' -o -name '*.exe' | xargs -rtl1 mono --aot
+	ln -s "/usr/lib/monogame/MonoGame.Framework.dll" "$pkgdir/usr/lib/lidgren-network/MonoGame.Framework.dll"
+	ln -s "/usr/lib/monogame/Tao.Sdl.dll" "$pkgdir/usr/lib/lidgren-network/Tao.Sdl.dll"
+	install -Dm644 "$srcdir/lidgren.pc.in" "$pkgdir/usr/lib/pkgconfig/lidgren.pc"
+	install -m644 "$srcdir/lidgren-xna.pc.in" "$pkgdir/usr/lib/pkgconfig/lidgren-xna.pc"
+	sed -i "s|@VERSION@|$pkgver|" "$pkgdir/usr/lib/pkgconfig/lidgren.pc"
+	sed -i "s|@VERSION@|$pkgver|" "$pkgdir/usr/lib/pkgconfig/lidgren-xna.pc"
+}

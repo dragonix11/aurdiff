@@ -1,0 +1,22 @@
+# Maintainer: eightballbill  <guglielmo.deconcini [at] gmail (dot) com>
+
+pkgname=rabbithole
+pkgver=20130822
+pkgrel=1
+pkgdesc="A simple yet flexible torrent search program that uses plugins."
+arch=('i686' 'x86_64')
+url="https://github.com/cr0wbar/rabbithole"
+license=("GPLv3")
+makedepends=('git' 'python2-distribute')
+depends=('python2' 'wxpython' 'python2-objectlistview' 'python2-pubsub' 'python2-beautifulsoup4' 'python2-bencode' 'python2-transmissionrpc' 'python2-six')
+
+build() {
+true
+}
+
+package() {
+cd $srcdir
+git clone https://github.com/cr0wbar/rabbithole.git
+cd rabbithole
+python2 setupLinux.py install --root=$pkgdir
+}
