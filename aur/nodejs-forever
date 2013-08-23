@@ -1,28 +1,28 @@
 # Author: Nodejitsu Inc. <info@nodejitsu.com>
 # Maintainer: indexzero <charlie.robbins@gmail.com>
+# Maintainer: bradleymeck <bradley.meck@gmail.com>
+# Maintainer: avianflu <charlie@charlieistheman.com>
 # Maintainer: mmalecki <me@mmalecki.com>
-# Maintainer: chjj <chjjeffrey@gmail.com>
-# Maintainer: V1 <info@3rd-Eden.com>
-_npmname=winston
-_npmver=0.7.2
-pkgname=nodejs-winston # All lowercase
-pkgver=0.7.2
+_npmname=forever
+_npmver=0.10.8
+pkgname=nodejs-forever # All lowercase
+pkgver=0.10.8
 pkgrel=2
-pkgdesc="A multi-transport async logging library for Node.js"
+pkgdesc="A simple CLI tool for ensuring that a given node script runs continuously (i.e. forever)"
 arch=(any)
-url="https://github.com/flatiron/winston"
-license=("MIT")
+url="http://github.com/nodejitsu/forever"
+license=("custom")
 depends=('nodejs' )
 optdepends=()
 source=(http://registry.npmjs.org/$_npmname/-/$_npmname-$_npmver.tgz)
 noextract=($_npmname-$_npmver.tgz)
-sha1sums=(2570ae1aa1d8a9401e8d5a88362e1cf936550ceb)
+sha1sums=("a78137a46fb8ca4adbf2f497d98816a526bb1f82")
 
 package() {
   cd "$srcdir"
   local _npmdir="$pkgdir/usr/lib/node_modules/"
-  mkdir -p "$_npmdir"
-  cd "$_npmdir"
+  mkdir -p $_npmdir
+  cd $_npmdir
   npm install -g --prefix "$pkgdir/usr" $_npmname@$_npmver
 }
 

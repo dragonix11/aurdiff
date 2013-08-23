@@ -1,0 +1,49 @@
+# Maintainer: UnCO <undercooled _at_ lavabit DOT com>
+# Contributor: Army
+# Contributor: Bastien Dejean <baskerville _at_ lavabit DOT com>
+
+_pkgname=sxiv
+pkgname=sxiv-bskv-manga-git
+pkgver=v1.1.1.8.g26a624a
+pkgrel=1
+pkgdesc="Simple (or small or suckless) X Image Viewer with manga view mode (-m) (baskerville xft fork)"
+arch=('i686' 'x86_64')
+url="https://github.com/muennich/sxiv"
+license=('GPL2')
+depends=('imlib2' 'giflib' 'libxft')
+makedepends=('git')
+optdepends=(
+  'imagemagick: for the example commands in config.def.h'
+  'libjpeg-turbo: for the example commands in config.def.h'
+  'gimp: for the example commands in config.def.h')
+provides=("${_pkgname}")
+conflicts=("${_pkgname}")
+source=("git+https://github.com/muennich/${_pkgname}.git"
+        'xft-manga.patch')
+md5sums=('SKIP'
+         '2d4cdbb51777d5c098514a74c9526c9f')
+
+pkgver() {
+  cd $_pkgname
+  git describe --always | sed 's|-|.|g'
+}
+
+build() {
+  cd $_pkgname
+
+  patch -p1 -i "$srcdir"/xft-manga.patch
+  if [ -e "$startdir"/config.h ]; then
+    msg "Using custom config.h."
+    cp "$startdir"/config.h .
+  fi
+
+  make PREFIX="/usr"
+}
+
+package() {
+  cd $_pkgname
+  make PREFIX="/usr" DESTDIR="$pkgdir" install
+  install -Dm644 sxiv.desktop "$pkgdir/usr/share/applications/sxiv.desktop"
+}
+
+# vim:set ts=2 sw=2 et:

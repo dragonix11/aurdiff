@@ -1,0 +1,26 @@
+# Maintainer: David Roheim <david dot roheim at gmail dot com>
+pkgname=zendframework2
+pkgver=2.2.3
+pkgrel=1
+pkgdesc="An object-oriented framework for PHP - Full version"
+arch=('any')
+url="http://framework.zend.com/"
+license=('BSD')
+depends=('php>=5.3.3')
+options=(!strip)
+optdepends=()
+conflicts=('zendframework2-min' 'zendframework2-git')
+source=("http://packages.zendframework.com/releases/ZendFramework-$pkgver/ZendFramework-$pkgver.tgz")
+sha256sums=('2237cc6a0e60fbcf5ce385205e6f968ef16af710a1be9b375f10f0c74c6105e6')
+
+build() {
+    true
+}
+
+package() {
+    cd "$srcdir/ZendFramework-$pkgver"
+    install -Dm644 LICENSE.txt "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
+    cp -R . "$pkgdir/usr/share/$pkgname"
+    install -d "$pkgdir/usr/bin"
+    ln -s "/usr/share/$pkgname/bin/zf.sh" "$pkgdir/usr/bin/zf2"
+}
