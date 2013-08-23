@@ -1,0 +1,27 @@
+# Maintainer:  Matthew Monaco <net 0x01b matt>
+# Contributor: Rogof <com gmail fake.bios>
+
+_gemname=gherkin
+pkgname=ruby-$_gemname
+pkgver=2.12.1
+pkgrel=3
+pkgdesc="A fast Gherkin lexer/parser based on the Ragel State Machine Compiler"
+arch=(any)
+url="https://github.com/cucumber/gherkin"
+license=(GPL)
+depends=(ruby ruby-multi_json)
+makedepends=(rubygems)
+source=(http://gems.rubyforge.org/gems/$_gemname-$pkgver.gem)
+noextract=($_gemname-$pkgver.gem)
+md5sums=(b6d1d3bbf63c402f271631de03407ce5)
+
+package() {
+
+	cd "$srcdir"
+	local _gemdir=$(ruby -rubygems -e'puts Gem.default_dir')
+	gem install --no-user-install --ignore-dependencies --verbose \
+	            -i "$pkgdir$_gemdir" -n "$pkgdir/usr/bin" \
+	            "$_gemname-$pkgver.gem"
+}
+
+# vim: set noet :

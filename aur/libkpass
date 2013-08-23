@@ -1,0 +1,29 @@
+# $Id$
+# Maintainer: Brian De Wolf <arch@bldewolf.com>
+pkgname=libkpass
+pkgver=6
+pkgrel=1
+pkgdesc="Libkpass is a from-scratch C implementation of reading and writing KeePass 1.x format password databases."
+url="https://sourceforge.net/projects/libkpass/"
+arch=('i686' 'x86_64')
+license=('GPL')
+depends=('nettle')
+makedepends=('pkgconfig' 'intltool')
+conflicts=()
+replaces=()
+backup=()
+source=(http://downloads.sourceforge.net/project/$pkgname/$pkgname-$pkgver/$pkgname-$pkgver.tar.gz)
+md5sums=('54950789900116eecaf70821b23396f1')
+build() {
+	cd "$srcdir/$pkgname-$pkgver"
+
+	./configure --prefix=/usr
+	make || return 1
+}
+
+package() {
+	cd "$srcdir/$pkgname-$pkgver"
+
+	make DESTDIR="$pkgdir/" install
+}
+

@@ -1,0 +1,30 @@
+# Maintainer: Karol "Kenji Takahashi" Wozniak <wozniakk@gmail.com>
+
+pkgname=r-cran-bitops
+_ppkgname=bitops
+pkgver=1.0_6
+_ppkgver=1.0-6
+pkgrel=1
+pkgdesc="Functions for Bitwise operations"
+url="http://cran.r-project.org/web/packages/bitops/index.html"
+license=('GPL2')
+arch=('i686' 'x86_64')
+makedepends=('gcc')
+depends=('r')
+optdepends=()
+source=(http://cran.r-project.org/src/contrib/${_ppkgname}_${_ppkgver}.tar.gz)
+md5sums=('fba16485a51b1ccd354abde5816b6bdd')
+
+build() {
+    mkdir -p ${pkgdir}/usr/lib/R/library
+    cd ${srcdir}
+    R CMD INSTALL bitops -l ${pkgdir}/usr/lib/R/library
+    rm -f ${pkgdir}/usr/lib/R/library/R.css
+    for lic in "LICENSE" "LICENCE" "COPYING"; do
+        if [ -f ${srcdir}/bitops/${lic} ]; then
+            install -Dm644 ${srcdir}/bitops/${lic} ${pkgdir}/usr/share/licenses/r-cran-bitops/${lic}
+        fi
+    done
+}
+
+# vim:set ts=4 sw=4 et:

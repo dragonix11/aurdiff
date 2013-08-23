@@ -1,0 +1,42 @@
+# Maintainer: Alan Orth <alan.orth@gmail.com>
+pkgname=ansible
+pkgver=1.2.3
+pkgrel=1
+pkgdesc='A radically simple deployment, model-driven configuration management, and command execution framework'
+arch=('any')
+url='http://www.ansibleworks.com'
+license=('GPL3')
+depends=('python2' 'python2-yaml' 'python2-paramiko>=1.7.7' 'python2-jinja')
+makedepends=('git' 'asciidoc' 'fakeroot')
+conflicts=('ansible-git')
+source=("http://www.ansibleworks.com/releases/$pkgname-$pkgver.tar.gz")
+sha256sums=('e8b95b5f1efcfa5d45d4b727abda12f1acdcda37fe09d981217d94082e7a0c8c')
+backup=('etc/ansible/ansible.cfg')
+
+build() {
+  cd "$srcdir/$pkgname-$pkgver"
+
+  python2 setup.py build
+}
+
+package() {
+  cd "$srcdir/$pkgname-$pkgver"
+
+  mkdir -p "${pkgdir}/usr/share/ansible"
+  cp -dpr --no-preserve=ownership library/* "${pkgdir}/usr/share/ansible"
+  cp -dpr --no-preserve=ownership examples "${pkgdir}/usr/share/ansible"
+
+  python2 setup.py install --root="${pkgdir}/" --optimize=1
+
+  install -D examples/ansible.cfg "${pkgdir}/etc/ansible/ansible.cfg"
+
+  install -D README.md "${pkgdir}/usr/share/doc/ansible/README.md"
+  install -D COPYING "${pkgdir}/usr/share/doc/ansible/COPYING"
+
+  mkdir -p "${pkgdir}/usr/share/man/man1"
+  cp -dpr --no-preserve=ownership docs/man/man1/*.1 "${pkgdir}/usr/share/man/man1"
+  mkdir -p "${pkgdir}/usr/share/man/man3"
+  cp -dpr --no-preserve=ownership docs/man/man3/*.3 "${pkgdir}/usr/share/man/man3"
+}
+
+# vim:set ts=2 sw=2 et:

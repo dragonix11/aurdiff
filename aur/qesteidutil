@@ -1,0 +1,28 @@
+# Maintainer: kevku <kevku@gmx.com>
+pkgname=qesteidutil
+pkgver=3.7.2.1079
+pkgrel=1
+pkgdesc="UI application for managing smart card PIN/PUK codes and certificates (Official version by AS Sertifitseerimiskeskus)"
+arch=('x86_64' 'i686')
+url="http://www.id.ee/"
+license=('LGPL')
+depends=('qt4' 'ccid' 'esteidcerts')
+makedepends=('cmake')
+conflicts=('qesteidutil-svn' 'smartcardpp-svn' 'sk-qesteidutil-svn' 'sk-smartcardpp-svn')
+install=qesteidutil.install
+source=("https://installer.id.ee/media/sources/$pkgname-$pkgver.tar.gz"
+        "https://installer.id.ee/media/sources/$pkgname-$pkgver.tar.gz.asc")
+sha256sums=('6fe68f793022e0c81a2426e329e5017c3572887c33667a76142d5f7714a38fe8'
+            'SKIP')
+
+build() {
+  cd "$srcdir/$pkgname-$pkgver"
+  cmake . -DCMAKE_INSTALL_PREFIX=/usr -DCMAKE_INSTALL_LIBDIR="lib" -DCMAKE_INSTALL_SYSCONFDIR="/etc"
+  make
+}
+
+package() {
+  cd "$srcdir/$pkgname-$pkgver"
+  make DESTDIR="$pkgdir/" install
+}
+

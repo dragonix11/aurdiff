@@ -1,0 +1,35 @@
+# Maintainer: Karol "Kenji Takahashi" Woźniak <kenji.sx>
+
+pkgname=copyq
+_realname=CopyQ
+pkgver=1.9.2
+pkgrel=1
+pkgdesc="Clipboard manager with searchable and editable history."
+url="https://github.com/hluk/CopyQ"
+depends=('qt4')
+optdepends=('copyq-plugin-itemweb')
+makedepends=('cmake')
+license=('GPL3')
+arch=('i686' 'x86_64')
+provides=('copyq')
+conflicts=('copyq-git')
+source=("https://github.com/hluk/${_realname}/archive/v${pkgver}.tar.gz")
+md5sums=('2e03762a0fd9ff48d7044d9eafd6ccf1')
+
+build() {
+    mkdir $srcdir/build
+    cd $srcdir/build
+    cmake -DWITH_WEBKIT=0 \
+        -DCMAKE_INSTALL_PREFIX=/usr \
+        -DQT_QMAKE_EXECUTABLE=qmake-qt4 \
+        $srcdir/$_realname-$pkgver
+    make
+}
+
+package() {
+    cd $srcdir/build
+    make DESTDIR="$pkgdir" install
+    rm -rf $srcdir/build
+}
+
+# vim:set ts=4 sw=4 et:

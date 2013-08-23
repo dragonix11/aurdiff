@@ -1,0 +1,27 @@
+# Contributor: Philip Nilsson <pnilsson@nullref.se>
+# Contributor: Valentin V. Bartenev <ne@vbart.ru> http://vbart.info/
+# Contributor: Frédéric Mangano <fmang@mg0.fr>
+
+pkgname='mongoc'
+pkgver='0.8'
+pkgrel='1'
+pkgdesc='The officially supported MongoDB C driver and BSON library.'
+arch=('i686' 'x86_64')
+url='http://www.mongodb.org/display/DOCS/C+Language+Center'
+license=('Apache')
+depends=()
+makedepends=()
+source=("$pkgname.tar.gz::https://github.com/mongodb/mongo-c-driver/archive/v$pkgver.tar.gz")
+md5sums=('19a617d908a9b3baee9556d571f59db5')
+build() {
+  cd "mongo-c-driver-$pkgver"
+  sed -i Makefile -e '/INSTALL/ s,src/bson\.h,& src/gridfs.h,'
+  make
+}
+
+package() {
+  cd "mongo-c-driver-$pkgver"
+  make install \
+    INSTALL_INCLUDE_PATH="$pkgdir/usr/include" \
+    INSTALL_LIBRARY_PATH="$pkgdir/usr/lib"
+}

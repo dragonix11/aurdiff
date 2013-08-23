@@ -1,0 +1,26 @@
+# Maintainer: kevku <kevku@gmx.com>
+pkgname=libdigidoc
+pkgver=3.7.2.1115
+pkgrel=1
+pkgdesc="Library for creating DigiDoc signature files (Official version by AS Sertifitseerimiskeskus)"
+arch=('x86_64' 'i686')
+url="http://www.id.ee/"
+license=('LGPL')
+depends=('libxml2' 'openssl')
+makedepends=('cmake' 'pcsclite' 'opensc')
+conflicts=('libdigidoc-svn' 'sk-libdigidoc-svn')
+source=("https://installer.id.ee/media/sources/$pkgname-$pkgver.tar.gz"
+        "https://installer.id.ee/media/sources/$pkgname-$pkgver.tar.gz.asc")
+sha256sums=('68392a7656e19fbc6756fa183872adb206af1bdbc84b18e6f438494fc767dec8'
+            'SKIP')
+
+build() {
+    cd "$srcdir/$pkgname-$pkgver"
+    cmake . -DCMAKE_INSTALL_PREFIX=/usr -DCMAKE_INSTALL_LIBDIR="lib" -DCMAKE_INSTALL_SYSCONFDIR="/etc"
+    make
+}
+
+package() {
+    cd "$srcdir/$pkgname-$pkgver"
+    make DESTDIR="$pkgdir/" install
+}

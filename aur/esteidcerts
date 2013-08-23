@@ -1,0 +1,17 @@
+# Maintainer: kevku <kevku@gmx.com>
+pkgname=esteidcerts
+pkgver=3.7.2.9103
+pkgrel=1
+pkgdesc="Estonian ID card root, intermediate and OCSP certificates (Official version by AS Sertifitseerimiskeskus)"
+arch=('any')
+url="http://www.id.ee/"
+license=('LGPL')
+source=("https://installer.id.ee/media/sources/$pkgname-$pkgver.tar.gz"
+        "https://installer.id.ee/media/sources/$pkgname-$pkgver.tar.gz.asc")
+sha256sums=('452a6db8b9196f8df255609ed0baad4d86d9d9f3220a2bc518ff111f515affe0'
+            'SKIP')
+
+package() {
+  cd "$srcdir/$pkgname-$pkgver"
+  cp -R usr $pkgdir/
+}

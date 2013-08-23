@@ -1,0 +1,26 @@
+# Maintainer: kevku <kevku@gmx.com>
+pkgname=esteidfirefoxplugin
+pkgver=3.7.2.1106
+pkgrel=1
+pkgdesc="Firefox ID card signing plugin. (Official version by AS Sertifitseerimiskeskus)"
+arch=('x86_64' 'i686')
+url="http://www.id.ee/"
+license=('LGPL')
+depends=('gtk2' 'esteidpkcs11loader')
+makedepends=('cmake')
+conflicts=('esteid-browser-plugin-svn' 'sk-esteidfirefoxplugin-svn')
+source=("https://installer.id.ee/media/sources/$pkgname-$pkgver.tar.gz"
+	"https://installer.id.ee/media/sources/$pkgname-$pkgver.tar.gz.asc")
+sha256sums=('92defc9e7d07d1fefeb68779d840b43562bb0bc984bea87da6beea969f9dd990'
+            'SKIP')
+
+build() {
+  cd "$srcdir/$pkgname-$pkgver"
+  make plugin
+}
+
+package() {
+  cd "$srcdir/$pkgname-$pkgver"
+  install -D npesteid-firefox-plugin.so $pkgdir/usr/lib/mozilla/plugins/npesteid-firefox-plugin.so
+}
+
