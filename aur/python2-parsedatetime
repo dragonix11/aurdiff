@@ -1,0 +1,29 @@
+# Maintainer: Limao Luo <luolimao+AUR@gmail.com>
+# Contributor: Jeremy Sands <cto@jeremysands.com>
+
+pkgname=python2-parsedatetime
+pkgver=1.1.2
+pkgrel=1
+pkgdesc="Parse human-readable date/time text"
+arch=(any)
+url=http://github.com/bear/parsedatetime/
+license=(Apache)
+depends=(python2)
+makedepends=(python2-setuptools)
+source=(https://pypi.python.org/packages/source/p/${pkgname#*-}/${pkgname#*-}-$pkgver.tar.gz)
+sha256sums=('ed6a828f16b7d2ecb0e93f60bc371ab1f7d3233f115e5d94ef680fb151e2df93')
+sha512sums=('eee74fb77dc1ff95ef21073d7d258ab45eae150ee4ac6b1d47f7f374905498583b3b78b3e5e70bde99d3448ea1fe71278a88b832ed2dd96ff9f2493dcb9b25d8')
+
+prepare() {
+    find ${pkgname#*-}-$pkgver -name '*.py' -type f -exec sed -ri 's:^#!/usr/bin/(env )?python$:&2:' '{}' \;
+}
+
+build() {
+    cd ${pkgname#*-}-$pkgver/
+    python2 setup.py build
+}
+
+package() {
+    cd ${pkgname#*-}-$pkgver/
+    python2 setup.py install --prefix=/usr --root="$pkgdir"
+}

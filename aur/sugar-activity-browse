@@ -1,0 +1,23 @@
+# Contributor: Cilyan Olowen <gaknar@gmail.com>
+
+pkgname=sugar-activity-browse
+_realname=Browse
+pkgver=153
+pkgrel=1
+pkgdesc="Sugar internet browser."
+arch=('i686' 'x86_64')
+url="http://www.sugarlabs.org/"
+license=('GPL')
+groups=('sucrose' 'fructose')
+depends=('sugar' 'hulahop' 'python2-dateutil')
+source=(http://download.sugarlabs.org/sources/sucrose/fructose/${_realname}/${_realname}-$pkgver.tar.bz2)
+md5sums=('db8d012819c2f90055a6b97375093de9')
+
+
+package() {
+  cd "$srcdir/${_realname}-$pkgver"
+
+  python2 setup.py install --root=${pkgdir} --prefix=/usr
+}
+
+# vim:set ts=2 sw=2 et:

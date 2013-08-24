@@ -1,0 +1,41 @@
+# Maintainer: Limao Luo <luolimao+AUR@gmail.com>
+# Contributor: Maxime de Roucy <maxime.deroucy@gmail.com>
+
+pkgname=gnome-agenda-svn
+pkgver=0.4.0.212
+pkgrel=2
+pkgdesc="Display calendars on the GNOME desktop tray. Supports Google Calendar, Novell Groupwise, Evolution and iCanlendar"
+arch=(any)
+url=http://code.google.com/p/gnome-agenda/
+license=(GPL2)
+depends=(python2-configobj python2-dateutil python2-dbus python2-gdata python2-libgnome
+    python2-lxml python2-pysqlite python2-sexy python2-vobject)
+makedepends=(python2-distutils-extra python2-setuptools subversion)
+provides=(${pkgname%-*}=$_pkgver)
+conflicts=(${pkgname%-*})
+source=($pkgname::svn+http://${pkgname%-*}.googlecode.com/svn/trunk/)
+sha256sums=('SKIP')
+sha512sums=('SKIP')
+
+pkgver() {
+    echo $(grep -o 'VERSION = "[0-9.]\+' $pkgname/agenda/static.py | tr -d 'A-Z=_" ').$(svnversion "$SRCDEST"/$pkgname/)
+}
+
+prepare() {
+    cd $pkgname/
+    for i in $(find -name '*.py') agenda-gtk; do
+        sed -ri 's:^#!/usr/bin/(env )?python$:&2:' "$i"
+    done
+    echo "" > po/POTFILES.in
+    sed -i 's:agenda-gtk.desktop:agenda.desktop:' setup.py
+}
+
+build() {
+    cd $pkgname/
+    python2 setup.py build
+}
+
+package() {
+    cd $pkgname/
+    python2 setup.py install --root="$pkgdir" --optimize=1
+}

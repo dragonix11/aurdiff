@@ -1,0 +1,24 @@
+# Maintainer: Limao Luo <luolimao+AUR@gmail.com>
+
+_pkgname=jsonschema
+pkgname=python2-${_pkgname}1
+pkgver=2.0.0
+pkgrel=1
+pkgdesc="Python object model built on JSON schema and JSON patch"
+arch=(any)
+url=https://github.com/Julian/jsonschema
+license=(MIT)
+makedepends=(python2-setuptools)
+source=($pkgname-$pkgver.tar.gz::https://github.com/Julian/jsonschema/archive/v$pkgver.tar.gz)
+sha256sums=('bfb5261497d704b8605ec5cc0e8aa3e06c5d8d2a036a4209d0fc3487496acd01')
+sha512sums=('545e5198c6f6d56ab2f7342bc34e82cbd37a516597a85db4a2fcf5af4bdcd1c595f48fedfad5b33702713fed5d389fdea81fbceb4fd6a6af97032a07fdf12f0f')
+
+build() {
+    cd $_pkgname-$pkgver/
+    python2 setup.py build
+}
+
+package() {
+    cd $_pkgname-$pkgver/
+    python2 setup.py install --prefix=/usr --root="$pkgdir"
+}

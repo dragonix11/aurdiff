@@ -1,0 +1,24 @@
+# Maintainer: Emmanuel Gil Peyrot <linkmauve@linkmauve.fr>
+pkgname=xnp2
+pkgver=20130727
+pkgrel=1
+pkgdesc="X Neko Project II, a PC-9801 emulator"
+arch=('i686' 'x86_64')
+url="http://www.nonakap.org/np2/"
+license=('BSD')
+depends=('gtk2' 'sdl_mixer')
+source=("http://www.nonakap.org/np2/${pkgname}-${pkgver}.tar.bz2")
+md5sums=('47b211207d7d97ff64eb7c864fd05ee5')
+
+build() {
+  cd "$srcdir/$pkgname-$pkgver/x11"
+  ./configure --prefix=/usr --enable-ia32
+  make
+}
+
+package() {
+  cd "$srcdir/$pkgname-$pkgver/x11"
+  make DESTDIR="$pkgdir/" install
+}
+
+# vim:set ts=2 sts=2 sw=2 et:

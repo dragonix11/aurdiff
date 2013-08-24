@@ -1,0 +1,62 @@
+# Maintainer: Benjamin A. Shelton <zancarius@gmail.com>
+# Source: https://github.com/zancarius/archlinux-pkgbuilds
+
+pkgname=sentry
+pkgver=6.0.6
+pkgrel=1
+pkgdesc="Python-based realtime logging and aggregation server."
+arch=(any)
+url="http://pypi.python.org/pypi/sentry"
+license=(BSD)
+conflicts=('python2-sentry')
+backup=('etc/sentry/sentry.conf.py')
+depends=(
+    python2
+)
+makedepends=(git python2-distribute python2-virtualenv)
+options=(!strip)
+install="${pkgname}.install"
+source=(
+    "http://pypi.python.org/packages/source/s/${pkgname}/${pkgname}-${pkgver}.tar.gz"
+    "${pkgname}.install"
+    "${pkgname}.service"
+)
+md5sums=(
+    9ac643933b10cbd227ade1139dd2036e # sentry tarball
+    d525f1803cbda2d7238fbb09b5ebd2cf # sentry.install
+    ebb9875dedec90b5b9eda00fab49f25e # sentry.service
+)
+
+package () {
+
+    mkdir -p "${pkgdir}/opt/sentry"
+    virtualenv2 --python=python2.7 "${pkgdir}/opt/sentry"
+
+    source "${pkgdir}/opt/sentry/bin/activate"
+
+    # Workaround for circumstances where cssutils may not be installed
+    # into the virtualenv at the correct version.
+    "${pkgdir}/opt/sentry/bin/pip" install "cssutils>=0.9.9,<0.10.0"
+
+    cd "${srcdir}/${pkgname}-${pkgver}"    
+    "${pkgdir}/opt/sentry/bin/python2" setup.py install --optimize=1
+
+    virtualenv2 --relocatable "${pkgdir}/opt/sentry"
+    cat "${pkgdir}/opt/sentry/bin/activate" | sed "s#${pkgdir}##" > "${pkgdir}/opt/sentry/bin/activate.new"
+    mv "${pkgdir}/opt/sentry/bin/activate.new" "${pkgdir}/opt/sentry/bin/activate"
+
+    mkdir -p "${pkgdir}/opt/sentry/.python-eggs"
+    mkdir -p "${pkgdir}/etc/sentry"
+
+    sh "${pkgdir}/opt/sentry/bin/activate"
+    "${pkgdir}/opt/sentry/bin/sentry" init "${pkgdir}/etc/sentry/sentry.conf.py"
+
+    # Remove Desktop Services Store from package. At least one of these files
+    # still persists in the Sentry package. They're harmless, but I don't like
+    # them. :) More information: http://en.wikipedia.org/wiki/.DS_Store
+    find "${pkgdir}" -name '.DS_Store' -delete
+
+    install -Dm0644 "${srcdir}/${pkgname}-${pkgver}/LICENSE" "${pkgdir}/usr/share/licenses/${pkgname}/LICENSE"
+    install -Dm0644 "${srcdir}/${pkgname}.service" "${pkgdir}/usr/lib/systemd/system/sentry.service"
+
+}

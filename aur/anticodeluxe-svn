@@ -1,0 +1,35 @@
+# Contributor Borislav Gerassimov (slimmer) <borislav_ba@hotmail.com>
+
+_pkgname=anticodeluxe
+pkgname=anticodeluxe-svn
+pkgver=118
+pkgrel=2
+arch=('i686' 'x86_64')
+pkgdesc="Very simple and fast QT4 Window/Desktop manager - SVN Version"
+url="http://code.google.com/p/anticodeluxe/"
+license=('GPL')
+depends=('qt4' 'libao' 'libvorbis')
+makedepends=('subversion')
+conflicts=('anticodeluxe')
+provides=('anticodeluxe')
+source=('anticodeluxe::svn+http://anticodeluxe.googlecode.com/svn/trunk/')
+md5sums=('SKIP')
+
+
+pkgver() {
+  cd $SRCDEST/$_pkgname
+  svnversion | tr -d [A-z]
+}
+
+build() {
+  cd $_pkgname
+
+  qmake-qt4 VERBOSE=1
+  make
+}
+
+package() {
+  cd $_pkgname
+
+  make install INSTALL_ROOT=$pkgdir
+}

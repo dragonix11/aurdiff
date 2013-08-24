@@ -1,0 +1,22 @@
+# Maintainer: L42y <423300@gmail.com>
+pkgname=camlistore
+pkgver=0.3
+pkgrel=1
+pkgdesc="Camlistore is a way of storing, syncing, sharing, modelling and backing up content."
+arch=('i686' 'x86_64')
+url="http://camlistore.org/"
+license=('Apache')
+depends=('sqlite')
+makedepends=('go')
+source=(https://github.com/bradfitz/$pkgname/archive/$pkgver.tar.gz)
+md5sums=('b6413cd49be160ab778c521007034327')
+
+build() {
+	cd "$srcdir/$pkgname-$pkgver"
+	go run make.go
+}
+
+package() {
+  install -d $pkgdir/usr/bin/
+	install -m755 $srcdir/$pkgname-$pkgver/bin/cam* $pkgdir/usr/bin
+}

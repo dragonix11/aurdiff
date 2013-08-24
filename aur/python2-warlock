@@ -1,0 +1,24 @@
+# Maintainer: Limao Luo <luolimao+AUR@gmail.com>
+
+pkgname=python2-warlock
+pkgver=1.0.1
+pkgrel=1
+pkgdesc="Python object model built on JSON schema and JSON patch"
+arch=(any)
+url=https://github.com/bcwaldon/warlock
+license=(Apache)
+depends=(python2-jsonpatch)
+makedepends=(python2-setuptools)
+source=(http://pypi.python.org/packages/source/w/${pkgname#*-}/${pkgname#*-}-$pkgver.tar.gz)
+sha256sums=('986ccfd647f89c1c8e7ebe40d159e5633818a58754b3ffdf51c4816927977791')
+sha512sums=('7ca4b512efa9f3b112682b5120618b14616d3d7307891004aedbe6b88d66d5baaff5c02b9dfe78ea845cdc2498668f81c9dfc6a22fedab7916f49947dd3706c6')
+
+build() {
+    cd ${pkgname#*-}-$pkgver/
+    python2 setup.py build
+}
+
+package() {
+    cd ${pkgname#*-}-$pkgver/
+    python2 setup.py install --prefix=/usr --root="$pkgdir"
+}

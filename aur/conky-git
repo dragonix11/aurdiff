@@ -1,0 +1,49 @@
+# Contributor: Your Name <youremail@domain.com>
+
+_pkgname=conky
+pkgname=conky-git
+pkgver=1.999.404.g02dfacd
+pkgrel=1
+pkgdesc='Lightweight system monitor for X'
+url='http://conky.sourceforge.net/'
+license=('BSD' 'GPL')
+arch=('i686' 'x86_64')
+options=('!emptydirs')
+depends=('alsa-lib' 'libxml2' 'curl' 'wireless_tools' 'libxft' 'glib2' 'libxdamage' 'imlib2')
+makedepends=('docbook2x' 'git')
+backup=('etc/conky/conky.conf' 'etc/conky/conky_no_x11.conf')
+conflicts=('conky')
+provides=('conky')
+source=('git://github.com/brndnmtthws/conky')
+md5sums=('SKIP')
+
+
+pkgver() {
+	cd $_pkgname
+	git describe --always | sed -e 's|-|.|g'
+}
+
+build() {
+	cd "${srcdir}/${pkgname}"
+
+	CPPFLAGS="${CXXFLAGS}" LIBS="${LDFLAGS}" ./configure \
+		--prefix=/usr \
+		--sysconfdir=/etc \
+		--enable-ibm \
+		--enable-curl \
+		--enable-rss \
+		--enable-weather-xoap \
+		--enable-imlib2 \
+		--disable-lua \
+		--enable-wlan \
+
+	make
+}
+
+package() {
+	cd "${srcdir}/${pkgname}"
+	make DESTDIR="${pkgdir}" install
+	install -Dm644 COPYING "${pkgdir}/usr/share/licenses/${pkgname}/LICENSE"
+	install -Dm644 extras/vim/syntax/conkyrc.vim "${pkgdir}"/usr/share/vim/vimfiles/syntax/conkyrc.vim
+	install -Dm644 extras/vim/ftdetect/conkyrc.vim "${pkgdir}"/usr/share/vim/vimfiles/ftdetect/conkyrc.vim
+}
