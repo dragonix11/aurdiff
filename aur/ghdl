@@ -1,0 +1,62 @@
+pkgname=ghdl
+_svnver=150
+_gccver=4.7.3
+_pkgver="0.30dev"
+pkgver="0.30dev.${_svnver}"
+pkgrel=1
+arch=('i686' 'x86_64')
+pkgdesc='VHDL simulator'
+url='http://ghdl.free.fr/'
+license=('GPL')
+depends=('gcc-ada' 'zlib')
+makedepends=('bison' 'flex' 'gawk' 'gettext' 'texinfo')
+options=(!makeflags)
+source=("${pkgname}::svn://svn.gna.org/svn/ghdl/trunk#revision=${_svnver}"
+	"ftp://ftp.gnu.org/gnu/gcc/gcc-${_gccver}/gcc-${_gccver}.tar.bz2"
+	ghdl.patch)
+md5sums=('SKIP'
+         '86f428a30379bdee0224e353ee2f999e'
+         '34468599251ca678b91037817c50808b')
+
+build() {
+  cd ${srcdir}/ghdl/translate/gcc
+  ./dist.sh sources
+  mv ghdl-${_pkgver}.tar.bz2 ${srcdir}
+
+  cd ${srcdir}
+  tar xf ghdl-${_pkgver}.tar.bz2
+  mv ghdl-${_pkgver}/vhdl gcc-${_gccver}/gcc
+  rm -rf ghdl-${_pkgver}.tar.bz2 ghdl-${_pkgver}
+
+  cd gcc-${_gccver}
+  patch -p1 < ../ghdl.patch
+
+  export CPPFLAGS=${CPPFLAGS/-D_FORTIFY_SOURCE=2/}
+  ./configure --prefix=/usr \
+      --libdir=/usr/lib --libexecdir=/usr/lib \
+      --mandir=/usr/share/man --infodir=/usr/share/info \
+      --disable-bootstrap \
+      --enable-languages=vhdl \
+      --enable-shared --enable-threads=posix \
+      --with-system-zlib --enable-__cxa_atexit \
+      --disable-libunwind-exceptions --enable-clocale=gnu \
+      --disable-libstdcxx-pch \
+      --enable-gnu-unique-object --enable-linker-build-id \
+      --enable-cloog-backend=isl --disable-cloog-version-check \
+      --enable-lto --enable-gold --enable-ld=default \
+      --enable-plugin --with-plugin-ld=ld.gold \
+      --with-linker-hash-style=gnu --disable-install-libiberty \
+      --disable-multilib --disable-libssp --disable-werror \
+      --enable-checking=release
+  make
+}
+
+package() {
+  cd ${srcdir}/gcc-${_gccver}
+  make DESTDIR=${pkgdir} install
+  rm -r ${pkgdir}/usr/{include,lib64,share/locale,share/man/man7}
+  find ${pkgdir}/usr/lib            -maxdepth 1 -type f               -exec rm '{}' \;
+  find ${pkgdir}/usr/bin            -type f -and -not -name ghdl      -exec rm '{}' \;
+  find ${pkgdir}/usr/share/man/man1 -type f -and -not -name ghdl.1    -exec rm '{}' \;
+  find ${pkgdir}/usr/share/info     -type f -and -not -name ghdl.info -exec rm '{}' \;
+}

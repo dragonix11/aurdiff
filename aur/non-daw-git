@@ -1,0 +1,37 @@
+# Maintainer: Lieven Moors <lievenmoors@gmail.com>
+# Contributor: Jonathan E. Brickman <jeb@ponderworthy.com>, Corey Mwamba <contact.me@coreymwamba.co.uk>
+pkgname=non-daw-git
+_gitname=non
+pkgver=d5741f9
+pkgrel=1
+pkgdesc="A modular Digital Audio Workstation system - Git version."
+arch=('i686' 'x86_64')
+url="http://non-daw.tuxfamily.org/"
+license=('GPL')
+groups=('multimedia')
+depends=('jack' 'liblo' 'libsigc++' 'liblrdf' 'hicolor-icon-theme' 'ntk')
+makedepends=('git' 'python' 'libxpm')
+provides=('non-daw' 'non-mixer' 'non-session-manager' 'non-sequencer')
+conflicts=('non-daw' 'non-mixer' 'non-session-manager' 'non-sequencer')
+source=('git://git.tuxfamily.org/gitroot/non/non.git')
+md5sums=('SKIP')
+install=non.install
+
+pkgver() {
+  cd ${_gitname}
+  # Use the tag of the last commit
+  git describe --always | sed 's|-|.|g'
+}
+
+build() {
+  cd ${_gitname}
+  ./waf configure --prefix="/usr"
+  ./waf
+}
+
+package(){
+  cd ${_gitname}
+  ./waf --destdir="${pkgdir}" install
+  install -m 755 ${srcdir}/non/timeline/bin/import-external-sources ${pkgdir}/usr/bin
+  install -m 755 ${srcdir}/non/timeline/bin/remove-unused-sources ${pkgdir}/usr/bin
+}
