@@ -1,0 +1,33 @@
+# Maintainer: Emmanuel Gil Peyrot <linkmauve@linkmauve.fr>
+
+pkgname=pytouhou-hg
+pkgver=430
+pkgrel=1
+pkgdesc='Libre reimplementation of the Touhou 6 engine.'
+arch=('i686' 'x86_64')
+url='http://pytouhou.linkmauve.fr/'
+license=('GPL3')
+#depends=('python2' 'sdl2' 'sdl2_image' 'sdl2_mixer' 'sdl2_ttf' 'libgl')
+depends=('python2' 'sdl2' 'sdl2_image' 'sdl2_mixer' 'libgl')
+makedepends=('mercurial' 'cython2')
+provides=('pytouhou')
+conflicts=('pytouhou')
+optdepends=('th06-demo-data: The freeware demo of EoSD.')
+
+source=('hg+http://hg.sitedethib.com/touhou'
+        'th06-demo.sh')
+md5sums=('SKIP'
+         '9ea0ff436830d5fcc2a5d74440d9bee9')
+
+pkgver() {
+  cd "$srcdir/touhou"
+  hg identify -n
+}
+
+package() {
+  cd "$srcdir/touhou"
+  python2 setup.py install --root="$pkgdir/" --optimize=1
+  install -Dm755 "$srcdir/th06-demo.sh" "$pkgdir/usr/bin/th06-demo"
+}
+
+# vim:set ts=2 sts=2 sw=2 et:

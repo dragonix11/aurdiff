@@ -1,0 +1,38 @@
+# Contributor: Archlive <http://archlive-pkg.googlecode.com>
+
+_pkgname=fatelf
+pkgname=fatelf-utils
+pkgver=108.0a4566740a98
+pkgrel=1
+pkgdesc="Utils for fatelf -- Universal Binaries for Linux"
+arch=('i686' 'x86_64')
+url="http://www.icculus.org/fatelf/"
+license=('GPL2')
+makedepends=('cmake')
+source=(hg+http://hg.icculus.org/icculus/fatelf)
+md5sums=('SKIP')
+
+
+pkgver() {
+  cd $_pkgname
+  echo $(hg identify -n).$(hg identify -i)
+}
+
+build() {
+  cd $_pkgname
+  cmake .
+  make
+}
+
+package() {
+  cd $_pkgname
+  
+  sed -i "s|/usr/local|/usr|g" cmake_install.cmake
+  make DESTDIR=${pkgdir} install
+
+  # Install the docs
+  install -d $pkgdir/usr/share/doc/fatelf
+  install $srcdir/${_hgrepo}/docs/*.txt $pkgdir/usr/share/doc/fatelf/
+}
+
+
