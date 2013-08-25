@@ -1,0 +1,40 @@
+# Maintainer: twa022 <twa022 at gmail dot com>
+
+_pkgname=cinnamon-screensaver
+pkgname=${_pkgname}-git
+pkgver=55.94ca899
+pkgrel=1
+pkgdesc="Screensaver for cinnamon desktop"
+arch=('i686' 'x86_64')
+url="https://github.com/linuxmint/cinnamon-screensaver"
+license=('GPL')
+depends=('dbus-glib' 'libgnomekbd' 'cinnamon' 'libsystemd')
+makedepends=('pkgconfig' 'intltool' 'libxss')
+conflicts=('gnome-screensaver')
+options=('!emptydirs')
+source=('git+https://github.com/linuxmint/cinnamon-screensaver.git'
+        'cinnamon-screensaver.pam')
+
+pkgver() {
+  cd ${srcdir}/${_pkgname}
+  echo $(git rev-list --count master).$(git rev-parse --short master)
+}
+
+build() {
+  cd ${srcdir}/${_pkgname}
+
+  ./autogen.sh --prefix=/usr --sysconfdir=/etc --sbindir=/usr/bin \
+      --libexecdir=/usr/lib/cinnamon-screensaver \
+      --localstatedir=/var \
+      --with-mit-ext --with-systemd 
+  make
+}
+
+package() {
+  cd ${srcdir}/${_pkgname}
+  make DESTDIR="${pkgdir}" install
+  install -Dm644 ../cinnamon-screensaver.pam "$pkgdir/etc/pam.d/cinnamon-screensaver"
+}
+
+sha256sums=('SKIP'
+            'c19870c4f2d6e91ba0eea2603753a74e0c5c82ff5fa3cacb1198027a38d0a6cb')

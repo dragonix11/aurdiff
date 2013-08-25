@@ -7,13 +7,15 @@ pkgrel=1
 pkgdesc="Plugin for Vapoursynth: ${_plug} (GIT version)"
 arch=('i686' 'x86_64')
 url="https://github.com/dubhater/vapoursynth-${_plug}"
-license=('GPL')
+license=('custom:WTFPL')
 depends=('vapoursynth')
 provides=("vapoursynth-plugin-${_plug}")
 conflicts=("vapoursynth-plugin-${_plug}")
 makedepends=('git')
-source=("${_plug}::git://github.com/dubhater/vapoursynth-${_plug}.git")
-md5sums=('SKIP')
+source=("${_plug}::git://github.com/dubhater/vapoursynth-${_plug}.git"
+        'COPYING')
+md5sums=('SKIP'
+         '389a9e29629d1f05e115f8f05c283df5')
 _gitname="${_plug}"
 
 pkgver() {
@@ -38,4 +40,5 @@ package(){
   cd "${_gitname}"
   install -Dm755 "lib${_plug}.so" "${pkgdir}/usr/lib/vapoursynth/lib${_plug}.so"
   install -Dm644 README.rst "${pkgdir}/usr/share/doc/vapoursynth/plugins/${_plug}/README"
+  install -Dm644 "${srcdir}/COPYING" "${pkgdir}/usr/share/licenses/${pkgname}/LICENSE"
 }

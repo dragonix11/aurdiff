@@ -1,0 +1,30 @@
+#Mantainer: Giovanni "Talorno" Ricciardi <kar98k.sniper@gmail.com>
+
+pkgname=mate-calc
+pkgver=1.6.0
+pkgrel=2
+pkgdesc="Calculator for the Mate desktop environment"
+arch=('i686' 'x86_64')
+license=('LGPL' 'GPL')
+depends=('gtk2' 'libxml2' 'libpng' 'freetype2' 'flex' 'bison' 'pixman' 'glib2' 'pango' 'gdk-pixbuf2' 'cairo' 'atk' 'gsettings-desktop-schemas')
+makedepends=('pkgconfig' 'mate-common')
+groups=('mate-extra' 'automake')
+url="http://mate-desktop.org"
+source=(http://pub.mate-desktop.org/releases/1.6/$pkgname-$pkgver.tar.xz)
+md5sums=('4672e85b045e5ace0a7e70fd0b8eb384')
+
+build()
+{
+cd "${srcdir}/${pkgname}-$pkgver"
+cp /usr/bin/mate-autogen ./
+bash autogen.sh --prefix=/usr
+intltoolize --automake --copy --force
+make
+}
+
+
+package()
+{
+cd "${srcdir}/${pkgname}-$pkgver"
+make DESTDIR="${pkgdir}" install
+}

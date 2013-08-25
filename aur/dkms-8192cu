@@ -1,0 +1,51 @@
+# Maintainer: Runnytu < runnytu at gmail.com >
+ 
+pkgname=dkms-8192cu
+pkgver=v3.4.4_4749
+pkgrel=8
+pkgdesc="Driver for Realtek RTL8188CUS (8188C, 8192C) chipset wireless cards"
+arch=('i686' 'x86_64')
+url="http://www.realtek.com.tw/"
+license=('GPL')
+depends=('dkms' 'linux-headers')
+conflicts=("8192cu" "rt8192cu")
+install=${pkgname}.install
+options=(!strip)
+_pkgname="8192cu"
+source=("https://dl.dropboxusercontent.com/u/54784933/$_pkgname-$pkgver.tar.gz"
+        "dkms.conf"
+        "blacklist-dkms-8192cu.conf"
+        "use_kthread_run_v2.patch"
+        "fix_310_proc.patch" )
+               
+md5sums=('81c7010f15edbc932d0b9b0717d47c4a'
+         'ece254ef09b3268b7bfd27713d69969b'
+         '5f2d28bf3839447bfe762416a89e1a21'
+         '7b22f83c62456e4b8310e21b56bb4c2f'
+         '345072f62970d27af3599dccc540683b')
+
+package() {
+       
+        installDir="$pkgdir/usr/src/$_pkgname-$pkgver"
+       
+        install -dm755 "$installDir"
+        install -m644 "$srcdir/dkms.conf" "$installDir"
+        install -dm755 "$pkgdir/etc/modprobe.d"
+        install -m644 "$srcdir/blacklist-dkms-8192cu.conf" "$pkgdir/etc/modprobe.d/blacklist-dkms-8192cu.conf"
+       
+        cd "${srcdir}/${_pkgname}-${pkgver}/"
+       
+        patch -p1 -i "$srcdir/use_kthread_run_v2.patch"
+        patch -p1 -i "$srcdir/fix_310_proc.patch"
+       
+        for d in `find . -type d`
+        do
+                install -dm755  "$installDir/$d"
+        done
+       
+        for f in `find . -type f`
+        do
+                install -m644 "${srcdir}/${_pkgname}-${pkgver}/$f" "$installDir/$f"
+        done
+       
+}

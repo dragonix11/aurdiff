@@ -1,0 +1,35 @@
+# Maintainer: twa022 <twa022 at gmail dot com>
+# Contributor: Xiao-Long Chen <chenxiaolong@cxl.epac.to>
+
+pkgname=muffin-git
+pkgver=414.9dfe6c5
+pkgrel=1
+pkgdesc="A window manager for GNOME"
+arch=('i686' 'x86_64')
+url="https://github.com/linuxmint/muffin"
+license=('GPL')
+depends=('clutter' 'cinnamon-desktop-git' 'gconf' 'gobject-introspection' 
+         'libcanberra' 'startup-notification' 'zenity' 'libxxf86vm')
+makedepends=('git' 'intltool' 'gnome-doc-utils')
+provides=('muffin')
+conflicts=('muffin')
+options=('!libtool' '!emptydirs')
+install=muffin.install
+source=('git+https://github.com/linuxmint/muffin.git')
+sha512sums=('SKIP')
+
+pkgver() {
+  cd muffin
+  echo $(git rev-list --count master).$(git rev-parse --short master)
+}
+
+build() {
+  cd "${srcdir}/muffin"
+  PYTHON=python2 ./autogen.sh --prefix=/usr --sysconfdir=/etc --libexecdir=/usr/lib/muffin --localstatedir=/var --disable-static --disable-schemas-compile --enable-compile-warnings=yes
+  make
+}
+
+package() {
+  cd "${srcdir}/muffin"
+  make DESTDIR="${pkgdir}" install
+}

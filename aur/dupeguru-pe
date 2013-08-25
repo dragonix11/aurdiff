@@ -1,0 +1,43 @@
+# Maintainer: Virgil Dupras <hsoft@hardcoded.net>
+pkgname=dupeguru-pe
+pkgver=2.8.0
+pkgrel=1
+pkgdesc="Find duplicate pictures on your system"
+arch=(i686 x86_64)
+url="http://www.hardcoded.net/dupeguru_pe/"
+license=('BSD')
+depends=(python python-pyqt4)
+makedepends=(
+    python-pip
+    python-sphinx
+    gcc
+)
+source=(http://download.hardcoded.net/$pkgname-src-$pkgver.tar.gz
+        dupeguru-pe.desktop)
+md5sums=('604a990c7213fdaad468cb6bce704317'
+         'd608a0829d158362c5276507f62d87f3')
+
+build() {
+  cd "$srcdir"
+  ./bootstrap.sh
+  source env/bin/activate
+  msg "Starting build..."
+  python configure.py --edition pe
+  python build.py --clean
+}
+
+package() {
+  cd "$srcdir"
+  mkdir -p "${pkgdir}/usr/share/applications"
+  cp ${pkgname}.desktop "${pkgdir}/usr/share/applications"
+  
+  python package.py
+  cd "build/${pkgname}-arch"
+  
+  mkdir -p "$pkgdir/usr/share/${pkgname}"
+  cp -a * "$pkgdir/usr/share/${pkgname}/"
+  chmod a+x "$pkgdir/usr/share/${pkgname}/run.py"
+  
+  mkdir -p "$pkgdir/usr/bin"
+  ln -s ../share/${pkgname}/run.py "$pkgdir/usr/bin/${pkgname}"
+}
