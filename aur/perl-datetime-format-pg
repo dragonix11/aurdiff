@@ -1,0 +1,38 @@
+pkgname=perl-datetime-format-pg
+pkgver=0.16009
+pkgrel=1
+pkgdesc="'Parse and format PostgreSQL dates and times'"
+arch=(i686 x86_64)
+license=('perl')
+url="http://search.cpan.org/~dmaki/DateTime-Format-Pg"
+options=(!emptydirs)
+depends=('perl-datetime-format-builder>=0.72' 'perl-datetime-timezone>=0.05' 'perl-datetime>=0.10')
+source=(http://search.cpan.org/CPAN/authors/id/D/DM/DMAKI/DateTime-Format-Pg-0.16009.tar.gz)
+md5sums=('b4de228803d1b822385983bc54ae0a95')
+sha512sums=('7f0ade7a0d3bdac310f89df67b1eee542620036bbc520b0b7b6081d1824146fab546d519bb23b8503c2d177fdcd55a15927a9f8d57f14a392e54a348359e4e96')
+
+prepare_environment() {
+  export PERL_MM_USE_DEFAULT=1 PERL5LIB=""                 \
+    PERL_AUTOINSTALL=--skipdeps                            \
+    PERL_MM_OPT="INSTALLDIRS=vendor DESTDIR='$pkgdir'"     \
+    PERL_MB_OPT="--installdirs vendor --destdir '$pkgdir'" \
+    MODULEBUILDRC=/dev/null
+  cd "${srcdir}/DateTime-Format-Pg-${pkgver}"
+}
+
+build() {
+  prepare_environment
+  /usr/bin/perl Build.PL
+  ./Build
+}
+
+check() {
+  prepare_environment
+  ./Build test
+}
+
+package() {
+  prepare_environment
+  ./Build install
+  find "$pkgdir" -name .packlist -o -name perllocal.pod -delete
+}

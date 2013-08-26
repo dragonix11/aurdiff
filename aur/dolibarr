@@ -1,0 +1,24 @@
+# Contributor: Sylvain HENRY <hsyl20@yahoo.fr>
+
+pkgname=dolibarr
+pkgver=3.4.0
+pkgrel=1
+pkgdesc="Dolibarr ERP/CRM"
+arch=('i686' 'x86_64')
+url="http://www.dolibarr.org"
+license=('GPLv3')
+makedepends=()
+depends=('php')
+optdepends=('mysql' 'postgreql')
+source=(http://downloads.sourceforge.net/project/dolibarr/Dolibarr%20ERP-CRM/$pkgver/dolibarr-$pkgver.tgz)
+install=dolibarr.install
+md5sums=('6f3be01b737375f06075d93a4b4b366c')
+
+
+package() {
+   mkdir -p $pkgdir/srv/dolibarr
+
+   cp -r -p $srcdir/$pkgname-$pkgver/* $pkgdir/srv/dolibarr/
+
+   mkdir $pkgdir/srv/dolibarr/conf/
+}

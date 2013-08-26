@@ -2,13 +2,14 @@
 
 pkgname=touhy-git
 _gitname=touhy
-pkgver=50.499d664
-pkgrel=4
+_resdir=touhydev
+pkgver=51.7d9b04e
+pkgrel=7
 pkgdesc="Elzen's desktop Environment"
 arch='any'
 license='GPL3'
 install='touhy.install'
-url='http://www.irlnc.org/touhy/'
+url='http://fadrienn.irlnc.org/touhy/'
 groups='touhy'
 depends=('udisks2' 'pygtk' 'python2-wnck' 'python2-notify' \
   'python2-dbus' 'python2-numpy')
@@ -48,9 +49,9 @@ package() {
   
   mkdir -p ${pkgdir}/usr/bin
   mkdir -p ${pkgdir}/usr/lib/python2.7/site-packages
-  mkdir -p ${pkgdir}/usr/share/${_gitname}
+  mkdir -p ${pkgdir}/usr/share/${_resdir}
   
-  cp -r resources/* ${pkgdir}/usr/share/${_gitname}
+  cp -r resources/* ${pkgdir}/usr/share/${_resdir}
   cp -r touhy ${pkgdir}/usr/lib/python2.7/site-packages
   
   rm .gitignore
@@ -62,7 +63,7 @@ package() {
     patch -i ${srcdir}/use-env.patch ${pkgdir}/usr/bin/${_file}
   done
 
-  install -Dm 644 ${pkgdir}/usr/share/${_gitname}/appinfos/touhy.desktop \
+  install -Dm 644 ${pkgdir}/usr/share/${_resdir}/appinfos/touhy.desktop \
     ${pkgdir}/usr/share/xsessions/touhy.desktop
 
   # remove applications, they have or will have their own PKGBUILD

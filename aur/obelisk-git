@@ -1,0 +1,40 @@
+# Maintainer: Andy Weidenbaum <archbaum@gmail.com>
+
+pkgname=obelisk-git
+_gitname='obelisk'
+pkgver=66888c7
+pkgrel=1
+pkgdesc="Obelisk of light scalable Bitcoin infrastructure"
+arch=('i686' 'x86_64')
+depends=('libbitcoin-leveldb-git' 'libconfig' 'zeromq')
+makedepends=('gcc' 'git' 'make')
+url="https://github.com/spesmilo/obelisk/"
+license=('AGPL3')
+source=(git+https://github.com/spesmilo/obelisk/)
+sha256sums=('SKIP')
+provides=('obelisk')
+conflicts=('obelisk')
+
+pkgver() {
+  cd $_gitname
+  git describe --always | sed 's|-|.|g'
+}
+
+build() {
+  cd $_gitname
+
+  msg 'Building...'
+  autoreconf -i
+  ./configure --prefix=/usr --sbindir=/usr/bin --libexecdir=/usr/bin --sysconfdir=/etc --sharedstatedir=/etc --localstatedir=/etc --program-prefix=obelisk-
+  make
+}
+
+package() {
+  cd $_gitname
+
+  msg 'Installing...'
+  make DESTDIR="$pkgdir" install
+
+  msg 'Cleaning up pkgdir...'
+  find "$pkgdir" -type d -name .git -exec rm -r '{}' +
+}
