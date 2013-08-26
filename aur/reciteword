@@ -1,0 +1,24 @@
+#Contributor: Wang Shouju <TheThirdGhost[AT]gmail[DOT]com>
+
+pkgname=reciteword
+pkgver=0.8.5
+pkgrel=1
+pkgdesc="a education software to help people to study English"
+arch=(i686 x86_64)
+url="http://reciteword.cosoft.org.cn"
+license="GPL"
+depends=('glibc' 'perlxml' 'esd')
+source=(http://downloads.sourceforge.net/reciteword/$pkgname-$pkgver.tar.bz2)
+md5sums=('36a146393616158ef6a56f5b3f668274')
+
+
+build() {
+  cd $srcdir/$pkgname-$pkgver
+  ./configure --prefix=/usr
+  make
+}
+
+package() {
+  cd $srcdir/$pkgname-$pkgver
+  make DESTDIR=$pkgdir install
+}

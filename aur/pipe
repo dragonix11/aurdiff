@@ -1,0 +1,24 @@
+# Maintainer: Florian Walch <florian dot walch at gmx dot at>
+
+pkgname=pipe
+pkgver=4.2.2
+pkgrel=1
+pkgdesc="Platform Independent Petri Net Editor."
+arch=('any')
+url="http://sourceforge.net/projects/pipe2/"
+license=('custom')
+depends=('java-runtime')
+source=("http://sourceforge.net/projects/pipe2/files/PIPEv4/PIPEv${pkgver}/PIPEv${pkgver}.zip" pipe LICENSE)
+md5sums=('87c19ca0b267341a4ce3cbe5d6cdcfea'
+         '7b12f2aedc23ad66aeb7f3543dc00bd0'
+         '7cf9b4e08660478ca4246e4333cecedd')
+
+package() {
+  # install files and executable
+  install -d $pkgdir/usr/share/java/pipe
+  cp -dr $srcdir/PIPEv4/Pipe/* $pkgdir/usr/share/java/pipe
+  install -D $srcdir/pipe $pkgdir/usr/bin/pipe
+
+  # install license
+  install -D $srcdir/LICENSE $pkgdir/usr/share/licenses/$pkgname/LICENSE
+}

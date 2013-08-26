@@ -1,0 +1,31 @@
+# Contributor: Sevenseven <owlpic@me.com>
+
+pkgname=qsapecng
+pkgver=2.0.0
+pkgrel=2
+pkgdesc="QSapecNG is a Qt4-based symbolic analysis program for linear analog circuits."
+arch=('i686' 'x86_64')
+url="http://sourceforge.net/projects/qsapecng/"
+license=('GPLv3')
+depends=('qt4' 'qwt5' 'boost-libs')
+makedepends=('boost' 'doxygen' 'cmake')
+source=("http://sourceforge.net/projects/qsapecng/files/QSapecNG-${pkgver}-source.tar.gz")
+md5sums=('310b56d8c9e31d4ff024dd1ccb047e51')
+
+build(){
+  cd ${srcdir}
+  if [[ -d ${srcdir}/build ]]; then
+    msg "Cleaning the previous build directory..."
+    rm -rf ${srcdir}/build 
+  fi
+
+  mkdir ${srcdir}/build
+  cd ${srcdir}/build 
+  cmake ${srcdir}/QSapecNG-${pkgver}-source -DCMAKE_INSTALL_PREFIX=/usr -DCMAKE_BUILD_TYPE=Release
+  make
+}
+
+package() { 
+  cd ${srcdir}/build
+  make DESTDIR="${pkgdir}" install
+}
