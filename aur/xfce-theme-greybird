@@ -1,0 +1,55 @@
+# Maintainer: Limao Luo <luolimao+AUR@gmail.com>
+# Contributor: flan_suse
+#
+# This suite contains the following:
+#        * xfwm4 theme
+#        * xfwm4 compact theme
+#        * metacity theme
+#        * emerald theme
+#        * gtk2 theme
+#        * gtk2 theme (classic)
+#        * gtk3 theme
+#        * gtk3 theme (classic)
+#        * unity theme
+#        * xfce4-notify theme
+#        * lightdm theme
+#        * wallpaper (found in the shimmer-wallpapers package; optdepends)
+
+# There have been some drastic changes as of July 22nd, 2012!
+# Please read through the AUR page comments if you wish to learn more.
+# I have modified this PKGBUILD to compensate for the drastic changes.
+
+pkgname=xfce-theme-greybird
+_pkgname=Greybird
+pkgver=1.2.1
+_pkgverclassic=0.9
+pkgrel=1
+pkgdesc="A grey and blue Xfce theme, used by default in Xubuntu 12.04; includes the classic low saturation theme"
+arch=(any)
+url=http://shimmerproject.org/projects/greybird/
+license=(CCPL:by-sa-3.0 GPL)
+groups=(xfce-themes-shimmer-collection)
+depends=(gtk-engine-murrine)
+optdepends=('elementary-xfce-icons: matching icon set; use the dark icon theme'
+    'gtk-engine-unico: required for gtk3 support for the classic theme; not required for the current theme'
+    'gtk3: required for CSS/GTK3 theme'
+    'lightdm-gtk-greeter: required for the LightDM GTK theme'
+    'lightdm-unity-greeter: required for the LightDM Unity theme'
+    'shimmer-wallpapers: contains the Greybird wallpaper, among others')
+conflicts=($pkgname-git)
+source=($pkgname-$pkgver.tar.gz::https://github.com/shimmerproject/$_pkgname/archive/v$pkgver.tar.gz
+    $pkgname-$_pkgverclassic.tar.gz::https://github.com/shimmerproject/$_pkgname/archive/v$_pkgverclassic.tar.gz)
+sha256sums=('d937e407950be4c73422cfe15daf59220ea33dc05005b89712f1940205c6330f'
+    '661f81347fe227bc3dc7ae40ee0e9bf1c96b478fab7283416a8569379a0aec4f')
+sha512sums=('60e34c53713b16bfc439647a2ec7e2585e6ffcfcc8a98ec34afcec90575ce60d4e6b2e7a47f0b65a20c3b8f6f9856f93a842caa7b245d8a374b9d30c1ec1a3e2'
+    '599fa02ea6eeb6f805c06f7e57ea86d6b620a28a24c5439b0a826439e04a7ac245a95c86c8ee5a4550c070308174564a427dd80fa8538c90e1439b9f697e17c4')
+
+package() {
+    local _themedir="$pkgdir/usr/share/themes"
+    install -d "$_themedir/$_pkgname "{Classic,Compact}
+
+    cp -rf $_pkgname-$pkgver/ "$_themedir"/$_pkgname/
+    rm "$_themedir"/$_pkgname/.gitignore
+    cp -rf $_pkgname-$_pkgverclassic/gtk-{2,3}.0 "$_themedir/$_pkgname Classic"
+    ln -s /usr/share/themes/$_pkgname/xfwm4_compact "$_themedir/$_pkgname Compact/xfwm4"
+}

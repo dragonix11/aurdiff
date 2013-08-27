@@ -1,0 +1,31 @@
+# Maintainer: Limao Luo <luolimao+AUR@gmail.com>
+# Contributor: flan_suse
+#
+# This suite contains the following:
+#        * xfwm4 theme
+#        * gtk2 theme
+#        * gtk3 theme
+#        * wallpaper (found in the shimmer-wallpapers package; optdepends)
+
+pkgname=xfce-theme-albatross
+_pkgname=Albatross
+pkgver=1.4
+pkgrel=1
+pkgdesc="A dark, smooth Xfce theme, introduced in the release of Xubuntu 9.10"
+arch=(any)
+url=http://shimmerproject.org/projects/albatross/
+license=(CCPL:by-sa-3.0 GPL)
+groups=(xfce-themes-shimmer-collection)
+depends=(gtk-engine-murrine)
+optdepends=('elementary-xfce-icons: matching icon set; use the dark icon theme'
+    'gtk-engine-unico: required for gtk3 support'
+    'shimmer-wallpapers: contains the Albatross wallpaper, among others')
+source=($pkgname-$pkgver.tar.gz::https://github.com/shimmerproject/$_pkgname/archive/v$pkgver.tar.gz)
+sha256sums=('cca5b0d217c99fc88074c3e89f8d5dbf676c68eca31fd13a9310b3d6bcb5527e')
+sha512sums=('86570e5ea7b42ae26ba0be5e39f990e0909fce0f43c35146db232ad713036802413796589b407d8bf7f379d52af134bf62af5145e6ff2d73e457fb92cf6422d9')
+
+package() {
+    install -d "$pkgdir"/usr/share/themes/
+    cp -rf $_pkgname-$pkgver/ "$pkgdir"/usr/share/themes/$_pkgname/
+    rm "$pkgdir"/usr/share/themes/$_pkgname/.gitignore
+}

@@ -1,0 +1,25 @@
+# Contributor: Arch Haskell Team <arch-haskell@haskell.org>
+_hkgname=pdf2line
+pkgname=pdf2line
+pkgver=0.0.1
+pkgrel=4
+pkgdesc="Simple command-line utility to convert PDF into text"
+url="http://hackage.haskell.org/package/${_hkgname}"
+license=('GPL')
+arch=('i686' 'x86_64')
+makedepends=('ghc' 'haskell-findbin' 'haskell-binary' 'haskell-bytestring' 'haskell-containers' 'haskell-filepath' 'haskell-process')
+depends=('gmp')
+options=('strip')
+source=(http://hackage.haskell.org/packages/archive/${_hkgname}/${pkgver}/${_hkgname}-${pkgver}.tar.gz)
+
+build() {
+    cd ${srcdir}/${_hkgname}-${pkgver}
+    runhaskell Setup configure --prefix=/usr --docdir=/usr/share/doc/${pkgname} -O
+    runhaskell Setup build
+}
+
+package() {
+    cd ${srcdir}/${_hkgname}-${pkgver}
+    runhaskell Setup copy --destdir=${pkgdir}
+}
+md5sums=('7ebf9db25a1ef136475396eedeff6f66')

@@ -1,0 +1,29 @@
+# Contributor: Patrick Palka <patrick@parcs.ath.cx>
+# Contributor: taimon@aur
+# Contributor: Dmitry Ostasevich <ostasevich at gmail dot com>
+
+pkgname=tudu
+pkgver=0.9.1
+pkgrel=1
+pkgdesc="ncurses-based hierarchical todo list manager with vim-like keybindings"
+arch=(i686 x86_64)
+url="http://code.meskio.net/tudu/"
+license=('GPL')
+depends=('ncurses')
+source=(http://code.meskio.net/$pkgname/$pkgname-$pkgver.tar.gz)
+md5sums=('c79333a9dcfa321e723aae424e90c778')
+
+
+build() {
+    cd "$pkgname-$pkgver"
+
+    ./configure --prefix=/usr --sysconfdir=/etc
+    make
+}
+
+package() {
+    cd "$pkgname-$pkgver"
+
+    make DESTDIR=$pkgdir install
+    install -vDm644 COPYING "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
+}

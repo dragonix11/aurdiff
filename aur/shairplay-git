@@ -1,0 +1,43 @@
+# $Id:
+# Maintainer: winlu
+# Contributor: BlackIkeEagle <ike DOT devolder AT gmail DOT com>
+# Contributor: skunark <jim.casteel@torpedia.org>
+
+pkgname=shairplay-git
+_gitname=shairplay
+pkgver=108.c892072
+pkgrel=1
+pkgdesc='Apple airplay and raop protocol server'
+arch=('i686' 'x86_64')
+url='https://github.com/juhovh/shairplay'
+license=('GPLv3')
+depends=('avahi' 'libao')
+makedepends=('git')
+source=("$_gitname::git://github.com/juhovh/shairplay.git")
+sha256sums=('SKIP')
+options=(!libtool)
+provides=('libshairport')
+conflicts=('libshairport')
+
+pkgver() {
+	cd "$srcdir/$_gitname"
+	echo $(git rev-list --count HEAD).$(git rev-parse --short HEAD)
+}
+
+build() {
+	cd $_gitname
+	./autogen.sh
+	./configure --prefix=/usr/
+	# installing airport.key to /etc/shairplay/
+	sed 's/airport.key/\/etc\/shairplay\/airport.key/' -i "$srcdir/$_gitname"/src/shairplay.c
+	make
+}
+
+package() {
+	install -Dm755 ../shairplay.service "${pkgdir}"/usr/lib/systemd/system/shairplay.service 
+	cd $_gitname
+	make DESTDIR="$pkgdir" install
+	install -Dm644 airport.key "${pkgdir}"/etc/${pkgname}/airport.key
+	install -Dm644 LICENSE "${pkgdir}"/usr/share/licenses/${pkgname}/LICENSE
+	install -Dm644 README.md "${pkgdir}"/usr/share/doc/${pkgname}/README.md
+}

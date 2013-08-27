@@ -1,0 +1,35 @@
+# Contributor: Ecmel Ercan <ecmel.ercan@gmail.com>
+
+pkgname=ss
+pkgver=1.05
+pkgrel=1
+pkgdesc="batch spreadsheet for C programmers"
+url="http://fog.misty.com/perry/ss/ref.html"
+arch=('x86_64' 'i686')
+license=('GPL3')
+depends=()
+makedepends=('groff')
+optdepends=('gcc: for macros' 
+            'gawk: for html export' 
+            'gnuplot: for plotting' 
+            'netpbm: for image export')
+source=("http://fog.misty.com/perry/ss/${pkgname}-${pkgver}.tar.gz")
+md5sums=('a11921bcc815158a8b85ebe9950ebd93')
+
+
+build() {
+  cd "${srcdir}/${pkgname}-${pkgver}"
+  sed -i 's:SS="/usr/local/bin/ss":SS="/usr/bin/ss":' SS
+  make
+}
+
+package() {
+  cd "${srcdir}/${pkgname}-${pkgver}"
+  install -Dm755 ss "$pkgdir/usr/bin/ss"
+  install -Dm755 SS "$pkgdir/usr/bin/SS"
+  
+  cd "${srcdir}/${pkgname}-${pkgver}/doc"
+  install -d "$pkgdir/usr/share/doc/SS"
+  cp -rf *.{ss,html,gif,txt} "$pkgdir/usr/share/doc/SS/"
+  install -Dm644 SS.1 "$pkgdir/usr/share/man/man1/SS.1"
+}
