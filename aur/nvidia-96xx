@@ -1,0 +1,47 @@
+# Contributor : Thomas Baechler <thomas@archlinux.org>
+# Contributor : Natrio <natrio@list.ru>
+
+pkgname=nvidia-96xx
+pkgver=96.43.23
+_kbr="3.10"
+_kmin=$_kbr".7"
+_kless="3.11"
+_extramodules=extramodules-${_kbr}-ARCH
+_kernver="$(cat /usr/lib/modules/${_extramodules}/version)"
+pkgrel=10
+pkgdesc="NVIDIA drivers for linux, 96xx branch."
+arch=('i686' 'x86_64')
+[ "$CARCH" = "i686"   ] && ARCH=x86
+[ "$CARCH" = "x86_64" ] && ARCH=x86_64
+url="http://www.nvidia.com/"
+depends=("linux>=$_kmin" "linux<$_kless" "nvidia-96xx-utils")
+makedepends=("linux-headers>=$_kmin" "linux-headers<$_kless")
+conflicts=('nvidia-173xx' 'nvidia-304xx' 'nvidia')
+license=('custom')
+install=nvidia.install
+source=("http://download.nvidia.com/XFree86/Linux-$ARCH/${pkgver}/NVIDIA-Linux-$ARCH-${pkgver}-pkg0.run" "173.14.36-37.patch" "linux-3.10.patch")
+options=(!strip)
+md5sums=('ca0bc6ae3b37cb259f3a906b4dc4670b' '944ed806c8d0f9174d5e9e16ae065bf6' 'edda124f64772b87314945eb95abfa24')
+[ "$CARCH" = "x86_64" ] && md5sums[0]='a043fe8dd639bd00b1792eea7a195677'
+
+build() {
+	cd $srcdir
+	sh NVIDIA-Linux-$ARCH-${pkgver}-pkg0.run --extract-only
+	cd NVIDIA-Linux-$ARCH-${pkgver}-pkg0
+	cd usr/src/nv/
+	patch -p1 -i $srcdir/173.14.36-37.patch || exit 1
+	patch -p4 -i $srcdir/linux-3.10.patch || exit 1
+ 	ln -s Makefile.kbuild Makefile
+	make SYSSRC=/usr/lib/modules/${_kernver}/build module
+}
+
+package() {
+	cd $srcdir/NVIDIA-Linux-$ARCH-${pkgver}-pkg0/usr/src/nv/
+	mkdir -p $pkgdir/usr/lib/modules/${_extramodules}/
+	install -m644 nvidia.ko $pkgdir/usr/lib/modules/${_extramodules}/
+        mkdir -p $pkgdir/etc/modprobe.d
+        echo "blacklist nouveau" >> $pkgdir/etc/modprobe.d/nouveau_blacklist.conf
+	sed -i -e "s/EXTRAMODULES='.*'/EXTRAMODULES='${_extramodules}'/" $startdir/nvidia.install
+        # gzip -9 module
+        gzip "${pkgdir}/usr/lib/modules/${_extramodules}/nvidia.ko"
+}
