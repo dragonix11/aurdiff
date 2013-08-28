@@ -1,0 +1,37 @@
+# Maintainer: Josh <moc tod liamg ta suoecal>
+
+pkgname=duo_unix
+pkgver=1.9.4
+pkgrel=1
+pkgdesc='Login utility and PAM module for Duo Security two-factor authentication'
+arch=('i686' 'x86_64')
+url='https://www.duosecurity.com/docs/duounix'
+license=('custom:GPL2')
+depends=('openssl' 'pam')
+install="${pkgname}.install"
+backup=('etc/duo/login_duo.conf' 'etc/duo/pam_duo.conf')
+source=("https://dl.duosecurity.com/${pkgname}-latest.tar.gz")
+options=('!libtool')
+
+# https://www.duosecurity.com/docs/checksums#duounix
+sha1sums=('bc8cd9c9a4774a4f85e76453488b8e12c5681fd1')
+
+build() {
+  cd "${srcdir}/${pkgname}-${pkgver}"
+
+  # By default, login_duo is installed setuid root with system-wide config files
+  # By default, login_duo tries to use the sshd user for privilege separation (--with-privsep-user=USER)
+  # If this user does not exist then the nobody user is used instead (which should be the Arch Linux default)
+  # More config options here: https://github.com/duosecurity/duo_unix
+  ./configure --prefix=/usr --sbindir=/usr/bin --with-pam=/usr/lib/security
+  make
+}
+
+package() {
+  cd "${srcdir}/${pkgname}-${pkgver}"
+  make DESTDIR="${pkgdir}/" install
+
+  # The license is GPL, but with a couple clarifications/exceptions (link the LICENSE file to /usr/share/licenses)
+  install -d -m755 "${pkgdir}/usr/share/licenses/${pkgname}"
+  ln -s "/usr/share/doc/${pkgname}/LICENSE" "${pkgdir}/usr/share/licenses/${pkgname}/LICENSE"
+}

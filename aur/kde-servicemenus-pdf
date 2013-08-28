@@ -1,0 +1,20 @@
+# Contributor: Krzysztof Raczkowski <raczkow@gnu-tech.pl>
+# Maintainer: alexmo82 <25396682@live.it>
+
+pkgname=kde-servicemenus-pdf
+pkgver=0.5
+pkgrel=2
+pkgdesc="File Manager extra PDF managing options in KDE4."
+arch=('any')
+url="http://kde-look.org/content/show.php/servicemenu-pdf+for+KDE4?content=37321"
+license=('GPL')
+depends=('kdebase-workspace>=4.5.0' 'ghostscript' 'texlive-core' 'poppler' 'pdftk')
+source=(http://www.egregorion.net/works/kde/servicemenus/pdf/kde-service-menu-pdf_0.5.tar.gz)
+md5sums=('092612e97819bd18ddddf29cde3b3b20')
+
+build() {
+  mkdir -p ${pkgdir}/usr/share/kde4/services/ServiceMenus/
+  mkdir -p ${pkgdir}/usr/bin/
+  install -m 644 ${srcdir}/kde-service-menu-pdf_$pkgver/desktop/*.desktop ${pkgdir}/usr/share/kde4/services/ServiceMenus/
+  install -m 755 ${srcdir}/kde-service-menu-pdf_$pkgver/bin/* ${pkgdir}/usr/bin/
+}

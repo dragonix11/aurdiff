@@ -1,0 +1,26 @@
+# Maintainer: Rafael Beraldo <rafaelluisberaldo@gmail.com>
+
+pkgname=abntex2
+pkgver=1.8
+pkgrel=1
+pkgdesc="a LaTeX class for writing ABNT-compliant documents"
+arch=('i686' 'x86_64')
+url="https://code.google.com/p/abntex2/"
+license=('LPPL')
+depends=('texlive-core')
+source=("https://abntex2.googlecode.com/files/${pkgname}.tds-${pkgver}.zip")
+conflicts=('texlive-publishers')
+md5sums=('582b828e6e02611333211ee928525dca')
+
+
+install=abntex2.install
+
+package() {
+  install -dm755 "${pkgdir}/usr/share/texmf-dist/"
+
+  for subdir in tex doc bibtex ; do
+    cp -r "${srcdir}/${subdir}" "${pkgdir}/usr/share/texmf-dist/"
+  done
+}
+
+# vim:set ts=2 sw=2 et:
