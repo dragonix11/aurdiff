@@ -1,0 +1,56 @@
+pkgname=mingw-w64-cairo
+pkgver=1.12.16
+pkgrel=1
+pkgdesc="Cairo vector graphics library (mingw-w64)"
+arch=(any)
+url="http://cairographics.org"
+license=("LGPL" "MPL")
+makedepends=(mingw-w64-gcc mingw-w64-pkg-config)
+depends=(mingw-w64-crt
+mingw-w64-glib2
+mingw-w64-libpng
+mingw-w64-fontconfig
+mingw-w64-pixman)
+options=(!libtool !strip !buildflags)
+source=("http://cairographics.org/releases/cairo-${pkgver}.tar.xz")
+md5sums=('a1304edcdc99282f478b995ee5f8f854')
+
+_architectures="i686-w64-mingw32 x86_64-w64-mingw32"
+
+build() {
+  cd "$srcdir/cairo-$pkgver"
+  for _arch in ${_architectures}; do
+    mkdir -p "${srcdir}/${pkgname}-${pkgver}-build-${_arch}"
+    cd "${srcdir}/${pkgname}-${pkgver}-build-${_arch}"
+    export CFLAGS="$CFLAGS -mms-bitfields"
+    unset LDFLAGS
+    ${srcdir}/${pkgname#mingw-w64-}-${pkgver}/configure \
+      --prefix=/usr/${_arch} \
+      --build=$CHOST \
+      --host=${_arch} \
+      --enable-win32 \
+      --enable-win32-font \
+      --enable-png \
+      --enable-shared \
+      --enable-static \
+      --enable-gobject \
+      --enable-tee \
+      --disable-xlib \
+      --disable-xcb \
+      --enable-fc \
+      --enable-ft
+    sed -i "s/deplibs_check_method=.*/deplibs_check_method=pass_all/g" libtool
+    make
+  done
+}
+
+package() {
+  for _arch in ${_architectures}; do
+    cd "${srcdir}/${pkgname}-${pkgver}-build-${_arch}"
+    make DESTDIR="$pkgdir" install
+    find "$pkgdir/usr/${_arch}" -name '*.exe' -o -name '*.bat' -o -name '*.def' -o -name '*.exp' | xargs -rtl1 rm
+    find "$pkgdir/usr/${_arch}" -name '*.dll' | xargs -rtl1 ${_arch}-strip --strip-unneeded
+    find "$pkgdir/usr/${_arch}" -name '*.a' -o -name '*.dll' | xargs -rtl1 ${_arch}-strip -g
+    rm -r "$pkgdir/usr/${_arch}/share"
+  done
+}
