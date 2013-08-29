@@ -1,0 +1,30 @@
+# Contributor: Mikko Sysikaski  mikko.sysikaski at gmail dot com
+# Updated by Stephen Diehl - sdiehl@clarku.edu
+# Maintainer: Bjoern Lindig bjoern _dot_ lindig _at_ googlemail _dot_ com
+
+pkgname=pure
+pkgver=0.57
+pkgrel=3
+pkgdesc="Pure is a modern-style functional programming language based on term rewriting."
+arch=("i686" "x86_64")
+license=('GPL3')
+url="http://code.google.com/p/pure-lang"
+depends=('llvm<=3.2' 'gsl' 'gmp' 'readline')
+makedepends=('make' 'gcc' 'bison' 'flex')
+optdepends=('emacs-pure')
+source=("https://bitbucket.org/purelang/pure-lang/downloads/$pkgname-$pkgver.tar.gz")
+md5sums=('c32cd4a539474108389da66ee9d6c78f')
+
+build() {
+     cd $srcdir
+
+     cd $srcdir/$pkgname-$pkgver
+     ./configure --prefix=/usr --without-elisp --without-texmacs --enable-release
+
+     make 
+}
+
+package() {
+     cd $srcdir/$pkgname-$pkgver
+     make DESTDIR=$pkgdir install 
+}
