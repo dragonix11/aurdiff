@@ -1,0 +1,56 @@
+# Maintainer: Cravix < dr dot neemous at gmail dot com >
+# Contributor: Sven-Hendrik Haase <sh@lutzhaase.com>
+# Contributor: Jose Riha <jose1711 gmail com>
+
+pkgname=freegish-git
+_pkgname=gish
+pkgver=1.60.158.605422d
+pkgrel=1
+pkgdesc="Free version of gish, a physics platformer"
+arch=('x86_64' 'i686')
+url="http://github.com/FrozenCow/gish"
+license=('GPL')
+depends=('sdl' 'openal' 'libvorbis' 'libpng' 'libgl')
+makedepends=('git' 'cmake' 'mesa' 'imagemagick')
+provides=('freegish')
+conflicts=('freegish')
+install='freegish.install'
+
+source=("git://github.com/theunknownxy/$_pkgname.git"
+        'freegish.desktop'
+        'libmath.patch')
+
+md5sums=('SKIP'
+         '0516766a35113b84bafebe1861db0fce'
+         'cb0877cc32afa3a679b911ab643a14b6')
+
+pkgver() {
+  cd "$srcdir/$_pkgname"
+  echo 1.60.$(git rev-list --count HEAD).$(git rev-parse --short HEAD)
+}
+
+build() {
+  cd "$srcdir/$_pkgname"
+
+  # libmath fix...
+  patch -p1 < ../libmath.patch
+  mkdir build && cd build
+  cmake ..
+  make
+}
+
+package() {
+  cd $srcdir/$_pkgname
+  install -Dm755 gish $pkgdir/usr/bin/freegish
+  install -dm755 $pkgdir/usr/share/freegish
+  mkdir -p $pkgdir/usr/share/{icons,applications}
+
+  # i don't know if there's a better way instead of using imagemagick... hmm
+  convert gish.bmp $pkgdir/usr/share/icons/freegish.png
+
+  install -m644 ${srcdir}/freegish.desktop $pkgdir/usr/share/applications/freegish.desktop
+  # there's no texturesets or tile0{1,2,3} dir in git repo...
+  cp -r animation level music sound texture $pkgdir/usr/share/freegish
+}
+
+# vim: sw=2:ts=2 et:

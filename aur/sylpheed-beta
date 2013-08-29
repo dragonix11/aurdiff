@@ -1,0 +1,32 @@
+# Maintainer: Einar Lielmanis <einar@spicausis.lv>
+
+pkgname=sylpheed-beta
+pkgver=3.4.0beta5
+pkgrel=2
+pkgdesc="Lightweight and user-friendly e-mail client. Latest official beta version."
+arch=('i686' 'x86_64')
+url="http://sylpheed.sraoss.jp/en/"
+license=('GPL')
+depends=('gpgme' 'gtk2')
+makedepends=('compface' 'gtkspell')
+options=('libtool')
+conflicts=('sylpheed' 'sylpheed-beta-iconmod')
+provides=('sylpheed')
+source=(http://sylpheed.sraoss.jp/sylpheed/v3.4beta/sylpheed-$pkgver.tar.bz2)
+
+build() {
+  cd "$srcdir/sylpheed-$pkgver"
+
+  sed -i 's/AM_CONFIG_HEADER/AC_CONFIG_HEADERS/g' configure.in
+  sed -i 's/AM_PROG_CC_STDC/AC_PROG_CC/g' configure.in
+
+  ./autogen.sh --prefix=/usr --enable-ldap --enable-gpgme || return 1
+  make || return 1
+}
+
+package() {
+  cd "$srcdir/sylpheed-$pkgver"
+  make DESTDIR="$pkgdir" install || return 1
+}
+
+md5sums=('0922ba11fdc318eced74528ba2318b76')
