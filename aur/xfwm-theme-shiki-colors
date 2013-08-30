@@ -1,0 +1,49 @@
+#Maintainer: boenki <boenki at gmx dot de>
+#Contributor: Vclav Kram <vkramar@email.cz>
+
+pkgname=xfwm-theme-shiki-colors
+pkgver=0.3
+pkgrel=2
+pkgdesc="xfwm theme for shiki-colors."
+arch=(any)
+url="http://www.xfce-look.org/content/show.php/Shiki-Colors+for+xfwm?content=88913"
+license=('GPL')
+depends=('xfwm4')
+source=("${pkgname}-${pkgver}-src.tar.gz::http://www.xfce-look.org/CONTENT/content-files/88913-Shiki-Colors.tar.gz")
+md5sums=('e505be9a0bf0451095c553409b2ff453')
+
+package() {
+  install -d $pkgdir/usr/share/themes
+  cp -r $srcdir/Shiki-Colors $pkgdir/usr/share/themes
+  cd $pkgdir/usr/share/themes/Shiki-Colors/xfwm4
+  rm *~
+  chmod 644 *
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

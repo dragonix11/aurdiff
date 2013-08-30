@@ -1,0 +1,40 @@
+# Maintainer: Moritz Bunkus <moritz@bunkus.org>
+
+pkgname=perl-rose-db-object
+pkgver=0.807
+pkgrel=1
+pkgdesc="Extensible, high performance object-relational mapper (ORM)"
+arch=(any)
+license=('PerlArtistic')
+url="http://search.cpan.org/dist/Rose-DB-Object/"
+depends=('perl-bit-vector' 'perl-clone>=0.29' 'perl-datetime' 'perl-dbi>=1.40' 'perl-list-moreutils' 'perl-rose-datetime>=0.532' 'perl-rose-db>=0.763' 'perl-rose-object>=0.854' 'perl-time-clock>=1.00')
+options=('!emptydirs')
+source=("http://search.cpan.org/CPAN/authors/id/J/JS/JSIRACUSA/Rose-DB-Object-${pkgver}.tar.gz")
+md5sums=('472efb003b0d6bf1c7878d475c798105')
+sha512sums=('8dcc5c7edde4bd54031048cee7bdc641e126ae1cc155700a3683837d7669f31cf74a17fdfae104ed841ffa7644311693ee44d04492384e93f95dad156b9e59c5')
+
+prepare_environment() {
+  export PERL_MM_USE_DEFAULT=1 PERL5LIB=""                 \
+    PERL_AUTOINSTALL=--skipdeps                            \
+    PERL_MM_OPT="INSTALLDIRS=vendor DESTDIR='$pkgdir'"     \
+    PERL_MB_OPT="--installdirs vendor --destdir '$pkgdir'" \
+    MODULEBUILDRC=/dev/null
+  cd "${srcdir}/Rose-DB-Object-${pkgver}"
+}
+
+build() {
+  prepare_environment
+  /usr/bin/perl Makefile.PL
+  make
+}
+
+check() {
+  prepare_environment
+  make test
+}
+
+package() {
+  prepare_environment
+  make install
+  find "$pkgdir" -name .packlist -o -name perllocal.pod -delete
+}

@@ -1,0 +1,30 @@
+# Maintainer: Arne Hoch <arne@derhoch.de>
+pkgname=dbeaver
+pkgver=2.2.5
+pkgrel=1
+pkgdesc="a free universal database tool for developers and database administrators"
+arch=('i686' 'x86_64')
+url="http://dbeaver.jkiss.org/"
+license=("Freeware")
+depends=('java-runtime>=1.6' 'gtk2')
+makedepends=('unzip')
+
+if [ "$CARCH" = "i686" ]; then
+  source=(http://dbeaver.jkiss.org/files/dbeaver-$pkgver-linux.gtk.x86.zip dbeaver.desktop)
+  md5sums=('8f67a00eae2ada036e699566981ccad9')
+else
+  source=(http://dbeaver.jkiss.org/files/dbeaver-$pkgver-linux.gtk.x86_64.zip dbeaver.desktop)
+  md5sums=('99037defa43d28fc8cdd037bb50b80bf')
+fi
+md5sums+=('6944e8324464e5802ddf6292026593d6')
+
+package() {
+  mkdir -p $pkgdir/opt/
+  mkdir -p $pkgdir/usr/share/applications
+  mkdir -p $pkgdir/usr/bin
+  cd $srcdir
+  cp -r $pkgname $pkgdir/opt/
+  ln -s /opt/dbeaver/dbeaver $pkgdir/usr/bin/
+  install -m 644 $srcdir/dbeaver.desktop $pkgdir/usr/share/applications/
+}
+
