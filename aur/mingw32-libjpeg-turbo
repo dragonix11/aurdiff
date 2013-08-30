@@ -1,0 +1,49 @@
+pkgname=mingw32-libjpeg-turbo
+_pkgname=libjpeg-turbo
+pkgver=1.3.0
+pkgrel=1
+pkgdesc="libjpeg derivative with accelerated baseline JPEG compression and decompression (mingw32)"
+arch=(any)
+url="http://libjpeg-turbo.virtualgl.org/"
+license=("GPL, custom")
+depends=(mingw32-runtime)
+makedepends=(nasm mingw32-gcc)
+provides=("mingw32-libjpeg=8.0.2")
+conflicts=(mingw32-libjpeg)
+replaces=(mingw32-libjpeg)
+options=(!libtool !strip !buildflags)
+source=("http://sourceforge.net/projects/libjpeg-turbo/files/$pkgver/$_pkgname-$pkgver.tar.gz")
+md5sums=('e1e65cc711a1ade1322c06ad4a647741')
+
+build() {
+  cd "$srcdir/$_pkgname-$pkgver"
+
+  ./configure \
+    --host=i486-mingw32 \
+    --prefix=/usr/i486-mingw32 \
+    --with-jpeg8
+  make
+}
+
+package() {
+  cd "$srcdir/$_pkgname-$pkgver"
+
+  make DESTDIR=$pkgdir/ install
+  
+  # provide jpegint.h as it is required by various software
+  install -m644 jpegint.h "$pkgdir/usr/i486-mingw32/include/jpegint.h"
+
+  # Remove manpages
+  echo $pkgdir &> /tmp/elq
+  rm -rf "$pkgdir/usr/i486-mingw32/share/man"
+
+  # Remove docs
+  rm -rf "$pkgdir/usr/i486-mingw32/doc"
+
+  # Remove programs (we need lib, not .exe files)
+  rm -f "$pkgdir/usr/i486-mingw32/bin/"*.exe
+ 
+  # Strip
+  i486-mingw32-strip -x -g "$pkgdir/usr/i486-mingw32/bin/"*.dll
+  i486-mingw32-strip -g "$pkgdir/usr/i486-mingw32/lib/"*.a
+}
