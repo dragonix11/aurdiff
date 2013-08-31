@@ -1,0 +1,24 @@
+# Maintainer: Bjoern Lindig <bjoern dot lindig at googlemail dot com>
+
+pkgname=pure-docs
+pkgver=0.57
+pkgrel=1
+pkgdesc="Pure Language and Library Documentation"
+arch=('any')
+url="http://purelang.bitbucket.org/"
+license=('GPL')
+source=(https://bitbucket.org/purelang/pure-lang/downloads/$pkgname-$pkgver.tar.gz)
+md5sums=('a222c4a7ef48f205eb087480a9cf9adc')
+
+build() {
+  cd "$srcdir/$pkgname-$pkgver"
+  make 
+}
+
+package() {
+  cd "$srcdir/$pkgname-$pkgver"
+  make DESTDIR="$pkgdir/" install
+}
+
+# vim:set ts=2 sw=2 et:
+md5sums=('fef740d217eb060bb8cc57629905c9bd')
