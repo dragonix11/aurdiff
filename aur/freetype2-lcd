@@ -1,0 +1,49 @@
+# Contributor: Anonymo <meowdib at gmail dot com>
+# Maintainer: Luca Bennati <lucak3 AT gmail DOT com>
+
+pkgname=freetype2-lcd
+pkgver=2.5.0.1
+pkgrel=1
+pkgdesc="TrueType font rendering library, for LCD displays."
+arch=('i686' 'x86_64')
+license=('GPL')
+url="http://freetype.sourceforge.net"
+depends=('zlib' 'bzip2' 'sh')
+provides=("freetype2=$pkgver")
+conflicts=('freetype2')
+options=('!libtool')
+source=("http://downloads.sourceforge.net/sourceforge/freetype/freetype-${pkgver}.tar.bz2"
+	freetype-2.3.0-enable-spr.patch
+	freetype-2.2.1-enable-valid.patch
+	freetype-2-quantization_fix.patch
+	ftoption.h)
+md5sums=('c72e9010b1d986d556fc0b2b5fcbf31a'
+         '816dc8619a6904a7385769433c0a8653'
+         '214119610444c9b02766ccee5e220680'
+         '385162f4a3e01653d55ab9a9be0c8808'
+         '5a8171040609dc6f67048e955b5b1324')
+
+build() {
+  cd "${srcdir}/freetype-${pkgver}"
+
+  patch -Np1 -i "${srcdir}/freetype-2.3.0-enable-spr.patch"
+  patch -Np1 -i "${srcdir}/freetype-2.2.1-enable-valid.patch"
+
+  cp "${srcdir}/ftoption.h" include/freetype/config/ftoption.h
+  cd src/autofit
+  patch -p0 -i "${srcdir}/freetype-2-quantization_fix.patch"
+  cd ../..
+
+  ./configure --prefix=/usr
+  make
+}
+
+check() {
+  cd "${srcdir}/freetype-${pkgver}"
+  make -k check
+}
+
+package() {
+  cd "${srcdir}/freetype-${pkgver}"
+  make DESTDIR="${pkgdir}" install
+}

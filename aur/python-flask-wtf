@@ -1,0 +1,25 @@
+pkgname=python-flask-wtf
+pkgver=0.9.1
+pkgrel=1
+pkgdesc='Simple integration of Flask and WTForms (python3 version)'
+arch=('i686', 'x86_64')
+url='https://pypi.python.org/pypi/Flask-WTF'
+license=('custom')
+depends=('python-wtforms' 'python-flask')
+makedepends=('git')
+source=("https://pypi.python.org/packages/source/F/Flask-WTF/Flask-WTF-${pkgver}.tar.gz")
+md5sums=('8404b1950cdf444801d9beb622c18c74')
+
+build() {
+    cd "$srcdir/Flask-WTF-${pkgver}"
+
+    python setup.py build
+}
+
+package() {
+    cd "$srcdir/Flask-WTF-${pkgver}"
+
+    python setup.py install --root=${pkgdir} --optimize=1
+
+    install -D -m644 LICENSE ${pkgdir}/usr/share/licenses/python-flask-wtf
+}

@@ -1,0 +1,42 @@
+# Maintainer: <kfgz at interia dot pl>
+
+pkgname=ibored
+pkgver=1.1.13
+pkgrel=1
+pkgdesc="A hex editor for disk sectors, but can also be used to edit files, including disk images. RTFM!"
+arch=('i686' 'x86_64')
+url="http://apps.tempel.org/iBored/"
+license=('unknown')
+install=${pkgname}.install
+#source=(http://files.tempel.org/iBored/iBored-Linux_${pkgver}.zip
+source=(http://files.tempel.org/iBored/Older%20Versions/iBored-Linux_${pkgver}.zip
+        readme.txt
+        templates_programming.txt
+        ${pkgname}
+        ${pkgname}.desktop)
+md5sums=('5e4a000818439498b041efcdfd57a272'
+         '4e3745e228439323069bb3e9597adbec'
+         '711d1806ab157b6896fd848761c9d265'
+         'd08d1267627b01a4e96983afb724ecea'
+         'caa8a27869f20a4c0395338150646196')
+
+if [ `uname -m` = "x86_64" ]; then
+  depends=('lib32-gtk2')
+ else
+  depends=('gtk2')
+fi
+
+package() {
+  install -dm755 "${pkgdir}"/{opt/${pkgname},usr/bin}
+  cd "${srcdir}"/iBored
+  cp -a * "${pkgdir}"/opt/${pkgname}
+  cd "${pkgdir}"/opt/${pkgname}
+  rm *.rtf
+  mv "Script Methods Reference.txt" script_methods_reference.txt
+  chmod -x script_methods_reference.txt
+  chmod -x "iBored Libs"/templates.xml
+  cd "${srcdir}"
+  install -m644 *.txt "${pkgdir}"/opt/${pkgname}
+  install -m755 ${pkgname} "${pkgdir}"/usr/bin
+  install -D -m644 ibored.desktop "${pkgdir}"/usr/share/applications/ibored.desktop
+}
