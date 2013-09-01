@@ -1,0 +1,32 @@
+# Contributor: David Spicer <azleifel at gmail dot com>
+
+pkgname=vdr-suspendoutput
+_pluginname=suspendoutput
+pkgver=2.0.0
+pkgrel=1
+arch=('i686' 'x86_64')
+pkgdesc="A VDR plugin that suspends live TV output"
+url="http://sourceforge.net/projects/xineliboutput/"
+license=('GPL2')
+depends=('vdr>=2.0.0')
+source=(http://prdownloads.sourceforge.net/sourceforge/xineliboutput/${pkgname}-${pkgver}.tgz)
+md5sums=('4cbeaf9bf9c83e72ed3a8dee703caf39')
+
+build() {
+  cd "${srcdir}/${_pluginname}-${pkgver}"
+
+  make
+}
+
+package() {
+  cd "${srcdir}/${_pluginname}-${pkgver}"
+
+  # Install plugin
+  make DESTDIR="$pkgdir/" install
+  
+  # Install documents
+  install -d -m755 "${pkgdir}/usr/share/doc/${pkgname}"
+  for _file in README HISTORY; do
+    install -m644 ${_file} "${pkgdir}/usr/share/doc/${pkgname}"
+  done
+}
