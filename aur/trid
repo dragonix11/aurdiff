@@ -1,0 +1,36 @@
+# Maintainer:	Jesse Jaara	<gmail.com: jesse.jaara>
+# Contributor:	p2k		<uni-ulm.de: Patrick.Schneider>
+
+pkgname=trid
+pkgver=2.11
+pkgrel=3
+pkgdesc="An utility designed to identify file types from their binary signatures"
+arch=('i686' 'x86_64')
+url="http://mark0.net/soft-trid-e.html"
+license=('CUSTOM')
+if [ "$CARCH" == "x86_64" ];then
+  depends=('trid-defs' 'lib32-ncurses')
+else
+  depends=('trid-defs' 'ncurses')
+fi
+source=(http://mark0.net/download/trid_linux.zip)
+
+package() {
+  cd "${srcdir}"
+
+  install -D trid "${pkgdir}/opt/trid/trid"
+  install -m 644 readme_e.txt "${pkgdir}/opt/trid/README"
+  mkdir -p "${pkgdir}/usr/share/licenses/trid"
+  ln -s /opt/trid/README "${pkgdir}/usr/share/licenses/trid/README"
+
+  mkdir -p "${pkgdir}/usr/bin"
+  cat > "${pkgdir}/usr/bin/trid" <<EOF
+#!/bin/sh
+
+/opt/trid/trid -d:/opt/trid/triddefs.trd \$*
+
+EOF
+  chmod +x "${pkgdir}/usr/bin/trid"
+}
+
+md5sums=('ee6327a79e1abf8ad36d1b0b96057f3f')

@@ -1,0 +1,56 @@
+# Contributor: Simon Perry <pezz at sanxion dot net>
+# Contributor: Max Roder <maxroder@web.de>
+# Generator  : CPANPLUS::Dist::Arch 1.19
+
+_distpkgname='GnuPG-Interface'
+pkgname=perl-gnupg-interface
+pkgver=0.46
+pkgrel=3
+pkgdesc="Object methods for interacting with GnuPG"
+arch=('any')
+license=('PerlArtistic' 'GPL')
+options=('!emptydirs')
+depends=('perl-any-moose>=0.04')
+makedepends=()
+url='http://search.cpan.org/dist/GnuPG-Interface'
+source=("http://search.cpan.org/CPAN/authors/id/A/AL/ALEXMV/$_distpkgname-$pkgver.tar.gz")
+md5sums=('16339800f127c51a34188a0bf7103219')
+sha512sums=('35a88fdfd28c93e6f320f4fb986bdbbcb0c183876dff4689043ad311c2b60ad0bb23cd3ec7a248eb19c5d3fd286bd92c158bde3651c14cdbea5db875d733049b')
+_distdir="$_distpkgname-$pkgver"
+
+prepare() {
+  cd "$_distdir/test"
+  gpg --list-keys --homedir . >/dev/null
+}
+
+build() {
+  ( export PERL_MM_USE_DEFAULT=1 PERL5LIB=""                 \
+      PERL_AUTOINSTALL=--skipdeps                            \
+      PERL_MM_OPT="INSTALLDIRS=vendor DESTDIR='$pkgdir'"     \
+      PERL_MB_OPT="--installdirs vendor --destdir '$pkgdir'" \
+      MODULEBUILDRC=/dev/null
+
+    cd "$_distdir"
+    /usr/bin/perl Makefile.PL
+    make
+  )
+}
+
+check() {
+  cd "$_distdir"
+  ( export PERL_MM_USE_DEFAULT=1 PERL5LIB=""
+    make test
+  )
+}
+
+package() {
+  cd "$_distdir"
+  make install
+  find "$pkgdir" -name .packlist -o -name perllocal.pod -delete
+}
+
+# Local Variables:
+# mode: shell-script
+# sh-basic-offset: 2
+# End:
+# vim:set ts=2 sw=2 et:

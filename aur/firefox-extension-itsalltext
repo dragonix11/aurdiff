@@ -1,0 +1,25 @@
+# Maintainer: Vain <aurmaint1 on host: uninformativ dot de>
+
+_plugin_name=itsalltext
+_plugin_version=1.8.1
+_plugin_id=4125
+pkgdesc="Edit textareas in your favorite editor"
+license=('GPL3')
+
+pkgname=firefox-extension-$_plugin_name
+pkgver=$_plugin_version
+pkgrel=2
+arch=('any')
+url="https://addons.mozilla.org/firefox/addon/$_plugin_id"
+depends=('firefox')
+source=("https://addons.mozilla.org/firefox/downloads/latest/$_plugin_id/addon-$_plugin_id-latest.xpi")
+md5sums=('261e8be97c0407050331e089525649cc')
+
+package() {
+  cd "$srcdir"
+  emid=$(sed -n '/.*<em:id>\(.*\)<\/em:id>.*/{s//\1/p;q}' install.rdf)
+  dstdir=$pkgdir/usr/lib/firefox/browser/extensions/$emid
+  install -d "$dstdir"
+  mv * "$dstdir"
+  rm "$dstdir"/*.xpi
+}

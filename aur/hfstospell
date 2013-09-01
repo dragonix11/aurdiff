@@ -1,0 +1,34 @@
+# Maintainer: Jesse Jaara	<gmail.com: jesse.jaara>
+# Contributor: Janne Haapsaari	<iki.fi: haaja>
+
+pkgname=hfstospell
+pkgver=0.2.4
+pkgrel=1
+pkgdesc='Helsinki Finite-State Transducer Technology (HFST) tools'
+arch=('i686' 'x86_64')
+url='http://www.ling.helsinki.fi/kieliteknologia/tutkimus/hfst/'
+license=('APACHE')
+depends=('libxml++' 'libarchive' 'libsigc++')
+options=(!libtool)
+source=(http://downloads.sourceforge.net/project/hfst/hfst/hfstospell-${pkgver}.tar.gz)
+
+prepare() {
+  cd "${srcdir}/hfstospell-${pkgver}"
+
+#  sed 's|@HFSTOSPELL_NAME@|hfstospell|' -i hfstospell.pc.in
+}
+
+build() {
+  cd "${srcdir}/hfstospell-${pkgver}"
+
+  ./configure --prefix=/usr
+  make
+}
+
+package () {
+  cd "${srcdir}/hfstospell-${pkgver}"
+
+   make DESTDIR="${pkgdir}" install
+}
+
+md5sums=('159bfa4ca9e7c4073f17e64cfaa2ee50')

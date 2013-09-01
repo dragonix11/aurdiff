@@ -1,0 +1,59 @@
+# Maintainer: Limao Luo <luolimao+AUR@gmail.com>
+# Contributor: TuxSpirit <tuxspirit@archlinux.fr>
+
+_pkgname=peazip
+pkgname=$_pkgname-gtk2
+pkgver=5.1.0
+pkgrel=1
+pkgdesc="GTK2 archiver utility"
+arch=(i686 x86_64)
+url=http://www.peazip.org/peazip-linux.html
+license=(Artistic2.0 LGPL2.1)
+depends=(balz desktop-file-utils lib32-curl lib32-gmp4 lib32-gtk2 lib32-ncurses lpaq paq8o p7zip quad unace upx zpaq)
+[[ $CARCH == "i686" ]] && depends=(${depends[@]/lib32-/})
+provides=($_pkgname)
+conflicts=($_pkgname-qt)
+install=$_pkgname.install
+source=($pkgname-$pkgver.tgz::http://downloads.sourceforge.net/project/$_pkgname/$pkgver/$_pkgname-$pkgver.LINUX.GTK2.tgz $_pkgname.desktop)
+noextract=($pkgname-$pkgver.tgz)
+sha256sums=('8a74b7c659a0854e4f16e9507a870e34aed47b60b41e4d6ab567488c3846db74'
+    '4d876c6a61f25a7e2f3dfa69b1c80e61fdda9220bbf8e23a407e34eae377091b')
+sha512sums=('2d7a4f6725567e73f04569f16adc2258258e5cd77257052ad7b74b0063796490b7c6a2cd4be978583476918bd0001691be63a2c59d22c9ba0925a8fd0b7b76be'
+    'bc86d42b33285c2709081ddca7c06fe789cc2d42c69c4cbed595c077a776d91e5526eb799dcdc404375a3bfb212927165a02d3d79301f53adb8a89039bf7bb5f')
+
+package() {
+    _resdir="$pkgdir"/usr/lib/$_pkgname/res/
+
+    install -d $pkgname/
+    cd $pkgname/
+    bsdtar -xf ../$pkgname-$pkgver.tgz
+    cd usr/local/share/PeaZip/res/
+
+    install -Dm755 ../$_pkgname "$pkgdir"/usr/lib/$_pkgname/$_pkgname
+
+    for i in pea pealauncher rnd; do
+        install -Dm755 $i "$_resdir"/$i
+    done
+    for i in arc/{arc,*.sfx}; do
+        install -Dm755 $i "$_resdir"/$i
+    done
+    for i in altconf.txt lang/* themes/{{nographic,seven}-embedded/*,*.7z} arc/arc.{ini,groups}; do
+        install -Dm644 $i "$_resdir"/$i
+    done
+
+    install -d "$_resdir"/7z/Codecs/
+    for i in 7z{,a,r,.so,Con.sfx,.sfx} Codecs/Rar29.so; do
+        ln -sf /usr/lib/p7zip/$i "$_resdir"/7z/$i
+    done
+    for i in quad/{balz,quad} unace/unace upx/upx lpaq/lpaq8 paq/paq8o zpaq/zpaq; do
+        install -d "$_resdir"/$(dirname $i)/
+        ln -sf /usr/bin/$(basename $i) "$_resdir"/$i
+    done
+    install -d "$pkgdir"/usr/bin/
+    for i in /usr/lib/$_pkgname/{$_pkgname,res/pea,res/pealauncher}; do
+        ln -sf $i "$pkgdir"/usr/bin/$(basename $i)
+    done
+
+    install -Dm644 "$srcdir"/$pkgname/usr/local/share/icons/$_pkgname.png "$pkgdir"/usr/share/pixmaps/$_pkgname.png
+    desktop-file-install "$srcdir"/$_pkgname.desktop --dir "$pkgdir"/usr/share/applications/
+}

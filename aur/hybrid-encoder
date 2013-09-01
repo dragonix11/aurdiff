@@ -1,0 +1,40 @@
+# Maintainer: kfgz <kfgz at interia pl>
+# Contributor: Hugo Osvaldo Barrera <hugo at osvaldobarrera dot com dot ar>
+
+pkgname=hybrid-encoder
+pkgver=130901
+pkgrel=1
+pkgdesc="A very complete gui for video encoding"
+arch=('i686' 'x86_64')
+license=('LGPL')
+depends=('libvpx' 'x264' 'mediainfo' 'ffmpeg' 'mplayer' 'mencoder' 'gpac' \
+         'mkvtoolnix' 'sox' 'vorbis-tools' 'lsdvd' 'tsmuxer' 'neroaacenc' \
+         'aften' 'mp4fpsmod' 'dcaenc' 'delaycut-git' 'qt4' 'freetype2' 'dbus-core' \
+         'zlib' 'libxrender' 'libxext' 'openssl' 'glib2' 'telxcc-git' 'framecounter')
+url="http://www.selur.de/"
+
+if test "$CARCH" == x86_64; then
+  source=(http://www.selur.de/sites/default/files/hybrid_downloads/Hybrid_${pkgver}_64bit_binary.zip
+          hybrid.desktop
+          Hybrid.png)
+  md5sums=('737031ab20f6e6dcdfaca7674a152cca'
+           'ef192eacf5ae36753de84561a3a5248a'
+           '798dd936a3bc9bcd3b131d5dd6db96e6')
+fi
+
+if test "$CARCH" == i686; then
+  source=(http://www.selur.de/sites/default/files/hybrid_downloads/Hybrid_${pkgver}_binary.zip
+          hybrid.desktop
+          Hybrid.png)
+  md5sums=('52032a6795c1df44f705d0b6332780fc'
+           'ef192eacf5ae36753de84561a3a5248a'
+           '798dd936a3bc9bcd3b131d5dd6db96e6')
+fi
+
+package() {
+  cd "${srcdir}"
+
+  install -D -m755 Hybrid "${pkgdir}"/usr/bin/Hybrid
+  install -D -m644 hybrid.desktop "${pkgdir}"/usr/share/applications/hybrid.desktop
+  install -D -m644 Hybrid.png "${pkgdir}"/usr/share/pixmaps/Hybrid.png
+}
