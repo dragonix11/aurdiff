@@ -1,0 +1,26 @@
+# Contributor: Benjamin Bukowski <benjamin.bukowski@gmail.com>
+pkgname=tsmuxer-gui
+pkgver=1.10.6
+pkgrel=15
+pkgdesc='Transport Stream muxer - gui only'
+arch=('i686' 'x86_64')
+url="http://www.smlabs.net/tsmuxer_en.html"
+license=('custom')
+depends=('tsmuxer')
+options=('!strip')
+
+if [ "$CARCH" == "i686" ]; then
+	depends=(${depends} 'qt4' 'libpng12')
+else
+	depends=(${depends} 'lib32-qt4' 'lib32-libpng12')
+fi
+source=("tsMuxeR_shared_${pkgver}.tar.gz" "tsmuxer.desktop" "tsmuxer.png")
+md5sums=('1f2e2a609d1a2dc8808ad3b3641733f7' '5f0810eb3266a2dde973eca918acff4a' '3e71328058f9dbeb5c580a5fb7c6850a')
+
+package() {
+	cd $srcdir/
+  install -D -m644 tsmuxer.desktop $pkgdir/usr/share/applications/tsmuxer.desktop
+  install -D -m644 tsmuxer.png $pkgdir/usr/share/pixmaps/tsmuxer.png
+	install -D -m755 tsMuxerGUI $pkgdir/usr/bin/tsMuxerGUI
+}
+

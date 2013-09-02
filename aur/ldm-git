@@ -1,0 +1,49 @@
+# Maintainer: Robin Hahling
+pkgname=ldm-git
+_pkgname=ldm
+pkgver=20130902
+pkgrel=1
+pkgdesc="A lightweight device mounter"
+arch=('i686' 'x86_64')
+url="https://github.com/LemonBoy/ldm"
+license=('MIT')
+depends=('udev')
+makedepends=('git')
+provides=(${_pkgname})
+conflicts=(${_pkgname})
+install=ldm.install
+
+_gitroot="https://github.com/LemonBoy/ldm.git"
+_gitname="${_pkgname}"
+
+build() {
+  cd "$srcdir"
+  msg "Connecting to GIT server...."
+
+  if [ -d $_gitname ] ; then
+    cd $_gitname && git pull origin
+    msg "The local files are updated."
+  else
+    git clone $_gitroot $_gitname
+  fi
+
+  msg "GIT checkout done or server timeout"
+  msg "Starting make..."
+
+  rm -rf "$srcdir/$_gitname-build"
+  git clone "$srcdir/$_gitname" "$srcdir/$_gitname-build"
+  cd "$srcdir/$_gitname-build"
+
+  # needed before it is fixed in the Makefile
+  export LDFLAGS=""
+  make
+}
+
+package() {
+  cd "$srcdir/$_gitname-build"
+  make PREFIX="/usr" DESTDIR="${pkgdir}" install
+
+  install -Dm644 LICENSE "${pkgdir}/usr/share/licenses/${_pkgname}/LICENSE"
+}
+
+# vim:set ts=2 sw=2 et:

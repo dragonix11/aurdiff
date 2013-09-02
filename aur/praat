@@ -1,0 +1,26 @@
+# Maintainer: jpate <j.k.pate@sms.ed.ac.uk>
+pkgname=praat
+pkgver=5.3.54
+pkgrel=1
+pkgdesc="A tool for 'Doing Phonetics by computer'"
+arch=('x86_64' 'i686')
+url="http://www.fon.hum.uva.nl/praat/"
+license=('GPL')
+depends=( 'alsa-lib' 'gtk2' )
+makedepends=( 'pkg-config' )
+optdepends=( 'ttf-sil-fonts' )
+source=("http://www.fon.hum.uva.nl/praat/praat5354_sources.tar.gz")
+md5sums=('e44d3259448c4e5497058d410327e56c')
+
+package() {
+  cd "$srcdir/sources_5354/"
+
+  cp makefiles/makefile.defs.linux.alsa makefile.defs
+
+  sed -i 's/-lasound/-lasound -lpthread/' makefile.defs
+
+  make
+
+  install -Dm755  praat "$pkgdir/usr/bin/praat"
+}
+
