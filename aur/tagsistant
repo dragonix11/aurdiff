@@ -1,0 +1,31 @@
+# Maintainer: Fabien Dubosson <fabien dot dubosson at gmail dot com>
+# Contributor: Joshua Stiefer <facedelajunk@gmail.com>
+# Contributor: Devin Mullins <me@twifkak.com>
+
+pkgname=tagsistant
+pkgver=0.6
+pkgrel=1
+pkgdesc="A semantic File System based on Fuse for Linux kernel"
+arch=('i686' 'x86_64')
+url="http://www.tagsistant.net/"
+license=('GPL')
+depends=('fuse' 'sqlite2' 'glib2')
+makedepends=('subversion' 'automake')
+conflicts=('tagsistant-svn')
+install=tagsistant.install
+source=("${pkgname}::svn+http://svn.gna.org/svn/tagfs/branches/0.6")
+sha1sums=('SKIP')
+
+build() {
+  cd "${srcdir}/${pkgname}"
+  autoreconf -vfi
+  ./configure --prefix=/usr --datarootdir="$pkgdir/usr/share"
+  make
+}
+
+package() {
+  cd "${srcdir}/${pkgname}"
+  make DESTDIR="$pkgdir/" install
+}
+
+# vim:set ts=2 sw=2 et:

@@ -1,0 +1,48 @@
+# Maintainer: redskull <redskull at free dot fr>
+# Contributor: SanskritFritz (gmail)
+# Contributor: crazyb0y <bjin1990 at gmail dot com>
+
+pkgname=sgt-puzzles-svn
+pkgver=10035
+pkgrel=1
+pkgdesc="Simon Tatham's Portable Puzzle Collection"
+arch=('i686' 'x86_64')
+url="http://www.chiark.greenend.org.uk/~sgtatham/puzzles/"
+license=('MIT')
+makedepends=('make' 'gcc' 'subversion' 'perl')
+depends=('gtk2')
+provides=('puzzles')
+conflicts=('puzzles')
+source=('sgt-puzzles::svn://svn.tartarus.org/sgt/puzzles')
+md5sums=('SKIP')
+
+_svnmod=sgt-puzzles
+
+pkgver() {
+  cd $SRCDEST/$_svnmod
+  svnversion | tr -d [A-z]
+}
+
+build() {
+  cd $srcdir/$_svnmod
+
+  ./mkfiles.pl
+  ./mkauto.sh
+  ./configure
+
+  make prefix=/usr || return 1
+}
+
+package() {
+  cd $srcdir/$_svnmod
+  mkdir -p $pkgdir/usr/bin
+  make prefix=/usr gamesdir=/usr/bin DESTDIR=$pkgdir install
+  cd $pkgdir/usr/bin
+  for game in *; do
+    mv $game $game-sgt
+  done
+  cd $srcdir/$_svnmod
+  install -D -m644 LICENCE $pkgdir/usr/share/licenses/$pkgname/COPYING
+}
+
+

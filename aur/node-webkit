@@ -1,0 +1,34 @@
+pkgname=node-webkit
+pkgver=0.7.2
+pkgrel=1
+pkgdesc="node-webkit is an app runtime based on Chromium and node.js."
+arch=("i686" "x86_64")
+url="https://github.com/rogerwang/node-webkit"
+license=("MIT")
+depends=("alsa-lib" "gconf" "gtk2" "nss" "libudev.so.0")
+optdepends=("nodejs: npm package support"
+"nw-gyp: native add-on build tool for node-webkit")
+
+if [ "$CARCH" = "i686" ]; then
+  _arch="ia32"
+  sha256sums=("5901fdf8e3967b953141857d3ecea0a010edb35e7a125bb0b7ab850ac7bb79e0")
+fi
+if [ "$CARCH" = "x86_64" ]; then
+  _arch="x64"
+  sha256sums=("b4ac2761cf9307e2e1c88e54ff726cd5c434e6d2939a66aa85a3a3acc867eeaf")
+fi
+
+source=( "https://s3.amazonaws.com/${pkgname}/v${pkgver}/${pkgname}-v${pkgver}-linux-${_arch}.tar.gz" )
+
+package() {
+  msg2 "create path and copy files"
+  mkdir -p $pkgdir/usr/{lib/${pkgname},bin}
+  cp -R $srcdir/${pkgname}-v$pkgver-linux-$_arch/* $pkgdir/usr/lib/node-webkit/
+  
+  msg2 "symlink /usr/bin/nw -> /usr/lib/${pkgname}/nw"
+  ln -s "/usr/lib/${pkgname}/nw" "$pkgdir/usr/bin/nw"
+
+  msg2 "symlink /usr/bin/nwsnapshot -> /usr/lib/${pkgname}/nwsnapshot"
+  ln -s "/usr/lib/${pkgname}/nwsnapshot" "$pkgdir/usr/bin/nwsnapshot"
+}
+

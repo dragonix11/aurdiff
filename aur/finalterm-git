@@ -1,0 +1,36 @@
+# Maintainer: Joris Steyn <jorissteyn@gmail.com>
+# Contributor: kens <arch forums>
+pkgname=finalterm-git
+pkgver=91.20e4bd2
+pkgrel=1
+pkgdesc="A new breed of terminal emulator"
+arch=('x86_64' 'i686')
+url="http://finalterm.org"
+license=('GPL3')
+depends=('libgee' 'mx-git' 'clutter>=1.12' 'clutter-gtk' 'libkeybinder3' 'startup-notification')
+makedepends=('vala' 'git' 'libtool' 'cmake' 'intltool')
+provides=('finalterm')
+conflicts=('finalterm')
+source=('git://github.com/p-e-w/finalterm.git')
+md5sums=('SKIP')
+install=build-schemas
+
+pkgver() {
+    cd finalterm
+    echo $(git rev-list --count HEAD).$(git rev-parse --short HEAD)
+}
+
+build() {
+    cd ${srcdir}/finalterm
+    sed -i 's/mx-1.0/mx-2.0/g' CMakeLists.txt
+    
+    mkdir build
+    cd build
+    cmake -DCMAKE_INSTALL_PREFIX=/usr ..
+    make
+}
+
+package() {
+    cd ${srcdir}/finalterm/build
+    make DESTDIR="$pkgdir" install
+}

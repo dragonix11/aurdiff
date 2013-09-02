@@ -1,0 +1,90 @@
+# Maintainer: yadieet <yadieet@gmail.com>
+
+pkgname=squid-legacy
+pkgver=3.1.23_20130721_r10487
+pkgrel=1
+pkgdesc='Full-featured Web proxy cache server (version 3.1)'
+arch=('x86_64' 'i686')
+url='http://www.squid-cache.org/'
+depends=('openssl' 'pam' 'cron' 'perl' 'libltdl')
+conflicts=('squid')
+provides=('squid')
+makedepends=('libcap' 'gcc>=4.8.1')
+license=('GPL')
+options=('emptydirs')
+backup=('etc/squid/squid.conf'
+        'etc/squid/mime.conf'
+        'etc/conf.d/squid')
+install=squid.install
+source=('http://www.squid-cache.org/Versions/v3/3.1/squid-3.1.23-20130721-r10487.tar.gz'
+        'squid.conf.d'
+        'squid.pam'
+        'squid.cron'
+        'squid.service')
+md5sums=('075b2ff79d00795f3d0733be61cfd492'
+         '2383772ef94efddc7b920628bc7ac5b0'
+         '270977cdd9b47ef44c0c427ab9034777'
+         '25091cd2637085edb1ada7954bde2871'
+         'ceeb57c69ebb165676219222f109a24e')
+
+build()
+{
+  cd "$srcdir/squid-3.1.23-20130721-r10487"
+
+  sed '/^    HUGE_OBJECT_FLAG=/ s/"-fhuge-objects"//' -i configure 
+  sed 's/-Wall/-Wno-error=unused-result/' -i configure
+  sed '/^DEFAULT_SWAP_DIR/ s@/cache@/cache/squid@' -i src/Makefile.in
+  sed '/^#cache_dir/ s/100/256/
+       /^NAME: cache_effective_group/ {n;n;s/none/proxy/}' -i src/cf.data.pre
+
+  ./configure \
+    --prefix=/usr \
+    --datadir=/usr/share/squid \
+    --sysconfdir=/etc/squid \
+    --libexecdir=/usr/lib/squid \
+    --localstatedir=/var \
+    --with-logdir=/var/log/squid \
+    --with-pidfile=/run/squid.pid \
+    --enable-auth \
+    --enable-auth-basic \
+    --enable-auth-ntlm \
+    --enable-auth-digest \
+    --enable-auth-negotiate \
+    --enable-removal-policies="lru,heap" \
+    --enable-storeio="aufs,ufs,diskd" \
+    --enable-delay-pools \
+    --enable-arp-acl \
+    --enable-ssl \
+    --enable-snmp \
+    --enable-linux-netfilter \
+    --enable-ident-lookups \
+    --enable-useragent-log \
+    --enable-cache-digests \
+    --enable-referer-log \
+    --enable-htcp \
+    --enable-carp \
+    --enable-epoll \
+    --with-maxfd=8192 \
+    --with-filedescriptors=8192 \
+    --with-large-files \
+    --with-default-user=proxy \
+    --enable-async-io \
+    --enable-truncate
+  make
+}
+
+package()
+{
+  cd "$srcdir"
+
+  make -C "squid-3.1.23-20130721-r10487" DESTDIR="$pkgdir" install
+  install -Dm755 "$srcdir/squid.cron" "$pkgdir/etc/cron.weekly/squid"
+  install -Dm755 "$srcdir/squid.conf.d" "$pkgdir/etc/conf.d/squid"
+  install -Dm644 "$srcdir/squid.pam" "$pkgdir/etc/pam.d/squid"
+  install -Dm644 "$srcdir/squid.service" \
+    "$pkgdir/usr/lib/systemd/system/squid.service"
+  rm -rf $pkgdir/run $pkgdir/var/run
+  mv -f $pkgdir/usr/sbin/squid $pkgdir/usr/bin/
+  rm -rf $pkgdir/usr/sbin
+}
+

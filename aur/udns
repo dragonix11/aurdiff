@@ -1,0 +1,33 @@
+# Maintainer: Christian Hesse <mail@eworm.de>
+# Contributor: Gaetan Bisson <bisson@archlinux.org>
+
+pkgname=udns
+pkgver=0.2
+pkgrel=1
+pkgdesc='Stub DNS resolver library with ability to perform both syncronous and asyncronous DNS queries'
+url='http://www.corpit.ru/mjt/udns.html'
+license=('LGPL')
+arch=('i686' 'x86_64' 'armv6h')
+source=("http://www.corpit.ru/mjt/udns/udns-${pkgver}.tar.gz")
+
+build() {
+	cd "${srcdir}/${pkgname}-${pkgver}"
+
+	./configure
+	make
+}
+
+package() {
+	cd "${srcdir}/${pkgname}-${pkgver}"
+
+	install -d "${pkgdir}"/usr/bin
+	install -m0755 dnsget rblcheck ex-rdns "${pkgdir}"/usr/bin/
+	install -D -m0644 udns.h "${pkgdir}"/usr/include/udns.h
+	install -D -m0644 libudns.a "${pkgdir}"/usr/lib/libudns.a
+
+	install -D -m0644 dnsget.1 "${pkgdir}"/usr/share/man/man1/dnsget.1
+	install -D -m0644 rblcheck.1 "${pkgdir}"/usr/share/man/man1/rblcheck.1
+	install -D -m0644 udns.3 "${pkgdir}"/usr/share/man/man3/udns.3
+}
+
+sha256sums=('558c7d7acc358e13f91f73ba7fef0ed094010716a8dcee286eef05d0ff264224')
