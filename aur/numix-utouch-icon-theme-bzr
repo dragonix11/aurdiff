@@ -1,0 +1,33 @@
+# Maintainer: Diego <cdprincipe@at@gmail@dot@com>
+
+pkgname=numix-utouch-icon-theme-bzr
+pkgver=51
+pkgrel=1
+pkgdesc="Touch style of Numix icon theme"
+arch=('any')
+url="https://launchpad.net/~numix-icon-theme-dev/+archive/utouch"
+license=('GPL3')
+makedepends=('bzr')
+provides=('numix-utouch-icon-theme')
+conflicts=('numix-utouch-icon-theme')
+source=(bzr+lp:numix-icon-theme)
+md5sums=('SKIP')
+
+pkgver() {
+  cd "$srcdir/numix-icon-theme"
+  bzr revno
+}
+
+package() {
+  cd "$srcdir/numix-icon-theme"
+    
+  # create theme dirs
+  install -d -m 755 "$pkgdir"/usr/share/icons/Numix-uTouch
+
+  # clean up
+  rm -rf {.git,.gitignore,CREDITS,LICENSE,README}
+
+  # install theme
+  cp -r . "$pkgdir"/usr/share/icons/Numix-uTouch/
+
+}

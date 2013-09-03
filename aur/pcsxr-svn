@@ -1,0 +1,38 @@
+# Maintainer: alucryd <alucryd at gmail dot com>
+# Contributor: Infy <eugene dot yudin at gmail dot com>
+
+pkgname=pcsxr-svn
+pkgver=87058
+pkgrel=1
+pkgdesc="A Sony PlayStation emulator based on the PCSX-df Project"
+arch=('i686' 'x86_64')
+url="http://pcsxr.codeplex.com/"
+license=('GPL')
+depends=('gtk3' 'libcdio' 'libxv' 'sdl2')
+makedepends=('intltool' 'mesa' 'subversion')
+provides=("${pkgname%-*}")
+conflicts=("${pkgname%-*}" 'pcsx-df')
+options=('!libtool')
+source=("${pkgname%-*}::svn+https://pcsxr.svn.codeplex.com/svn/pcsxr")
+sha256sums=('SKIP')
+
+pkgver() {
+  cd ${pkgname%-*}
+
+  svnversion
+}
+
+build() {
+  cd ${pkgname%-*}
+
+  ./autogen.sh --prefix='/usr' --enable-libcdio --enable-opengl
+  make
+}
+
+package() {
+  cd ${pkgname%-*}
+
+  make DESTDIR="${pkgdir}" install
+}
+
+# vim: ts=2 sw=2 et:
