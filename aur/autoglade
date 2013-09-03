@@ -1,0 +1,39 @@
+# Maintainer: Alexej Magura <agm2819*gmail*>
+# Contributor: Eugenio F <eugfcl@gmail.com>
+# Contributor: Mathieu Clabaut <mathieu.clabaut@gmail.com>-
+
+pkgname=autoglade
+pkgver=0.5
+pkgrel=3
+pkgdesc="A tool that automagically creates a fully working application from a glade GUI definition"
+url="http://autoglade.sourceforge.net/"
+license=('GPL')
+depends=('python2' 'glade' 'pygobject' 'pygtk' )
+arch=('any')
+source=("http://sourceforge.net/projects/$pkgname/files/$pkgname/$pkgname-$pkgver/${pkgname}_$pkgver-1ubuntu3.tar.gz/download")
+md5sums=('eac499260ca3143345f50159aed8b15a')
+
+prepare () {
+
+    cd "$srcdir/trunk"
+
+    sed -i 's:#!\s*/usr/bin/env python:#!/usr/bin/env python2:' autoglade/autoglade.py
+
+    sed -i 's:#!\s*/usr/bin/env python:#!/usr/bin/env python2:' setup.py
+
+    sed -i 's/version="0.4"/version="0.5"/' setup.py
+
+    chmod +x setup.py
+}
+
+package () {
+
+    cd "$srcdir/trunk"
+
+    python2 setup.py install --root="$pkgdir"
+
+    install -d "$pkgdir/usr/share/doc/$pkgname"
+
+    install -m 644 -t "$pkgdir/usr/share/doc/$pkgname" debian/changelog
+
+}

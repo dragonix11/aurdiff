@@ -1,0 +1,50 @@
+# Maintainer: alucryd <alucryd at gmail dot com>
+# Contributor: sh4nks <sh4nks7 at gmail dot com
+
+pkgname=lightdm-pantheon-greeter-bzr
+pkgver=214
+pkgrel=1
+pkgdesc="Pantheon greeter for LightDM"
+arch=('i686' 'x86_64')
+url="https://launchpad.net/pantheon-greeter"
+license=('GPL')
+depends=('clutter-gtk' 'granite' 'libindicator3' 'lightdm')
+makedepends=('bzr' 'cmake' 'vala0.16')
+provides=("${pkgname%-*}")
+conflicts=("${pkgname%-*}")
+install="${pkgname%-*}.install"
+source=("${pkgname%-*}::bzr+lp:pantheon-greeter")
+sha256sums=('SKIP')
+
+pkgver() {
+  cd ${pkgname%-*}
+
+  bzr revno
+}
+
+build(){
+  cd ${pkgname%-*}
+
+  if [[ -d build ]]; then
+    rm -rf build
+  fi
+  mkdir build && cd build
+
+  cmake .. -DCMAKE_INSTALL_PREFIX='/usr' -DVALA_EXECUTABLE='/usr/bin/valac-0.16' -DGSETTINGS_COMPILE='OFF'
+  make
+}
+
+package(){
+  cd ${pkgname%-*}/build
+
+  make DESTDIR="${pkgdir}" GCONF_DISABLE_MAKEFILE_SCHEMA_INSTALL=1 install
+
+  install -dm 755 "${pkgdir}"/usr/bin
+  mv "${pkgdir}"/usr/{share/xgreeters/,bin/lightdm-}pantheon-greeter
+  mv "${pkgdir}"/usr/share/xgreeters/{,lightdm-}pantheon-greeter.desktop
+
+  sed 's/share\/xgreeters/bin/; s/pantheon-greeter/lightdm-pantheon-greeter/g; /en_US/d' -i "${pkgdir}"/usr/share/xgreeters/lightdm-pantheon-greeter.desktop
+
+}
+
+# vim: ts=2 sw=2 et:

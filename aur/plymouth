@@ -1,0 +1,59 @@
+pkgname=plymouth
+pkgver=0.8.8.36.g53f6b44
+pkgrel=1
+pkgdesc="A graphical boot splash screen with kernel mode-setting support (Git verson for now)"
+url="http://cgit.freedesktop.org/cgit/plymouth/"
+
+arch=('i686' 'x86_64')
+license=('GPL')
+
+depends=('libdrm' 'pango' 'systemd')
+makedepends=('git')
+optdepends=('ttf-dejavu')
+
+options=('!libtool' '!emptydirs')
+
+provides=('plymouth')
+conflicts=('plymouth')
+
+source=(
+'git://anongit.freedesktop.org/plymouth'
+'plymouth.hook'
+'plymouth.install'
+)
+
+md5sums=(
+'SKIP'
+'SKIP'
+'SKIP'
+)
+pkgver() {
+    cd "$srcdir"/plymouth
+    git describe --always | sed 's/-/./g'
+}
+
+build() {
+    cd "$srcdir"/plymouth
+    ./autogen.sh --prefix=/usr \
+        --exec-prefix=/usr \
+        --sysconfdir=/etc \
+        --localstatedir=/var \
+        --libdir=/usr/lib \
+        --libexecdir=/usr/lib \
+        --sbindir=/usr/bin \
+        --enable-systemd-integration \
+        --enable-tracing \
+        --enable-pango \
+        --without-rhgb-compat-link \
+        --without-system-root-install
+    make
+}
+
+package() {
+    cd "$srcdir"/plymouth
+    make DESTDIR="$pkgdir" install
+
+    # initcpio
+    install -Dm644 "$srcdir/plymouth.hook" "$pkgdir/usr/lib/initcpio/hooks/plymouth"
+    install -Dm644 "$srcdir/plymouth.install" "$pkgdir/usr/lib/initcpio/install/plymouth"
+}

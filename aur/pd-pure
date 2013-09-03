@@ -1,0 +1,23 @@
+# Maintainer: alastair pharo  asppsa at gmail dot com 
+# Contributor: bjoern lindig bjoern dot lindig at googlemail dot com
+
+pkgname=pd-pure
+pkgver=0.16
+pkgrel=2
+pkgdesc="Loader plugin for the Pure programming language which lets you write external Pd objects in Pure"
+arch=('i686' 'x86_64')
+url="http://docs.pure-lang.googlecode.com/hg/pd-pure.html"
+depends=('pd' 'pure')
+license=('custom')
+source=(http://pure-lang.googlecode.com/files/$pkgname-$pkgver.tar.gz)
+md5sums=('ff8f9d2a31c636c0663e039863323697')
+
+build() {
+  cd $srcdir/$pkgname-$pkgver
+  make prefix=/usr pdlibdir=/usr/lib/pd
+}
+
+package() {
+  cd $srcdir/$pkgname-$pkgver
+  make DESTDIR=$pkgdir install
+}

@@ -1,0 +1,41 @@
+# Maintainer: Jerome Leclanche <jerome.leclanche+arch@gmail.com>
+
+pkgname=akonadi-git
+pkgver=v1.10.2.148.g3e27e7c
+pkgrel=1
+pkgdesc="PIM layer, which provides an asynchronous API to access all kind of PIM data"
+arch=('i686' 'x86_64')
+url='http://www.kde.org'
+license=('LGPL')
+depends=('shared-mime-info' 'boost-libs' 'mariadb' 'soprano')
+makedepends=('git' 'cmake' 'automoc4' 'boost' 'postgresql')
+conflicts=('akonadi')
+provides=('akonadi')
+# groups=('kde')
+source=("git://anongit.kde.org/akonadi")
+sha256sums=('SKIP')
+_gitname="akonadi"
+
+pkgver() {
+	cd "$srcdir/$_gitname"
+	git describe --always | sed 's|-|.|g'
+}
+
+build() {
+	cd "$srcdir"
+
+	mkdir build
+	cd build
+	cmake "$srcdir/$_gitname" \
+		-DCMAKE_BUILD_TYPE=Release \
+		-DCMAKE_INSTALL_PREFIX=/usr \
+		-DINSTALL_QSQLITE_IN_QT_PREFIX=TRUE \
+		-DQT_QMAKE_EXECUTABLE=qmake-qt4 \
+		-DAKONADI_BUILD_TESTS=OFF
+	make
+}
+
+package() {
+	cd "$srcdir/build"
+	make DESTDIR="$pkgdir" install
+}

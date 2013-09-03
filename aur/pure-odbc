@@ -1,0 +1,25 @@
+# Maintainer: alastair pharo  asppsa at gmail dot com
+# Contributor: Bjoern Lindig bjoern _dot_ lindig _at_ googlemail _dot_ com
+
+pkgname=pure-odbc
+pkgver=0.9
+pkgrel=1
+pkgdesc="A Pure module to access to all ODBC-capable databases"
+arch=("i686" "x86_64")
+license=('GPL3')
+url="http://code.google.com/p/pure-lang"
+depends=('pure' 'unixodbc')
+makedepends=('make' 'gcc')
+source=("https://bitbucket.org/purelang/pure-lang/downloads/$pkgname-$pkgver.tar.gz")
+sha1sums=('6f608a59943b90906c3e059ce770fa4423119e64')
+
+build() {
+	cd $srcdir/$pkgname-$pkgver
+	make || return 1
+}
+
+package() {
+	cd $srcdir/$pkgname-$pkgver
+	make DESTDIR=$pkgdir install || return 1
+}
+

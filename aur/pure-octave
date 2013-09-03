@@ -1,0 +1,24 @@
+# Maintainer: alastair pharo  asppsa at gmail dot com
+# Contributor: Bjoern Lindig bjoern _dot_ lindig _at_ googlemail _dot_ com
+
+pkgname=pure-octave
+pkgver=0.3
+pkgrel=2
+pkgdesc="embed an Octave interpreter into Pure."
+arch=("i686" "x86_64")
+license=('LGPL3')
+url="http://code.google.com/p/pure-lang"
+depends=('pure' 'octave')
+makedepends=('make' 'gcc')
+source=("http://pure-lang.googlecode.com/files/$pkgname-$pkgver.tar.gz")
+sha1sums=('f0132d18c146f6728b68bc02b4d0c1512244e82a')
+
+build() {
+	cd $srcdir/$pkgname-$pkgver
+	make
+}
+
+package() {
+	cd $srcdir/$pkgname-$pkgver
+	make DESTDIR=$pkgdir install 
+}

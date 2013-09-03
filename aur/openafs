@@ -1,0 +1,101 @@
+# Maintainer: Michael Lass <bevan@bi-co.net>
+# Contributor: Szymon Jakubczak <szym-at-mit-dot-edu>
+
+pkgname=openafs
+pkgver=1.6.5
+pkgrel=3
+pkgdesc="Open source client for the AFS distributed file system"
+arch=('i686' 'x86_64')
+url="http://www.openafs.org"
+license=('custom:"IBM Public License Version 1.0"')
+depends=('krb5')
+makedepends=('autoconf' 'automake' 'bison' 'flex' 'gzip' 'linux-headers')
+conflicts=('openafs-features' 'openafs-features-libafs')
+backup=(etc/conf.d/openafs
+	etc/openafs/ThisCell
+        etc/openafs/cacheinfo
+        etc/openafs/CellServDB)
+options=(!staticlibs)
+install=openafs.install
+source=(http://openafs.org/dl/openafs/${pkgver}/${pkgname}-${pkgver}-src.tar.bz2
+        http://openafs.org/dl/openafs/${pkgver}/${pkgname}-${pkgver}-doc.tar.bz2
+        0001-Adjust-RedHat-config-and-service-files.patch
+        0002-Use-nofork-when-starting-bosserver-via-systemd.patch
+        0003-Enable-encryption-after-starting-the-client.patch
+        0004-Linux-3.11-Convert-from-readdir-to-iterate-file-oper.patch
+        0005-Linux-3.11-Adapt-to-d_count-changes.patch)
+md5sums=('e33e0b031760d4f90815d40b8ab3c540'
+         '3a391eb7932a841818f95c3d27f1bebc'
+         '7827863c695ad60656ea9068b665b674'
+         'c366b52ab42b21407e041456835ccc83'
+         '727fec4fe918c9b40f5aa2efbe1a42e2'
+         '967e249cc6324154c1835ffd6a7b945a'
+         'b927b5c800bd0c80b98af979441b4b35')
+
+build() {
+  cd ${srcdir}/${pkgname}-${pkgver}
+
+  # Adjust RedHat config and service files to our needs
+  patch -p1 < ${srcdir}/0001-Adjust-RedHat-config-and-service-files.patch
+
+  # Use -nofork when starting bosserver vis systemd
+  patch -p1 < ${srcdir}/0002-Use-nofork-when-starting-bosserver-via-systemd.patch
+
+  # Enable encryption after starting the client
+  patch -p1 < ${srcdir}/0003-Enable-encryption-after-starting-the-client.patch
+
+  # Compatibility with Linux 3.11
+  patch -p1 < ${srcdir}/0004-Linux-3.11-Convert-from-readdir-to-iterate-file-oper.patch
+  patch -p1 < ${srcdir}/0005-Linux-3.11-Adapt-to-d_count-changes.patch
+
+  # Needed when changes to configure were made
+  ./regen.sh -q
+
+  ./configure --prefix=/usr \
+              --sysconfdir=/etc \
+              --sbindir=/usr/bin \
+              --libexecdir=/usr/bin \
+              --with-linux-kernel-packaging \
+              --disable-fuse-client
+  make
+}
+
+
+package() {
+  _kernelver=$(uname -r)
+  _extramodules=$(readlink -fn /usr/lib/modules/${_kernelver}/extramodules)
+
+  cd ${srcdir}/${pkgname}-${pkgver}
+
+  make DESTDIR=${pkgdir} install
+
+  # rename kpasswd which is already provided by krb5
+  mv ${pkgdir}/usr/bin/kpasswd ${pkgdir}/usr/bin/kpasswd-openafs
+  mv ${pkgdir}/usr/share/man/man1/kpasswd.1 ${pkgdir}/usr/share/man/man1/kpasswd-openafs.1
+
+  # create cache directory
+  install -dm700 ${pkgdir}/var/cache/openafs
+
+  # move kernel module
+  install -dm755 ${pkgdir}${_extramodules}
+  mv ${pkgdir}/lib/modules/${_kernelver}/extra/openafs/openafs.ko ${pkgdir}${_extramodules}/openafs.ko
+  gzip -9 ${pkgdir}${_extramodules}/openafs.ko
+  rm -rf ${pkgdir}/lib
+
+  # move PAM libs
+  install -dm755 ${pkgdir}/usr/lib/security
+  mv ${pkgdir}/usr/lib/pam_afs.krb.so.1 ${pkgdir}/usr/lib/pam_afs.so.1 ${pkgdir}/usr/lib/security/
+
+  # install systemd service files
+  install -Dm644 ${srcdir}/${pkgname}-${pkgver}/src/packaging/RedHat/openafs-client.service ${pkgdir}/usr/lib/systemd/system/openafs-client.service
+  install -Dm644 ${srcdir}/${pkgname}-${pkgver}/src/packaging/RedHat/openafs-server.service ${pkgdir}/usr/lib/systemd/system/openafs-server.service
+
+  # install default configs
+  install -Dm644 ${srcdir}/${pkgname}-${pkgver}/src/afsd/CellServDB ${pkgdir}/etc/${pkgname}/CellServDB
+  install -Dm644 ${srcdir}/${pkgname}-${pkgver}/src/packaging/RedHat/openafs.sysconfig ${pkgdir}/etc/conf.d/openafs
+  install -Dm644 ${srcdir}/${pkgname}-${pkgver}/src/packaging/RedHat/openafs-ThisCell ${pkgdir}/etc/${pkgname}/ThisCell
+  install -Dm644 ${srcdir}/${pkgname}-${pkgver}/src/packaging/RedHat/openafs-cacheinfo ${pkgdir}/etc/${pkgname}/cacheinfo
+
+  # install license
+  install -Dm644 ${srcdir}/${pkgname}-${pkgver}/src/LICENSE ${pkgdir}/usr/share/licenses/${pkgname}/LICENSE
+}

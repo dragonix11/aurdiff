@@ -1,0 +1,32 @@
+#Maintainer: Xyne <ac xunilhcra enyx, backwards>
+pkgname=locale-en_xx
+pkgver=2013.7
+pkgrel=3
+pkgdesc='A mixed international English locale with ISO and POSIX formats for cosmopolitan coders.'
+arch=(any)
+license=(GPL)
+url="http://xyne.archlinux.ca/projects/locale-en_xx"
+replaces=(locale-en_XX)
+conflicts=(locale-en_XX)
+provides=(locale-en_XX)
+source=(
+  http://xyne.archlinux.ca/projects/locale-en_xx/src/locale-en_xx-2013.7.tar.xz
+  http://xyne.archlinux.ca/projects/locale-en_xx/src/locale-en_xx-2013.7.tar.xz.sig
+)
+sha512sums=(
+  ab85e72c585fda8910f21436553d240d207623178a1d2b94f3437fe4aff9f0d913c59778e729002b518cfee4c6438ec348af0bfc957378915868c56f2e9891fe
+  b7c299cb7d7f219802a28492ac34c40f923cb0d1ee0d65a7c161ee613ae780b934867752cfa550510969e57b43044a6d27cdb5821743740fc66a3723a17e19c5
+)
+md5sums=(
+  c2dae630326f950218db86005fb08b46
+  96719cec1873fa06497b9208af5fa8ba
+)
+install=locale-en_xx.install
+
+package () {
+  cd -- "$srcdir/$pkgname-$pkgver"
+  install -Dm644 "en_XX@POSIX" "$pkgdir/usr/share/i18n/locales/en_XX@POSIX"
+#   install -Dm755 "en_XX.sh" "$pkgdir/etc/profile.d/en_XX.sh"
+}
+
+# vim: set ts=2 sw=2 et:
