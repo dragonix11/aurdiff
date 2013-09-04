@@ -1,0 +1,44 @@
+# Maintainer: Aaron Mueller <mail@aaron-mueller.de>
+# Contributor: Nuno Araujo <nuno.araujo@russo79.com>
+# Contributor: Christopher Marra <christophermarra86@gmail.com>
+# Contributor: Nuno Araujo <nuno.araujo@russo79.com>
+
+pkgname=kmod-roccat
+pkgver=0.10.0
+_extramodules=`ls -v /usr/lib/modules/ | grep extra | tail -n 1`
+pkgrel=1
+pkgdesc="Kernel modules for ROCCAT devices"
+arch=('i686' 'x86_64')
+url="http://roccat.sourceforge.net"
+license=('GPL')
+depends=()
+makedepends=('linux-headers')
+conflicts=('roccat-dkms')
+optdepends=('roccat-tools: graphical tools to adjust the mouse settings')
+install=$pkgname.install
+source=(http://downloads.sourceforge.net/project/roccat/linux/kmod-roccat/kmod-roccat-$pkgver.tar.bz2)
+md5sums=('f58c38ee9fe958bfcc10dbdd56c3afb0')
+
+build() {
+  cd "$srcdir/$pkgname-$pkgver/2.6.39_to_3.10"
+  sed -i 's%uname -r%ls -v /lib/modules | grep -v extra | tail -n 1%' Makefile
+  make modules
+}
+
+package() {
+  cd "$srcdir/$pkgname-$pkgver/"
+  install -D override-roccat.conf $pkgdir/usr/lib/depmod.d/override-roccat.conf
+
+  cd "$srcdir/$pkgname-$pkgver/2.6.39_to_3.10"
+  install -D hid-roccat.ko $pkgdir/usr/lib/modules/$_extramodules/hid-roccat.ko
+  install -D hid-roccat-common.ko $pkgdir/usr/lib/modules/$_extramodules/hid-roccat-common.ko
+  install -D hid-roccat-arvo.ko $pkgdir/usr/lib/modules/$_extramodules/hid-roccat-arvo.ko
+  install -D hid-roccat-isku.ko $pkgdir/usr/lib/modules/$_extramodules/hid-roccat-isku.ko
+  install -D hid-roccat-kone.ko $pkgdir/usr/lib/modules/$_extramodules/hid-roccat-kone.ko
+  install -D hid-roccat-koneplus.ko $pkgdir/usr/lib/modules/$_extramodules/hid-roccat-koneplus.ko
+  install -D hid-roccat-konepure.ko $pkgdir/usr/lib/modules/$_extramodules/hid-roccat-konepure.ko
+  install -D hid-roccat-kovaplus.ko $pkgdir/usr/lib/modules/$_extramodules/hid-roccat-kovaplus.ko
+  install -D hid-roccat-lua.ko $pkgdir/usr/lib/modules/$_extramodules/hid-roccat-lua.ko
+  install -D hid-roccat-pyra.ko $pkgdir/usr/lib/modules/$_extramodules/hid-roccat-pyra.ko
+  install -D hid-roccat-savu.ko $pkgdir/usr/lib/modules/$_extramodules/hid-roccat-savu.ko
+}

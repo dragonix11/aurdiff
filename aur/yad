@@ -1,0 +1,22 @@
+# Maintainer: trile7 at gmail dot com
+# Contributor: Ernia <monghitri@aruba.it>
+
+pkgname=yad
+pkgver=0.23.0
+pkgrel=1
+pkgdesc="A fork of zenity - display graphical dialogs from shell scripts or command line"
+url="http://code.google.com/p/yad/"
+arch=('any')
+license=('GPL3')
+depends=('gtk2' 'hicolor-icon-theme')
+makedepends=('intltool')
+install='yad.install'
+source=(http://yad.googlecode.com/files/${pkgname}-${pkgver}.tar.xz)
+
+build() {
+  cd "${srcdir}/${pkgname}-${pkgver}"
+  ./configure --prefix=/usr || return 1
+  make || return 1
+  make DESTDIR="${pkgdir}" install || return 1
+}
+sha1sums=('71ae25fd9e0ebdc9d9ae79234ab7a30e2d6627c4')

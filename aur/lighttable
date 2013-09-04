@@ -1,0 +1,45 @@
+# Maintainer: Ebubekir KARUL <ebubekirkarul@yandex.com>
+# Contributor: Gaurish Sharma <contact@gaurishsharma.com>
+# Contributor: Massimiliano Torromeo <massimiliano.torromeo@gmail.com>
+# Contributor: Tony Sokhon <tonyskn@gmail.com>
+# Contributor: Katrina L. Halliwell <rambaldi.kat.47@gmail.com>
+
+pkgname=lighttable
+pkgver=0.5.2
+pkgrel=1
+pkgdesc="New interactive IDE that lets you modify running programs and embed anything from websites to games."
+url="http://www.lighttable.com/"
+license=('custom')
+depends=(nss libx11 libxrandr libpng gconf)
+options=(!strip)
+arch=('i686' 'x86_64')
+
+source=(lighttable http://d35ac8ww5dfjyg.cloudfront.net/playground/bins/$pkgver/LightTableLinux.tar.gz lighttable.desktop lighttable.png)
+md5sums=('5c3110a62216b2edd6b50b3b2cb0b4fa'
+         'e94ac5a7c87a4f6242fb236e6de84f83'
+         'a454708d725223d577c2d67d08300717'
+         'f8c055be2f047ff4aaffdd028f62f027')
+
+if [[ "$CARCH" == "x86_64" ]]; then
+  source[1]=http://d35ac8ww5dfjyg.cloudfront.net/playground/bins/$pkgver/LightTableLinux64.tar.gz
+  md5sums[1]='52a663c2bcd3c75587bc43c346cd7e07'
+fi
+
+package() {
+  install -D -m755 lighttable "$pkgdir/usr/bin/lighttable"
+
+  _destdir="$pkgdir/opt/LightTable"
+
+  install -dm755 $_destdir
+  #rm "$srcdir/LightTable/debug.log"
+  mv $srcdir/LightTable/* $_destdir
+  
+  mkdir -p "${pkgdir}"/usr/share/{applications,pixmaps}
+  install -m644 "${startdir}"/lighttable.desktop "${pkgdir}/usr/share/applications/"
+  install -m644 "${startdir}"/lighttable.png "${pkgdir}"/usr/share/pixmaps/lighttable.png
+
+
+
+  #for more info, https://github.com/Kodowa/Light-Table-Playground/issues/161
+  ln -s /usr/lib/libudev.so "$_destdir/libudev.so.0"
+}

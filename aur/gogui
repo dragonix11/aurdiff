@@ -1,0 +1,40 @@
+# Maintainer: solsTiCe d'Hiver <solstice.dhiver@gmail.com>
+
+pkgname=gogui
+pkgver=1.4.8
+pkgrel=1
+pkgdesc="a gui for any Go Text Protocol software like GNU Go"
+arch=('any')
+url="http://gogui.sourceforge.net"
+license=("GPL")
+depends=('java-runtime')
+source=(http://downloads.sourceforge.net/gogui/gogui-$pkgver.zip)
+install=gogui.install
+md5sums=('c5d055e5d988da3bd68be0c4de31aec0')
+
+package() {
+	cd $srcdir/gogui-$pkgver
+	sed -i '/^update-mime-database/d' install.sh
+	sed -i '/^update-desktop-database/d' install.sh
+
+	# create directories expected by install.sh
+	mkdir -p $pkgdir/usr/share/icons/hicolor/48x48/apps
+	mkdir -p $pkgdir/usr/share/icons/hicolor/48x48/mimetypes
+	mkdir -p $pkgdir/usr/share/icons/hicolor/scalable/apps
+	mkdir -p $pkgdir/usr/share/applications
+	mkdir -p $pkgdir/usr/share/mime/applications
+	mkdir -p $pkgdir/usr/share/mime/packages
+
+	./install.sh -j $JAVA_HOME -p $pkgdir/usr -s $pkgdir/etc
+
+	# make it useable with openjdk6 too (NOT TESTED !)
+	sed -i 's|"$JAVA"|java|' $pkgdir/usr/bin/*
+
+	# fix the installation to remove any ref to $pkgdir in files
+	grep -l -r $pkgdir $pkgdir|while read i
+	do
+		sed -i 's|'$pkgdir'||' $i
+	done
+
+	#install -d $pkgdir/usr/share/mimelnk/application
+}

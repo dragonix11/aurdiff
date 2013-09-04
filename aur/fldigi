@@ -1,0 +1,45 @@
+# Maintainer: Andreas Schreiner <andreas.schreiner@sonnenmulde.at>
+# Contributor: [Vitaliy Berdinskikh](mailto:ur6lad@archlinux.org.ua) aka UR6LAD
+
+pkgname=fldigi
+pkgver=3.21.75
+pkgrel=1
+pkgdesc="Digital Modes for Radio - GUI"
+arch=('i686' 'x86_64')
+url="http://w1hkj.com/Fldigi.html"
+license=('GPL')
+depends=('cty' 'fltk' 'libsamplerate')
+optdepends=('hamlib: rig control through hamlib'
+	'libsndfile: sound file support'
+	'portaudio: PortAudio support'
+	'pulseaudio: pulseaudio support'
+	'xmlrpc-c-abyss: XML-RPC control')
+source=(http://w1hkj.com/downloads/$pkgname/$pkgname-$pkgver.tar.gz)
+
+build() {
+	cd "$srcdir"
+
+	#patch -p1 < cty.patch
+	#patch -p1 < short.patch
+
+	cd $pkgname-$pkgver
+
+	./configure --prefix=/usr \
+		--enable-tls
+	make ASCIIDOC_ICONS_DIR=/etc/asciidoc/images/icons/
+}
+
+check() {
+	cd "$srcdir"/$pkgname-$pkgver
+
+	make -k check
+}
+
+package() {
+	cd "$srcdir"/$pkgname-$pkgver
+
+	make DESTDIR="$pkgdir" install
+}
+
+md5sums=('9f6c3d3a6074d31c72e37cc4a28afd77')
+sha512sums=('1dd63aeb937b400a1211dcc09e45d2507ebde3c26f784c180446eb865ef49f0a9425c4f542ddcd5a26ba31630f1e1fd54a0794f33ee3821ebe71910852b43c1b')
