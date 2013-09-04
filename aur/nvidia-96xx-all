@@ -1,0 +1,103 @@
+# Maintainer : Maximilien Noal <noal dot maximilien at gmail dot com> [AUR: xcomcmdr]
+# linux-3.10.patch from : 3ED_0 <krzysztof1987 at gmail> (nvidia-96xx-ck)
+# linux-3.11.patch from : 3ED_0 <krzysztof1987 at gmail> (nvidia-96xx-ck)
+# Contributor: Luis Moreno <luismoreno83 at gmail dot com>
+# Contributor: Christos Nouskas <nous at archlinux dot us>
+# Now based on nvidia-96xx by natrio <natrio at list dot ru>
+# Previously based on nvidia-beta-all by Ng Oon-Ee <n g o o n e e AT g mail dot com>
+# ...Which was based on nvidia-beta by Dan Vratil <vratil at progdansoft dot com>
+
+pkgname=nvidia-96xx-all
+pkgver=96.43.23
+pkgrel=30
+pkgdesc='NVIDIA drivers, 96xx branch, for all kernels.'
+arch=('i686' 'x86_64')
+provides='nvidia-96xx'
+url='http://www.nvidia.com/'
+depends="nvidia-96xx-utils>=${pkgver}"
+makedepends='linux-headers'
+optdepends=('pangox-compat: to run nvidia-settings'
+  'xorg-server1.12: latest compatible Xorg server')
+conflicts=('nvidia' 'nvidia-304xx' 'nvidia-304xx-lts' 'nvidia-lts' \
+  'nvidia-ck' 'nvidia-173xx' 'nvidia-173xx-all' 'nvidia-173xx-lts' \
+  'nvidia-275xx' 'nvidia-275xx-ck' 'nvidia-275xx-pf' 'nvidia-304xx-ck' \
+  'nvidia-304xx-dkms' 'nvidia-304xx-pf' 'nvidia-96xx' 'nvidia-96xx-ck' \
+  'nvidia-96xx-lts' 'nvidia-all' 'nvidia-beta' 'nvidia-beta-ck' \
+  'nvidia-beta-dkms' 'nvidia-beta-zen' 'nvidia-bfs' 'nvidia-custom' \
+  'nvidia-dkms' 'nvidia-f2fs' 'nvidia-fbcondor' 'nvidia-gl43preview' \
+  'nvidia-linux-git' 'nvidia-ll' 'nvidia-lqx' 'nvidia-lqx-legacy' \
+  'nvidia-lts-ck' 'nvidia-mainline' 'nvidia-pae' 'nvidia-pf' \
+  'nvidia-uksm' 'nvidia-uksm-ck' 'nvidia-zen')
+license='custom'
+install='nvidia.install'
+if [[ "$CARCH" = "i686" ]]; then
+  _arch='x86'
+  _nv='0'
+  source=('http://download.nvidia.com/XFree86/Linux-x86/96.43.23/NVIDIA-Linux-x86-96.43.23-pkg0.run' \
+  '173.14.36-37.patch' 'linux-3.10.patch' 'linux-3.11.patch')
+fi
+if [[ "$CARCH" = "x86_64" ]]; then
+  _arch='x86_64'
+  _nv='2'
+  source=('http://download.nvidia.com/XFree86/Linux-x86_64/96.43.23/NVIDIA-Linux-x86_64-96.43.23-pkg2.run' \
+  '173.14.36-37.patch' 'linux-3.10.patch' 'linux-3.11.patch')
+fi
+options=(!strip)
+md5sums=('ca0bc6ae3b37cb259f3a906b4dc4670b' \
+  '944ed806c8d0f9174d5e9e16ae065bf6' \
+  'edda124f64772b87314945eb95abfa24' \
+  '646b70dbe4dbc03781569c155b60f845')
+[ "$CARCH" = "x86_64" ] && md5sums[0]='dd8546e5ae7d10da072306e5f13952b8'
+
+_packages=$(pacman -Qs linux | grep local/linux | awk {'print $1'})
+_kernvers=$(pacman -Ql ${_packages} | grep /modules.alias.bin | \
+  sed 's/.*\/lib\/modules\/\(.*\)\/modules.alias.bin/\1/g')
+
+build() {
+  msg "Building ${pkgname}..."
+  for _kernver in ${_kernvers}
+  do
+    msg "Making module for linux ${_kernver} :"
+    msg '1 of 4 - Extracting nvidia drivers...'
+    cd ${srcdir}
+    sh NVIDIA-Linux-${_arch}-${pkgver}-pkg${_nv}.run --extract-only
+    cd NVIDIA-Linux-${_arch}-${pkgver}-pkg${_nv}/usr/src/nv
+    msg '2 of 4 - Applying patches: 173.14.36-37.patch...'
+    patch -p1 -i ${srcdir}/173.14.36-37.patch
+    _curkver=$(echo ${_kernver}|cut -d\- -f1|tr -d '.'| tr -d '[A-Z][a-z]')
+    _curkver=$(echo ${_curkver}|cut -c 1-3)
+    if [[ ${_curkver} -ge 310 ]]; then
+      msg '2 of 4 - Applying patches: linux-3.10.patch...'
+      patch -p4 -i ${srcdir}/linux-3.10.patch
+    fi
+    if [[ ${_curkver} -ge 311 ]]; then
+      msg '2 of 4 - Applying patches: linux-3.11.patch...'
+      patch -p1 -i ${srcdir}/linux-3.11.patch
+    fi
+    msg "3 of 4 - Building module for ${_kernver}..."
+    make SYSSRC=/lib/modules/${_kernver}/build module
+    msg '4 of 4 - Making preparations for next kernel/packaging...'
+    mv nvidia.ko ${srcdir}/nvidia-${_kernver}.ko
+    mv -f ${srcdir}/NVIDIA-Linux-${_arch}-${pkgver}-pkg${_nv}/LICENSE \
+      ${srcdir}/LICENSE
+    rm -rf ${srcdir}/NVIDIA-Linux-${_arch}-${pkgver}-pkg${_nv}
+  done
+}
+
+package() {
+  msg "Packaging ${pkgname}..."
+  for _kernver in ${_kernvers}
+  do
+    mkdir -p ${pkgdir}/lib/modules/${_kernver}/kernel/drivers/video
+    install -m644 ${srcdir}/nvidia-${_kernver}.ko \
+      ${pkgdir}/lib/modules/${_kernver}/kernel/drivers/video/nvidia.ko
+    gzip ${pkgdir}/lib/modules/${_kernver}/kernel/drivers/video/nvidia.ko
+    mkdir -p ${pkgdir}/usr/share/licenses/${pkgname}
+    install -m644 ${srcdir}/LICENSE ${pkgdir}/usr/share/licenses/${pkgname}
+  done
+  if [ ! -f /etc/modprobe.d/nouveau_blacklist.conf ]; then
+    mkdir -p ${pkgdir}/etc/modprobe.d
+    echo "blacklist nouveau" >> \
+      ${pkgdir}/etc/modprobe.d/nouveau_blacklist.conf
+  fi
+}
