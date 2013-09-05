@@ -1,0 +1,29 @@
+# Maintainer: JokerYu <dayushinn@gmail.com>
+pkgname=koala
+pkgver=2.0.0
+pkgrel=1
+pkgdesc="A GUI application for Less, Sass, Compass and CoffeeScript compilation."
+arch=('i686' 'x86_64')
+url="http://koala-app.com/"
+license=('Apache')
+depends=("libudev.so.0")
+optdepends=('ruby: Sass compiled function support.')
+options=(!strip)
+if [ "$CARCH" = "x86_64" ];then
+  _arch="amd64"
+  md5sums=('c08448b0f61df5469a48b4c4bd8bf842')
+elif [ "$CARCH" = "i686" ];then
+  _arch="i386"
+  md5sums=('2d2cc0d40f1feeee8833e17e0e8c1f2b')
+fi
+
+source=("http://dl.yushinn.com/koala/${pkgname}_${pkgver}-beta_${_arch}.deb")
+
+#You can also download the package on Amazon Cloud Drive manully.
+#64bit https://www.amazon.com/clouddrive/share?s=HTIIYSB7ToAiTnmZwvVSYk
+#32bit https://www.amazon.com/clouddrive/share?s=8U4cNCa-TM4j0HXKdKADYg
+
+package() {
+  tar zxfp ${srcdir}/data.tar.gz -C ${pkgdir}/
+  chmod -R 755 ${pkgdir}/usr
+}
