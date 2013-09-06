@@ -1,0 +1,61 @@
+# Maintainer: Olivier Farges <farges.olivier@gmail.com>
+
+pkgname=starlight
+pkgver=20130906
+pkgrel=1
+pkgdesc="Monte Carlo Method applied to Central Receiver Systems"
+arch=('any')
+url="http://www.starwest.ups-tlse.fr"
+license=('GPL3')
+depends=()
+makedepends=('git' 'gsl' 'gcc-fortran' 'openmpi' 'openexr')
+conflicts=()
+provides=()
+install=
+
+source=()
+md5sums=()
+
+_gitroot="http://gitlab.red-pill.fr/ofarges/starlight.git"
+_gitname="starlight"
+
+build() {
+  
+  cd "$srcdir"
+  msg "Connecting to GIT server...."
+
+  if [[ -d "$_gitname" ]]; then
+    cd "$_gitname" && git pull origin
+    msg "The local files are updated."
+  else
+    git clone "$_gitroot" "$_gitname"
+  fi
+
+  msg "GIT checkout done or server timeout"
+  msg "Starting build..."
+  rm -rf "$srcdir/$_gitname-build"
+  git clone "$srcdir/$_gitname" "$srcdir/$_gitname-build"
+  if [ "$PBRT_SEARCHPATH" == "" ]; then
+    echo 'export PBRT_SEARCHPATH=/usr/lib/starlight' >> ~/.bashrc
+    echo 'export PATH=$PATH:$PBRT_SEARCHPATH' >> ~/.bashrc
+    echo 'export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$PBRT_SEARCHPATH' >> ~/.bashrc
+    echo 'export CPU=`grep -c processor /proc/cpuinfo`' >> ~/.bashrc
+    source ~/.bashrc
+  fi
+  cd "$srcdir/$_gitname-build/mcm3d"
+  mkdir objs
+  mkdir bin
+  mkdir lib
+  make
+}
+
+package() {
+  cd "$srcdir/$_gitname-build/mcm3d"
+  mkdir -p "$pkgdir/usr/bin"
+  mkdir -p "$pkgdir/usr/lib/$_gitname"
+  if [[ ! -d "$HOME/starlight" ]]; then
+    mkdir -p "$HOME/$_gitname"
+    cp $srcdir/$_gitname/run/* $HOME/$_gitname/
+  fi
+  make prefix="$pkgdir/usr" install
+ }

@@ -1,28 +1,20 @@
 # Maintainer: Adam Reichold <adamreichold@myopera.com>
-# Contributor: Stefan Husmann <stefan-husmann@t-online.de>
-pkgname=qpdfview-bzr
-pkgver=1248
-pkgrel=1
-pkgdesc='A tabbed PDF viewer using the poppler library. (development version)'
+pkgname=qpdfview
+pkgver=0.4.5
+pkgrel=2
+pkgdesc='A tabbed PDF viewer using the poppler library.'
 arch=('i686' 'x86_64')
 url='https://launchpad.net/qpdfview'
 license=('GPL2')
 depends=('libcups' 'poppler-qt5' 'qt5-svg')
 optdepends=('libspectre: for PostScript support' 'djvulibre: for DjVu support')
-makedepends=('bzr' 'qt5-tools')
-conflicts=('qpdfview')
+makedepends=('qt5-tools')
 install='qpdfview.install'
-source=('qpdfview::bzr+http://bazaar.launchpad.net/~adamreichold/qpdfview/trunk/')
-md5sums=('SKIP')
-
-pkgver() {
-  cd "$srcdir/qpdfview"
-  
-  bzr revno
-}
+source=("http://launchpad.net/$pkgname/trunk/$pkgver/+download/$pkgname-$pkgver.tar.gz")
+md5sums=('3049bfb6055f96a69f94dbbc31cbe4e6')
 
 build() {
-  cd "$srcdir/qpdfview"
+  cd "$srcdir/$pkgname-$pkgver"
   
   if ! pkg-config --exists libspectre; then
     local config="$config without_ps"
@@ -32,13 +24,14 @@ build() {
     local config="$config without_djvu"
   fi
 
-  lrelease-qt5 qpdfview.pro qpdfview.pro
+  lrelease-qt5 qpdfview.pro
   qmake-qt5 "CONFIG+=$config" qpdfview.pro
   make
 }
 
 package() {
-  cd "$srcdir/qpdfview"
+  cd "$srcdir/$pkgname-$pkgver"
 
   make "INSTALL_ROOT=$pkgdir" install
 }
+
