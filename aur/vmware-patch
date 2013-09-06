@@ -1,0 +1,57 @@
+# Maintainer: Det
+# Contributors: Igor Duarte Cardoso <igordcard@gmail.com>, haagch, Olivier Médoc <o_medoc@yahoo.fr>
+pkgname=vmware-patch
+pkgver=10.0.0
+pkgrel=1
+pkgdesc="A post-install configuration solution for VMware Workstation and Player (Plus)"
+arch=('i686' 'x86_64')
+url="https://www.vmware.com"
+license=('GPL')
+depends=('linux-headers')
+optdepends=("fuse: for the 'vmware-vmblock-fuse' client instead of the 'vmblock.ko' module")
+options=('!emptydirs')
+install=${pkgname}.install
+source=('vmware-patch' 'vmware-unpatch' 'vmware.service' 'vmware-usbarbitrator.service' 'vmware-workstation.service'
+        # Workstation 9/Player 5
+        'vmblock-9.0.2-5.0.2-3.11.patch' 'vmblock-9.0.2-5.0.2-3.11-3.10.patch' 'vmnet-9.0.2-5.0.2-3.11-3.10.patch'
+        'vmblock-9.0.2-5.0.2-9.0.1-5.0.1-9.0.0-5.0.0-3.9-3.8-3.7-3.6.patch'
+        'vmci-9.0.1-5.0.1-3.9-3.8.patch'
+        'vmmon-9.0.0-5.0.0-3.7-3.6-3.5.patch'
+        # Workstation 8/Player 4
+        'vmblock-8.0.4-4.0.4-8.0.3-4.0.3-3.6-3.5-3.4.patch' 'vmnet-8.0.4-4.0.4-8.0.3-4.0.3-8.0.2-4.0.2-3.6-3.5-3.4-3.3-3.2.patch')
+
+package() {
+    # Directories
+    install -d "${pkgdir}"/{etc/init.d,usr/{bin,lib/{systemd/system,vmware/modules/patches}}}
+
+    # Patch scripts
+    install -m755 vmware-{un,}patch "${pkgdir}"/usr/bin/
+
+    # Patches
+    install -m644 *.patch "${pkgdir}"/usr/lib/vmware/modules/patches/
+
+    # Main service (in case it doesn't exist or owned by us)
+    if [[ ! -f /usr/lib/systemd/system/vmware.service || $(pacman -Qo /usr/lib/systemd/system/vmware.service 2>&-) ]]; then
+        install -m644 vmware.service "${pkgdir}"/usr/lib/systemd/system/
+    else
+        warning "Not overwriting /usr/lib/systemd/system/vmware.service"
+    fi
+
+    # USB Arbitrator/Workstation Server services
+    install -m644 vmware-{usbarbitrator,workstation}.service "${pkgdir}"/usr/lib/systemd/system/
+}
+
+# Generated using 'updpkgsums' (a pacman-contrib binary merged in pacman 4.1)
+md5sums=('73fa27f7c1ad7e09a43fec9fe3d6cd8a'
+         '75f791660043d52b398710123dbc901d'
+         '03f7b0d6a304557e30c111b88fad69c6'
+         'ea3817fb7952932707bfedcf33a70697'
+         '56f7f642683e54250372bb57faaf4e95'
+         '6ba288cdf7d17dd66da9f664c3fa009d'
+         'ce885089247ec49fc4d86b8d7f33b6f6'
+         '6dc136e002d86382b66b287e419e2680'
+         'a6b96ba687e8ece29fa130c619996dc9'
+         'c95ff54cc002921fdbd32735dc5d6510'
+         '4eb0d38133bd4c019ce45a78e23233fe'
+         'a8d9b98570344514eda185a8115b2c32'
+         'edea711dca63399b7f47b53e50444c09')

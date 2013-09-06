@@ -1,0 +1,23 @@
+# Author: Dmitriy Smirnov <spilver@igus.lv>
+pkgname=guark
+_gitname=guark
+
+pkgver=1.0.0
+pkgrel=1
+
+pkgdesc="Nice tray audio player. Concept based on quark audio player, but more powerful."
+arch=('any')
+license=("GPL")
+url="https://github.com/DimaSmirnov/guark"
+depends=('gsreamer-0.10')
+source=('https://github.com/DimaSmirnov/guark')
+build() {
+  cd $_gitname
+  make
+}
+
+package() {
+  cd $_gitname
+  make PREFIX=/usr DESTDIR="$pkgdir" install
+}
+md5sums=('ab324fc994e476ea64d7d04adb2ab19a')
