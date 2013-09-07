@@ -1,0 +1,64 @@
+# Maintainer: megadriver <megadriver at gmx dot com>
+# Based on hplip from [extra]
+
+pkgname=hplip-minimal
+pkgver=3.13.8
+pkgrel=1
+pkgdesc="The HP printer drivers, and not much else"
+arch=('i686' 'x86_64' 'armv6h')
+url="http://hplipopensource.com"
+license=('GPL')
+depends=('ghostscript>=8.64-6')
+makedepends=('cups' 'libusbx')
+optdepends=('cups: for printing support'
+            'libusbx: for advanced usb support')
+conflicts=('hplip')
+options=('!docs' '!libtool')
+source=("http://downloads.sourceforge.net/hplip/hplip-$pkgver.tar.gz")
+md5sums=('44de6a1e4d295ae6f1f0f0ef1cdc7301')
+
+build() {
+ cd "$srcdir/hplip-$pkgver"
+
+ # https://bugs.archlinux.org/task/30085 - hack found in Gentoo
+ # Use system foomatic-rip for hpijs driver instead of foomatic-rip-hplip
+ # The hpcups driver does not use foomatic-rip
+ local i
+ for i in ppd/hpijs/*.ppd.gz ; do
+   rm -f ${i}.temp
+   gunzip -c ${i} | sed 's/foomatic-rip-hplip/foomatic-rip/g' | \
+     gzip > ${i}.temp || return 1
+   mv ${i}.temp ${i}
+ done
+
+ export AUTOMAKE='automake --foreign'
+ autoreconf --force --install
+
+ ./configure --prefix=/usr \
+             --disable-qt4 \
+             --disable-doc-build \
+             --disable-dbus-build \
+             --disable-network-build \
+             --disable-scan-build \
+             --disable-fax-build \
+             --disable-foomatic-rip-hplip-install \
+             --enable-foomatic-ppd-install \
+             --enable-hpcups-only-build \
+             --enable-new-hpcups \
+             --disable-cups-drv-install \
+             --enable-cups-ppd-install \
+             --enable-pp-build \
+
+ make
+}
+
+package() {
+ cd "$srcdir/hplip-$pkgver"
+ make DESTDIR="$pkgdir/" install
+ # remove config provided by sane and autostart of hp-daemon
+ rm -rf "$pkgdir"/etc/{sane.d,xdg}
+ # remove HAL .fdi file because HAL is no longer used
+ rm -rf "$pkgdir"/usr/share/hal
+ # remove rc script
+ rm -rf "$pkgdir"/etc/init.d
+}

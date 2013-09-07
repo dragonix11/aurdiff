@@ -1,0 +1,70 @@
+# Maintainer: <aggraef at gmail.com>
+# Contributor: <fero dot kiraly at gmail.com>
+
+# This package can be installed along with pd, pd-vanilla or pd-extended. To
+# avoid conflicts with these, pdsend and pdreceive are *not* included. Use the
+# puredata-utils package to get pdsend and pdreceive if none of the other Pd
+# versions is installed.
+
+pkgname=pd-l2ork
+pkgver=866.e6cf50d
+pkgrel=1
+pkgdesc="L2Ork (Linux Laptop Orchestra) version of PureData"
+url="http://l2ork.music.vt.edu/main/?page_id=56"
+arch=('i686' 'x86_64')
+license=('BSD')
+depends=('avifile' 'bluez-libs' 'desktop-file-utils' 'dssi' 'fftw'
+  'flite-fpic' 'fluidsynth' 'freeglut' 'ftgl' 'git' 'glew' 'gmerlin'
+  'gsl' 'gsm' 'hicolor-icon-theme' 'imagemagick' 'jack' 'ladspa' 'lame'
+  'libdc1394' 'libdv' 'libgl' 'libiec61883' 'libjpeg' 'libquicktime'
+  'libraw1394' 'libsndobj-cvs' 'libv4l' 'libvorbis' 'lua51' 'portaudio'
+  'smpeg' 'speex' 'stk' 'tk' 'tkpng')
+makedepends=('subversion' 'swig' 'automake' 'curl')
+optdepends=('puredata-utils' 'pd' 'pd-vanilla' 'pd-extended')
+conflicts=('pd-l2ork')
+options=('!makeflags')
+source=("$pkgname::git+https://github.com/pd-l2ork/pd.git")
+md5sums=(SKIP)
+
+pkgver() {
+  cd $srcdir/$pkgname
+  echo $(git rev-list --count HEAD).$(git rev-parse --short HEAD)
+}
+
+build() {
+  unset CFLAGS
+  unset LDFLAGS
+  unset INCLUDES
+
+  cd $srcdir/$pkgname/l2ork_addons
+  inst_dir=/usr ./tar_em_up.sh -F
+}
+
+package() {
+  cd "$srcdir/$pkgname/packages/linux_make/build"
+  mv usr "$pkgdir"
+  cd "$pkgdir/usr"
+  rm -f Makefile README.txt
+  # Remove pdsend and pdreceive to avoid conflicts with other Pd versions.
+  rm -f bin/cyclist bin/pdreceive bin/pdsend
+  rm -f share/man/man1/pdreceive.* share/man/man1/pdsend.*
+  # Get rid of the Gem include files, there are other packages which provide
+  # these, and this seems incomplete anyway.
+  rm -rf include/Base
+  # Extra icons, desktop files and mime types.
+  install -d "$pkgdir/usr/share/icons/hicolor/128x128/apps"
+  cp -f lib/pd-l2ork/pd-l2ork*.png "$pkgdir/usr/share/icons/hicolor/128x128/apps/"
+  # This is also in the pd-extended package.
+  # install -d "$pkgdir/usr/share/icons/hicolor/128x128/mimetypes"
+  # cp -f lib/pd-l2ork/text-x-puredata.png "$pkgdir/usr/share/icons/hicolor/128x128/mimetypes/"
+  install -d "$pkgdir/usr/share/applications"
+  cp -f lib/pd-l2ork/pd-l2ork*.desktop "$pkgdir/usr/share/applications/"
+  install -d "$pkgdir/usr/share/mime/packages"
+  cp -f "$srcdir/$pkgname/packages/linux_make/pd-l2ork.xml" "$pkgdir/usr/share/mime/packages/"
+  # Default prefs file.
+  install -d "$pkgdir/etc/pd-l2ork"
+  ln -s -f /usr/lib/pd-l2ork/default.pdl2ork "$pkgdir/etc/pd-l2ork/default.pdl2ork"
+  cp -f "$srcdir/$pkgname/packages/linux_make/default.pdl2ork" "$pkgdir/usr/lib/pd-l2ork"
+}
+
+# vim:set ts=2 sw=2 et:

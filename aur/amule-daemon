@@ -1,0 +1,63 @@
+# Maintainer: Gustavo Alvarez <sl1pkn07@gmail.com>
+
+pkgname=amule-daemon
+pkgver=10808
+pkgrel=1
+pkgdesc='An eMule-like client for the eD2k and Kademlia p2p networks (Daemon Function)'
+url='http://www.amule.org'
+arch=('i686' 'x86_64')
+license=('GPL')
+depends=('wxgtk2.9' 'crypto++' 'libupnp')
+makedepends=('ccache')
+provides=('amule')
+conflicts=('amule')
+optdepends=('kamule: AmuleGUI for KDE')
+source=('amuled.service'
+        'amuled@.service'
+        'amuled.tmpfile'
+        "http://amule.sourceforge.net/tarballs/aMule-SVN-r${pkgver}.tar.bz2")
+md5sums=('42452aa3b4a2847022b3f450f5bc7e78'
+         '253895ed04947fa95ca8fcaee9aeee10'
+         '1bfc1a1974803352d11f656c58448f15'
+         '68099241871f4e47eee06bebc7ce20a1')
+options=('ccache')
+install="amule-daemon.install"
+
+build() {
+
+  cd "${srcdir}"
+  rm -fr build
+  mkdir build
+  cd build
+
+  ../aMule-SVN-r${pkgver}/configure \
+      --prefix=/usr \
+      --mandir=/usr/share/man \
+      --disable-monolithic \
+      --enable-alcc \
+      --disable-debug \
+      --enable-upnp \
+      --enable-geoip \
+      --enable-optimize \
+      --enable-webserver \
+      --enable-amule-daemon \
+      --enable-fileview \
+      --enable-amulecmd \
+      --enable-ccache \
+      --with-wxdir=/usr/include/wx-2.9 \
+      --with-wx-config=/usr/bin/wx-config-2.9
+    make
+}
+
+package() {
+  cd "${srcdir}/build"
+  make DESTDIR="${pkgdir}" install
+
+  install -Dm644 "${srcdir}/amuled.service" "${pkgdir}/usr/lib/systemd/system/amuled.service"
+  install -Dm644 "${srcdir}/amuled@.service" "${pkgdir}/usr/lib/systemd/system/amuled@.service"
+  install -Dm644 "${srcdir}/amuled.tmpfile" "${pkgdir}/usr/lib/tmpfiles.d/amuled.conf"
+
+  install -dm750 -o129 -g129 "${pkgdir}/var/lib/amuled"
+  rm -fr "${pkgdir}/usr/share"/{pixmaps,applications}
+}
+

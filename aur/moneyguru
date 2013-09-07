@@ -1,0 +1,39 @@
+# Maintainer: Virgil Dupras <hsoft@hardcoded.net>
+pkgname=moneyguru
+pkgver=2.7.1
+pkgrel=1
+pkgdesc="Personal finance management application"
+arch=(any)
+url="http://www.hardcoded.net/moneyguru/"
+license=('BSD')
+depends=('python' 'pyqt')
+makedepends=(
+    python-sphinx
+)
+source=(http://download.hardcoded.net/$pkgname-src-$pkgver.tar.gz)
+md5sums=(d0fba3b61a705cf063f73178f78e0b9c)
+
+build() {
+  cd "$srcdir"
+  ./bootstrap.sh
+  source env/bin/activate
+  msg "Starting build..."
+  python configure.py
+  python build.py --clean
+}
+
+package() {
+  cd "$srcdir"  
+  mkdir -p "${pkgdir}/usr/share/applications"
+  cp "debian/${pkgname}.desktop" "${pkgdir}/usr/share/applications"
+  
+  python package.py
+  cd "build/${pkgname}-arch"
+  
+  mkdir -p "$pkgdir/usr/share/${pkgname}"
+  cp -a * "$pkgdir/usr/share/${pkgname}/"
+  chmod a+x "$pkgdir/usr/share/${pkgname}/run.py"
+  
+  mkdir -p "$pkgdir/usr/bin"
+  ln -s ../share/${pkgname}/run.py "$pkgdir/usr/bin/${pkgname}"
+}

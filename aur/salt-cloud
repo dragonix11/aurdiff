@@ -1,0 +1,29 @@
+# Maintainer: Christer Edwards <christer.edwards@gmail.com>
+
+pkgname=salt-cloud
+pkgver=0.8.9
+pkgrel=2
+pkgdesc="Salt Cloud is a generic cloud provisioning tool"
+arch=(any)
+url="https://github.com/saltstack/salt-cloud"
+license=("APACHE")
+
+depends=('salt'
+	 'python2'
+         'python2-yaml'
+	 'apache-libcloud')
+
+makedepends=()
+optdepends=()
+options=()
+conflicts=('salt-cloud-git')
+
+source=("http://pypi.python.org/packages/source/s/${pkgname}/${pkgname}-${pkgver}.tar.gz")
+
+md5sums=('7586a1c6c84b2770867dfe63c99c7770')
+
+package() {
+  cd ${srcdir}/${pkgname}-${pkgver}
+  python2 setup.py install --root=${pkgdir}/ --optimize=1
+}
+
