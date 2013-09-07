@@ -1,0 +1,24 @@
+# Maintainer: Veli-Jussi Raitila <vjr AT iki DOT fi>
+
+pkgname=python2-pysrt
+_pkgname=pysrt
+pkgver=0.5.0
+pkgrel=1
+pkgdesc="Python parser for SubRip (srt) files"
+arch=('any')
+url="https://github.com/byroot/pysrt"
+license=('GPL3')
+depends=('python2-charade')
+makedepends=('python2-distribute')
+
+source=(http://pypi.python.org/packages/source/p/pysrt/${_pkgname}-${pkgver}.tar.gz)
+md5sums=('c33354efdceca93995ad42f9509be325')
+
+package() {
+  cd "${srcdir}/${_pkgname}-${pkgver}"
+
+  # Remove tests
+  rm -rf tests
+  
+  python2 setup.py install --root="${pkgdir}" --optimize=1
+}
