@@ -1,0 +1,54 @@
+# Maintainer: RunningDroid <runningdroid AT zoho.com>
+
+pkgname=lwjgl-git
+pkgver=2.9.0.42.g6b15398
+pkgrel=1
+pkgdesc="Lightweight Java Game Library - for use in game projects in Java. | git version"
+arch=('i686' 'x86_64')
+url="http://lwjgl.org"
+license=('BSD')
+makedepends=('git' 'apache-ant')
+provides=(lwjgl)
+conflicts=(lwjgl)
+options=(!strip)
+source=(git+https://github.com/LWJGL/lwjgl.git)
+md5sums=('SKIP')
+_gitname=lwjgl
+
+pkgver() {
+  cd "$srcdir/$_gitname"
+  echo "$(git describe --always | sed -e 's/-/./g' -e 's/lwjgl//')"
+}
+
+build() {
+  cd "$srcdir/$_gitname"
+
+  ant all
+
+}
+
+package() {
+  cd "$srcdir/$_gitname"
+
+  # install licenses
+  install -d "$pkgdir/usr/share/licenses/$pkgname/3rdparty"
+  install -m644 -t "$pkgdir/usr/share/licenses/$pkgname/3rdparty" doc/3rdparty/*
+  install -m644 -t "$pkgdir/usr/share/licenses/$pkgname" doc/LICENSE
+
+  # install docs
+  install -d "$pkgdir/usr/share/doc/$pkgname"
+  install -m644 -t "$pkgdir/usr/share/doc/$pkgname" doc/{CREDITS,README,lwjgl_hidden_switches.text}
+
+  # install everything else
+  install -d "$pkgdir/usr/share/lwjgl/native"
+  mv libs/{linux,macosx,solaris,windows} "$pkgdir/usr/share/lwjgl/native"
+
+  install -d "$pkgdir/usr/share/lwjgl/jar"
+  install -m644 -t "$pkgdir/usr/share/lwjgl/jar" libs/*
+
+  install -d "$pkgdir/usr/share/lwjgl/res"
+  mv res/* "$pkgdir/usr/share/lwjgl/res"
+
+}
+
+# vim:set ts=2 sw=2 et:

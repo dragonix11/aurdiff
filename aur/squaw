@@ -1,0 +1,28 @@
+# Maintainer: Gaetan Bisson <bisson@archlinux.org>
+
+pkgname=squaw
+pkgver=1.4
+pkgrel=1
+pkgdesc='Simplistic Qt-based user agent for the Web'
+url='http://www.normalesup.org/~bisson/src/'
+license=('ISC')
+depends=('qtwebkit')
+arch=('i686' 'x86_64' 'armv7h')
+source=("${url}/${pkgname}-${pkgver}.cpp")
+sha1sums=('9d03af628ad9e2f6e509dc51226bb60d0d40ed5f')
+
+build() {
+	cd "${srcdir}"
+	moc-qt4 -o squaw.moc squaw-${pkgver}.cpp
+	c++ -lQtWebKit -lQtGui -lQtNetwork -lQtCore \
+		-I/usr/include/qt4 \
+		${CXXFLAGS} ${LDFLAGS} \
+		-o ${pkgname} ${pkgname}-${pkgver}.cpp
+}
+
+package() {
+	cd "${srcdir}"
+	install -d "${pkgdir}/usr/share/licenses/${pkgname}"
+	install -Dm755 "${srcdir}/${pkgname}" "${pkgdir}/usr/bin/${pkgname}"
+	head -n 15 "${pkgname}-${pkgver}.cpp" > "${pkgdir}/usr/share/licenses/${pkgname}/COPYING"
+}

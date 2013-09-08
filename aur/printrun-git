@@ -1,0 +1,40 @@
+# Contributor: Richard Kakaš <richard.kakas@gmail.com>
+# Maintainer: Eric Anderson <ejona86@gmail.com>
+
+pkgname=printrun-git
+_gitname='Printrun'
+pkgver=20130711.225.g9315a5e
+pkgrel=1
+pkgdesc='GUI interface for 3D printing on RepRap and other printers'
+arch=('any')
+url='https://github.com/kliment/Printrun'
+license=('GPL')
+provides=('printrun')
+conflicts=('printrun')
+depends=('python2-pyserial' 'wxpython' 'pyglet')
+makedepends=('git')
+source=('git://github.com/kliment/Printrun.git'
+        'pronterface.desktop' 'pronterface.png')
+sha256sums=('SKIP'
+            'd2b419a6b00540a4cd1d1e7e561aaf763ebf6dbfe5520569da4d4372a9d09918'
+            'b6321224cc52ce18f5450c68af8b9f92ec11e85a2a58c41be049b79faefa2ace')
+
+pkgver() {
+  cd "${srcdir}/${_gitname}"
+  git describe --tags --always | sed 's/printrun-//' | sed 's|-|.|g'
+}
+
+build() {
+  cd "${srcdir}/${_gitname}"
+  python2 setup.py build
+}
+
+package() {
+  cd "${srcdir}/${_gitname}"
+  python2 setup.py install --root="${pkgdir}" --prefix=/usr
+
+  install -D -m644 "${srcdir}/pronterface.desktop" \
+    "$pkgdir/usr/share/applications/pronterface.desktop"
+  install -D -m644 "${srcdir}/pronterface.png" \
+    "$pkgdir/usr/share/pixmaps/pronterface.png"
+}
