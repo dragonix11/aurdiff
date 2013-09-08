@@ -1,0 +1,21 @@
+pkgname=blender-smd
+pkgver=1.8.6
+pkgrel=1
+pkgdesc="Source engine import/export for Blender"
+arch=(any)
+url="https://developer.valvesoftware.com/wiki/Blender_SMD_Tools"
+license=("GPL v2")
+source=("https://blender-smd.googlecode.com/files/io_smd_tools-$pkgver.zip")
+depends=("blender>=9:2.68")
+makedepends=(dos2unix python)
+md5sums=('f42a6f069a2526f38d32d26794a3a9ef')
+
+build() {
+	cd $srcdir
+	find . -type f -exec dos2unix {} \;
+}
+package() {
+	cd $srcdir
+	find . -name '*.py' -exec install -Dm755 {} "$pkgdir/usr/share/blender/2.68/scripts/addons/"{} \;
+	python -m compileall "$pkgdir/usr/share/blender"
+}

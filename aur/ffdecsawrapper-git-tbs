@@ -13,7 +13,7 @@ url="https://github.com/bas-t/ffdecsawrapper.git"
 arch=('i686' 'x86_64')
 license=('GPLv3')
 depends=('linux-headers')
-makedepends=('git' 'linux-headers>=3.10' 'linux-headers<3.11')
+makedepends=('git')
 conflicts=('ffdecsawrapper' 'sasc-ng')
 provides=('ffdecsawrapper')
 backup=('etc/camdir/cardclient.conf' 'etc/conf.d/ffdecsawrapper' 'etc/camdir/cardslot.conf')
@@ -58,10 +58,10 @@ prepare() {
 		fi
 
 	cd $srcdir/linux-tbs-drivers
-	msg "Applying V4l-tbs patch..."
+	msg "Applying tbs-mutex patch..."
 	patch -p1 < $srcdir/tbs-mutex.patch
-	echo
-	msg "Here's a few seconds to confirm that the patch has been applied sucessfully..."
+	echo ""
+	msg "Here's a few seconds to confirm the patch has been applied sucessfully..."
 	sleep 5
 
 	make || return 1
@@ -69,7 +69,7 @@ prepare() {
 
 build() {
 
-	cd $srcdir/ffdecsawrapper/contrib/ffdecsawrapper      
+	cd $srcdir/ffdecsawrapper      
 	./configure --compiletype=release --dvb_dir=$srcdir/linux-tbs-drivers/linux/
 }
 
@@ -90,8 +90,8 @@ package() {
 	install -m0644 $srcdir/ffdecsawrapper.conf  $pkgdir/etc/conf.d/ffdecsawrapper
 	install -m0644 $srcdir/ffdecsawrapper.lr  $pkgdir/etc/logrotate.d/ffdecsawrapper-git-tbs.lr
 	install -m0644 $srcdir/ffdecsawrapper.service  $pkgdir/usr/lib/systemd/system/ffdecsawrapper.service      
-	install -m0755 $srcdir/ffdecsawrapper/contrib/ffdecsawrapper/ffdecsawrapper  $pkgdir/usr/bin
-	install -m0644 $srcdir/ffdecsawrapper/contrib/ffdecsawrapper/dvbloopback.ko  $pkgdir/usr/lib/modules/`uname -r`/extra
+	install -m0755 $srcdir/ffdecsawrapper/ffdecsawrapper  $pkgdir/usr/bin
+	install -m0644 $srcdir/ffdecsawrapper/dvbloopback.ko  $pkgdir/usr/lib/modules/`uname -r`/extra
 	find "$srcdir" -name '*.fw' -exec cp {} $pkgdir/usr/lib/firmware/tbs \;
 	find "$srcdir/linux-tbs-drivers" -name '*tbs*.ko' -exec cp {} $pkgdir/usr/lib/modules/`uname -r`/extra/tbs/ \;
 	find "$pkgdir" -name '*.ko' -exec gzip -9 {} \;

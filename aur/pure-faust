@@ -1,0 +1,24 @@
+# Maintainer: Albert Graef <aggraef@gmail.com>
+# Contributor: Bjoern Lindig bjoern dot lindig at googlemail dot com
+
+pkgname=pure-faust
+pkgver=0.9
+pkgrel=3
+pkgdesc="Run Faust-generated signal processing modules in Pure"
+arch=("i686" "x86_64")
+license=('LGPL3')
+url="http://purelang.bitbucket.org/"
+depends=('pure' 'faust2-git')
+makedepends=('make' 'gcc')
+source=("https://bitbucket.org/purelang/pure-lang/downloads/$pkgname-$pkgver.tar.gz")
+md5sums=('2506a488e58fbc0243c16872ff3bb3ea')
+
+build() {
+  cd $srcdir/$pkgname-$pkgver
+  make
+}
+
+package() {
+  cd $srcdir/$pkgname-$pkgver
+  make DESTDIR=$pkgdir install
+}
