@@ -4,13 +4,13 @@
 # Based on the wine-git in AUR
 
 pkgname='netflix-desktop'
-pkgver=0.8.2
+pkgver=0.8.5
 pkgrel=4
 pkgdesc="An automated script for viewing Netflix through Firefox and patched WINE"
 url="https://launchpad.net/netflix-desktop/"
 arch=('i686' 'x86_64')
 license=('MIT')
-depends=('wine-silverlight' 'ttf-ms-fonts' 'zenity' 'wget' 'python2-pyxattr')
+depends=('wine-silverlight' 'ttf-ms-fonts' 'zenity' 'wget' 'python2-pyxattr' 'wine-browser-installer')
 
 if [[ "$CARCH" == "x86_64" ]]; then
   depends+=(
@@ -38,9 +38,9 @@ netflix-desktop.desktop
 netflix-desktop.launcher
 NetflixIcon.png)
 
-md5sums=('7ce4580a463a61ab3dca713adc3c3bf4'
+md5sums=('139aa89ce9536ff860445ec67777f81a'
          'a41f098487affa1de34c8b44d52617b5'
-         'aa3bf2a5686f1b038e1561f8cc28929e'
+         'bd3492b17011d5acd4e05df1f60ead3b'
          '0a4c2ef50831a751dae74315eb066c01')
 
 prepare() {
@@ -76,7 +76,7 @@ package() {
         install -m644 ${srcdir}/${pkgname}/wine-browser-installer/browser-settings.ini ${pkgdir}/usr/share/netflix-desktop/
         install -m644 NetflixIcon.png ${pkgdir}/usr/share/netflix-desktop/
         install -m644 netflix-desktop.desktop ${pkgdir}/usr/share/applications/
-        install -m755 ${srcdir}/${pkgname}/wine-browser-installer/download-missing-files ${pkgdir}/usr/share/netflix-desktop/install-file-downloader
+        install -m755 ${srcdir}/${pkgname}/wine-browser-installer/download-missing-files ${pkgdir}/usr/share/netflix-desktop/.
         install -dm755 ${pkgdir}/usr/share/netflix-desktop/browser-profile
         cp -R ${srcdir}/${pkgname}/wine-browser-installer/browser-profile/* ${pkgdir}/usr/share/netflix-desktop/browser-profile/
         install -dm755 ${pkgdir}/usr/share/netflix-desktop/fullscreen-close-plugin

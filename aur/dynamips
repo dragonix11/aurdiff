@@ -1,0 +1,36 @@
+# Contributor: shild <sxp@bk.ru>
+# Contributor: Marcel Wysocki <maci@satgnu.net>
+# Contributor: Marek Skrobacki <skrobul@skrobul.com>
+# Maintainer: Rustam Tsurik <rustam.tsurik@gmail.com>
+
+pkgname=dynamips
+pkgver=0.2.10
+pkgrel=1
+pkgdesc="Cisco 7200/3600/2691 simulation platform."
+arch=('i686' 'x86_64')
+url="http://www.gns3.net/dynamips"
+license=('GPL')
+depends=('libpcap')
+makedepends=('elfutils')
+conflicts=('dynamips-community')
+
+if test "$CARCH" == x86_64; then
+  export DYNAMIPS_ARCH=amd64
+fi
+
+source=("dynamips-${pkgver}.source.tar.gz::https://github.com/GNS3/${pkgname}/archive/v${pkgver}.tar.gz"
+	"dynamips_arch_check.diff")
+
+md5sums=('60d185d7a7001e4b233e659102d1654a'
+	 '78c5659103bd12dc69fe5bde170c931d')
+         
+build() {
+  cd "${srcdir}/${pkgname}-${pkgver}"
+  patch -p0 < ../dynamips_arch_check.diff
+  make
+}
+
+package() {
+  cd "${srcdir}/${pkgname}-${pkgver}"
+  make DESTDIR="${pkgdir}/usr" install
+}

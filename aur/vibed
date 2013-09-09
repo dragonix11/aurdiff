@@ -1,0 +1,37 @@
+# Maintainer: Dicebot <public@dicebot.lv>
+pkgname=vibed
+pkgver=0.7.17
+pkgrel=3
+pkgdesc="Asynchronous I/O web framework written in D"
+arch=('i686' 'x86_64')
+url="http://vibed.org"
+license=('MIT')
+depends=('dmd>=2.063' 'libevent' 'openssl' 'dtools')
+makedepends=('unzip')
+install='vibed.install'
+source=("git+https://github.com/rejectedsoftware/vibe.d.git#tag=v$pkgver"
+        "git+https://github.com/D-Programming-Deimos/openssl.git"
+        "git+https://github.com/D-Programming-Deimos/libevent.git"
+        "viberun")
+
+sha1sums=('SKIP'
+          'SKIP'
+          'SKIP'
+          '25019ee8b637cd316693a8d90e95868ca66cbcc6')
+
+package() {
+    cd "$srcdir" 
+    mkdir -p ${pkgdir}/usr/share/vibed
+    mkdir -p ${pkgdir}/usr/share/licenses/vibed
+    cp -r ./vibe.d/source ${pkgdir}/usr/share/vibed/source
+    cp -r ./vibe.d/examples ${pkgdir}/usr/share/vibed/examples
+    cp ./vibe.d/LICENSE.txt ${pkgdir}/usr/share/licenses/vibed/LICENSE.txt
+    cp ./vibe.d/LICENSE_DE.txt ${pkgdir}/usr/share/licenses/vibed/LICENSE_DE.txt
+
+    mkdir -p ${pkgdir}/usr/share/vibed/source/deimos
+    cp -r ./openssl/deimos/openssl ${pkgdir}/usr/share/vibed/source/deimos/
+    cp -r ./libevent/deimos/event2 ${pkgdir}/usr/share/vibed/source/deimos/
+
+    mkdir -p ${pkgdir}/usr/bin/
+    install -m555 ./viberun ${pkgdir}/usr/bin/
+}

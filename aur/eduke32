@@ -1,0 +1,46 @@
+# Maintainer: carstene1ns <carsten.1 gmx net>
+# Contributor: Arkham <arkham at archlinux dot us>
+# Contributor: Christoph Zeiler <archNOSPAM_at_moonblade.dot.org>
+# Contributor: JD Steffen
+
+pkgname=eduke32
+# mind the underscore!
+pkgver=20130905_4050
+pkgrel=1
+pkgdesc='An advanced Duke Nukem 3D source port'
+arch=('i686' 'x86_64')
+install='eduke32.install'
+url='http://eduke32.com/'
+license=('GPL' 'custom: BUILD')
+depends=('sdl_mixer' 'mesa' 'libvpx' 'gtk2' 'desktop-file-utils')
+makedepends=('nasm')
+# no need for nasm on 64bit
+[ "$CARCH" == "x86_64" ] && makedepends=()
+optdepends=('eduke32-hrp: High Resolution Pack' 'eduke32-dukeplus: Enhanced Mod' 'timidity-freepats: free soundfont for music' 'eduke32-shareware-episode: Duke Nukem 3D Demo')
+conflicts=('eduke32-svn')
+source=("http://dukeworld.duke4.net/${pkgname}/synthesis/${pkgver//_/-}/${pkgname}_src_${pkgver//_/-}.tar.bz2"
+        "${pkgname}.png"
+        "${pkgname}.desktop"
+        "${pkgname}.install")
+md5sums=('704e61130b4fb06e9ebe3cd75546760e'
+         'bc189b860c8562e10f01e0faed909089'
+         '869ad03a7f78fe1e96d1fdf6123e7dc2'
+         '0bb168403e492fa0af79d8e4e6a3dd19')
+
+build() {
+  cd "${srcdir}/${pkgname}_${pkgver//_/-}"
+
+  # add our makeflags and explicitly disable c++ building for now
+  make debug="${CXXFLAGS}" CPLUSPLUS=0
+}
+
+package() {
+  cd "${srcdir}/${pkgname}_${pkgver//_/-}"
+
+  # install binaries, buildlicense, icon and desktop files
+  install -d "${pkgdir}/usr/bin"
+  install -m755 "eduke32" "mapster32" "${pkgdir}/usr/bin/"
+  install -Dm644 "package/buildlic.txt" "${pkgdir}/usr/share/licenses/${pkgname}/buildlic.txt"
+  install -Dm644 "${srcdir}/${pkgname}.png" "${pkgdir}/usr/share/pixmaps/${pkgname}.png"
+  install -Dm644 "${srcdir}/${pkgname}.desktop" "${pkgdir}/usr/share/applications/${pkgname}.desktop"
+}

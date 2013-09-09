@@ -1,0 +1,35 @@
+# Maintainer: Miguel Revilla <yo@miguelrevilla.com>
+# Contributor: Ferik <djferik at gmail dot com>
+
+pkgname=masterpdfeditor
+pkgver=1.9.10
+pkgrel=1
+pkgdesc="A complete solution for creation and editing PDF files. (Free for non-commercial use)"
+url="http://code-industry.net/free-pdf-editor.php"
+arch=('i686' 'x86_64')
+license=('custom')
+depends=('qt4')
+source=(${pkgname}.desktop)
+md5sums=('a04f846c789612450afedf43e80b5928')
+
+if [[ $CARCH == 'i686' ]]; then
+   source+=(http://code-industry.net/public/MasterPDFEditor-${pkgver}.i386.tar.gz)
+   md5sums+=('4e9ffca02fc0974c40f8fe35f42879ad')
+elif [[ $CARCH == 'x86_64' ]]; then
+   source+=(http://code-industry.net/public/MasterPDFEditor-${pkgver}.${CARCH}.tar.gz)
+   md5sums+=('3d7f27a78667350e19116804f68c6ea4')
+fi
+
+package() {
+	mkdir -p "${pkgdir}/opt/masterpdfeditor"
+	cd "${srcdir}/MasterPDFEditor"
+	/bin/tar cf - * | ( cd "${pkgdir}"/opt/masterpdfeditor; tar xfp - )
+	install -D -m755 "${srcdir}"/MasterPDFEditor/lang/*.qm "${pkgdir}"/opt/masterpdfeditor/lang
+	install -D -m755 "${srcdir}"/MasterPDFEditor/lang/*.ts "${pkgdir}"/opt/masterpdfeditor/lang
+	install -D -m644 "${srcdir}"/MasterPDFEditor/License.txt "${pkgdir}"/usr/share/licenses/masterpdfeditor/LICENSE
+	install -D -m644 "${srcdir}"/MasterPDFEditor/pdfeditor.png "${pkgdir}"/usr/share/pixmaps/pdfeditor.png
+	install -D -m644 "${srcdir}"/masterpdfeditor.desktop "${pkgdir}"/usr/share/applications/masterpdfeditor.desktop
+	rm "${pkgdir}"/opt/masterpdfeditor/License.txt
+	mkdir -p "${pkgdir}"/usr/bin
+	ln -s /opt/masterpdfeditor/pdfeditor "${pkgdir}"/usr/bin/pdfeditor
+}
