@@ -1,0 +1,31 @@
+# Contributor: Jed Brown <jed@59A2.org>
+pkgname=sowing
+pkgver=1.1.16e
+pkgrel=1
+pkgdesc="Tools for documenting and improving portability"
+arch=(x86_64 i686)
+url="http://www.cs.uiuc.edu/~wgropp/projects/software/sowing"
+license=('GPL')
+groups=()
+depends=()
+makedepends=()
+provides=()
+conflicts=()
+replaces=()
+backup=()
+options=()
+source=(http://ftp.mcs.anl.gov/pub/petsc/externalpackages/$pkgname-$pkgver.tar.gz)
+md5sums=('ced1c53d11f6888fe3f61760d121144c')
+
+build() {
+  mkdir -p "${srcdir}/build"
+  cd "${srcdir}/build"
+
+  ../${pkgname}-${pkgver}/configure --prefix=/usr --datadir=/usr/share/sowing
+  make
+}
+
+package() {
+  cd "${srcdir}/build"
+  make prefix="${pkgdir}/usr" datadir="${pkgdir}/usr/share/sowing" install
+}

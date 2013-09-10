@@ -1,0 +1,65 @@
+# Maintainer:  Michele Damiano Torelli <me_AT_mdtorelli_DOT_it>
+# Contributor: Neng Xu <neng2.xu2@gmail.com>
+
+pkgname=orientdb-git
+pkgver=1.5.1
+pkgrel=1
+pkgdesc="A NoSQL Graph-Document DBMS - Standard edition - Development version"
+conflicts=('orientdb' 'orientdb-graphed' 'orientdb-graphed-git')
+arch=('any')
+license=('Apache')
+url="http://www.orientdb.org"
+depends=('java-runtime-headless')
+makedepends=('git' 'apache-ant')
+install=$pkgname.install
+source=('orientdb.service'
+        'git://github.com/nuvolabase/orientdb')
+sha512sums=('c4f9e16d4502ef5a6f9f34afd573eef80949759b87d09d23e66070123f3a96ac9dc4196d3f4d31d45a013d6a8d40c1da72c38e49a2f490a72feb3d8cd44a7a6d'
+            'SKIP')
+
+pkgver() {
+  cd orientdb
+  git describe --always | sed 's/-/./g'
+}
+
+prepare() {
+  cd orientdb
+
+  sed -i 's|\.\./log|/opt/orientdb/log|' server/config/orientdb-server-log.properties
+  sed -i 's|YOUR_ORIENTDB_INSTALLATION_PATH|/opt/orientdb|' server/script/orientdb.sh
+  sed -i 's|USER_YOU_WANT_ORIENTDB_RUN_WITH|orient|' server/script/orientdb.sh
+}
+
+build() {
+  cd orientdb
+
+  ant -DreleaseHome=.
+}
+
+package() {
+  cd orientdb
+
+  _gitversion="$(cat build.xml | grep 'property name="version"' | head -1 | sed -r 's|<property name="version" value="||; s|"/>||; s|^[ \t]*||; s|[ \t]*$||; s|[ \r]*$||')"
+  msg "Git version: $_gitversion"
+
+  cd "orientdb-$_gitversion"
+
+  install -dm755 "${pkgdir}"/opt/orientdb
+  install -dm700 "${pkgdir}"/opt/orientdb/config
+  install -dm700 "${pkgdir}"/opt/orientdb/databases
+  install -dm755 "${pkgdir}"/opt/orientdb/bin
+  install -dm700 "${pkgdir}"/opt/orientdb/www
+  install -dm755 "${pkgdir}"/opt/orientdb/lib
+ 
+  install -d "${pkgdir}"/usr/bin
+  install -d "${pkgdir}"/var/log/orientdb
+  install -d "${pkgdir}"/usr/lib/systemd/system
+ 
+  install -m755 bin/console.sh "${pkgdir}"/opt/orientdb/bin/
+  install -m755 lib/* "${pkgdir}"/opt/orientdb/lib/
+  install -m700 config/* "${pkgdir}"/opt/orientdb/config/
+  install -m700 bin/shutdown.sh bin/server.sh bin/orientdb.sh "${pkgdir}"/opt/orientdb/bin/
+  cp -r www/* "${pkgdir}"/opt/orientdb/www/
+ 
+  install -m644 "${srcdir}"/orientdb.service "${pkgdir}"/usr/lib/systemd/system/
+}

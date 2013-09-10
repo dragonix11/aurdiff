@@ -1,0 +1,34 @@
+# Contributor: Bernhard Walle   <bwalle.de: bernhard            >
+# Contributor: Jesse Jaara      <gmail.com, mail.ru: jesse.jaara>
+# Contributor: Armin Wehrfritz
+# Maintainer:  Patrick McCarty  <pnorcks at gmail dot com>
+
+pkgname=osc
+pkgver=0.140.1
+pkgrel=1
+pkgdesc="Command line client for the openSUSE Build Service"
+arch=(any)
+url="http://openbuildservice.org/"
+license=('GPL')
+depends=('python2'
+         'python2-m2crypto'
+         'urlgrabber')
+optdepends=('obs-build: required to run local builds'
+            'obs-service-format_spec_file: for running the format_spec_file source service')
+conflicts=('osc-git')
+source=(https://github.com/openSUSE/${pkgname}/archive/${pkgver}.tar.gz)
+sha256sums=('68877bb452118fb5863eec25442fcb2c2df64aa5063e9892e0da9810365cdcb8')
+
+build() {
+  cd "${srcdir}/${pkgname}-${pkgver}"
+
+  python2 setup.py build
+}
+
+package() {
+  cd "${srcdir}/${pkgname}-${pkgver}"
+
+  python2 setup.py install --root="${pkgdir}/" --optimize=1
+  cd "${pkgdir}/usr/bin"
+  ln -s osc-wrapper.py osc
+}
