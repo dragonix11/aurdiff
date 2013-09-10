@@ -1,0 +1,43 @@
+# Maintainer: Isaac C. Aronson <isaac at pingas dot org>
+
+pkgname=tekkit-server
+pkgver=1.1.8
+pkgrel=2
+pkgdesc="Tekkit server unit files, script, and jar"
+arch=(any)
+url="http://technicpack.net/tekkit"
+license=('custom')
+depends=('java-runtime-headless' 'systemd' 'screen' 'expect')
+conflicts=('minecraft-server-systemd' 'minecraft-canary')
+options=(emptydirs)
+install=minecraft-server.install
+backup=('etc/conf.d/minecraft'
+        'srv/minecraft/server.properties')
+source=(http://mirror.technicpack.net/Technic/servers/tekkitmain/Tekkit_Server_v$pkgver.zip
+        http://assets.minecraft.net/1_5_1/minecraft_server.jar
+        minecraftd
+        minecraftd-diag
+        minecraftd.service
+        minecraftctl
+        conf.minecraft)
+
+md5sums=('50c127b75502b49e87faaaf16f905a25'
+         '9d31b969c3f197a1d40381d5620717ea'
+         'a556dbffd433d6d2dcaeba33b78511c5'
+         '64e793deed5856a970e92d0942168cfd'
+         '98df0cca61c6833ad032559f07b4acb1'
+         '8c9d65c7b424e1343da49fa0fdb5c9a6'
+         '83dcab34b02f1ed80a3fe11389ad0d2a')
+
+package() {
+  install -Dm744 "$srcdir/minecraftd"             "$pkgdir/usr/bin/minecraftd"
+  install -Dm744 "$srcdir/minecraftd-diag"        "$pkgdir/usr/bin/minecraftd-diag"
+  install -Dm744 "$srcdir/minecraftctl"           "$pkgdir/usr/bin/minecraftctl"
+
+  install -Dm644 "$srcdir/minecraftd.service"     "$pkgdir/usr/lib/systemd/system/minecraftd.service"
+  install -Dm644 "$srcdir/conf.minecraft"         "$pkgdir/etc/conf.d/minecraft"
+
+  install -d     "$pkgdir/srv/minecraft/backup"
+  cp      -r     "$srcdir/"{Tekkit.jar,minecraft_server.jar,config,coremods,mods,server.properties} "$pkgdir/srv/minecraft/"
+  chmod   755    "$pkgdir/srv/minecraft/"{config,coremods,mods}
+}

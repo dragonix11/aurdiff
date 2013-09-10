@@ -1,0 +1,29 @@
+# Maintainer: Zdeněk Janeček <jan.zdenek@gmail.com>
+pkgname=entangle
+pkgver=0.5.3
+pkgrel=1
+pkgdesc="Entangle provides a graphical interface for “tethered shooting”, aka taking photographs with a digital camera completely controlled from the computer."
+arch=('i686' 'x86_64')
+url="http://entangle-photo.org/"
+license=('GPL')
+depends=('dbus-glib>=0.60' 'lcms' 'gtk3' 'libpeas' 'libgexiv2' 'libgphoto2' 'libraw')
+#makedepends=('')
+install=entangle.install
+source=(http://entangle-photo.org/download/sources/$pkgname-$pkgver.tar.gz)
+md5sums=('761c6bae31cb9d87ac3250675d663aae')
+
+build() {
+  cd "$srcdir/$pkgname-$pkgver"
+  ./configure --prefix=/usr --sysconfdir=/etc --localstatedir=/var --libdir=/usr/lib
+  make
+}
+
+check() {
+  cd "$srcdir/$pkgname-$pkgver"
+  make -k check
+}
+
+package() {
+  cd "$srcdir/$pkgname-$pkgver"
+  make DESTDIR="$pkgdir" install
+}

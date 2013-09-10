@@ -1,0 +1,31 @@
+# Maintainer: Alessio Sergi <asergi at archlinux dot us>
+# Contributor: FzerorubigD <Fzerorubigd {AT} GMail {DOT} com>
+
+pkgname=dropbox-uploader-git
+pkgver=144.3e5aef0
+pkgrel=1
+pkgdesc="A bash script to manage Dropbox from the CLI"
+arch=('any')
+url="https://github.com/andreafabrizi/Dropbox-Uploader"
+license=('GPL3')
+depends=('bash' 'curl')
+makedepends=('git')
+source=('git://github.com/andreafabrizi/Dropbox-Uploader.git')
+md5sums=('SKIP')
+
+pkgver() {
+  cd "$srcdir"/Dropbox-Uploader
+  echo $(git rev-list --count HEAD).$(git rev-parse --short HEAD)
+}
+
+prepare() {
+  cd "$srcdir"/Dropbox-Uploader
+  sed -i '/^DU=/s|=.*$|="/usr/bin/dropbox_uploader"|' dropShell.sh
+}
+
+package() {
+  cd "$srcdir"/Dropbox-Uploader
+  install -d -m 755 "$pkgdir"/usr/bin
+  install -m 755 dropbox_uploader.sh "$pkgdir"/usr/bin/dropbox_uploader
+  install -m 755 dropShell.sh "$pkgdir"/usr/bin/dropShell
+}

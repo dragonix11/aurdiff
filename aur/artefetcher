@@ -1,0 +1,40 @@
+# Contributor: Frederic Bezies <fredbezies@gmail.com>
+# Work in progress PKGBUILD.
+
+pkgname=artefetcher
+_pkgname=arteFetcher
+pkgver=0.3.0
+pkgrel=1
+pkgdesc="A video grabber for Arte Catch UP TV."
+arch=('i686' 'x86_64')
+url="http://artefetcher.sourceforge.net/"
+license=('GPL')
+depends=('qt4')
+makedepends=('qtwebkit')
+provides=()
+conflicts=()
+replaces=()
+backup=()
+options=('!libtool' '!emptydirs')
+source=(http://downloads.sf.net/sourceforge/$pkgname/ArteFetcher_$pkgver.tar.gz)
+md5sums=('9454cace6ebe8f34d87ab0211b5497af')
+
+build() {
+  cd $_pkgname
+  lrelease-qt4 arteFetcher_*.ts
+  qmake-qt4 PREFIX=$pkgdir/usr/bin
+  make
+} 
+
+package() {
+   cd $_pkgname
+   mkdir -p "$pkgdir"/usr/share/applications
+   cp arteFetcher.desktop "$pkgdir"/usr/share/applications
+   mkdir -p "$pkgdir"/usr/share/pixmaps
+   cp arteFetcher.png "$pkgdir"/usr/share/pixmaps
+   make DESTDIR="$pkgdir" install
+   
+}
+
+
+md5sums=('79f542687ed719a7beab98e6b6997017')

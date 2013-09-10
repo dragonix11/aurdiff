@@ -1,0 +1,26 @@
+# Author: James Halliday <mail@substack.net> (http://substack.net)
+# Maintainer: substack <mail@substack.net>
+_npmname=browserify
+_npmver=2.29.1
+pkgname=nodejs-browserify # All lowercase
+pkgver=2.29.1
+pkgrel=1
+pkgdesc="browser-side require() the node way"
+arch=(any)
+url="http://github.com/substack/node-browserify"
+license=( "MIT" )
+depends=('nodejs' )
+optdepends=()
+source=(http://registry.npmjs.org/$_npmname/-/$_npmname-$_npmver.tgz)
+noextract=($_npmname-$_npmver.tgz)
+sha1sums=(9bcb814aab920d8b6373ec9241281893b1229a87)
+
+package() {
+  cd "$srcdir"
+  local _npmdir="$pkgdir/usr/lib/node_modules/"
+  mkdir -p "$_npmdir"
+  cd "$_npmdir"
+  npm install -g --prefix "$pkgdir/usr" $_npmname@$_npmver
+}
+
+# vim:set ts=2 sw=2 et:
