@@ -1,0 +1,47 @@
+# Moritz Bunkus <moritz@bunkus.org>
+
+pkgname='perl-config-any'
+pkgver='0.24'
+pkgrel=1
+pkgdesc="Load configuration from different file formats, transparently"
+arch=('any')
+license=('PerlArtistic' 'GPL')
+options=('!emptydirs')
+depends=()
+makedepends=('perl-xml-libxml')
+url='http://search.cpan.org/dist/Config-Any'
+source=('http://search.cpan.org/CPAN/authors/id/B/BR/BRICAS/Config-Any-0.24.tar.gz')
+md5sums=('bf58a5cbd8b809886bd0459986e55ad7')
+sha512sums=('7eee9ea2794d87aada9a46668ac9c947b34c7107f53a3da9de21a3ebebc63b8718e3f8cea1009697909047d376de0e8fcd137d6d3dd66cb719bf7e48a50cd093')
+
+prepare_environment() {
+  export PERL_MM_USE_DEFAULT=1 PERL5LIB=""                 \
+    PERL_AUTOINSTALL=--skipdeps                            \
+    PERL_MM_OPT="INSTALLDIRS=vendor DESTDIR='$pkgdir'"     \
+    PERL_MB_OPT="--installdirs vendor --destdir '$pkgdir'" \
+    MODULEBUILDRC=/dev/null
+  cd "${srcdir}/Config-Any-${pkgver}"
+}
+
+build() {
+  prepare_environment
+  /usr/bin/perl Makefile.PL
+  make
+}
+
+check() {
+  prepare_environment
+  make test
+}
+
+package() {
+  prepare_environment
+  make install
+  find "$pkgdir" -name .packlist -o -name perllocal.pod -delete
+}
+
+# Local Variables:
+# mode: shell-script
+# sh-basic-offset: 2
+# End:
+# vim:set ts=2 sw=2 et:

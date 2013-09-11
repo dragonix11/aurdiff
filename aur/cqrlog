@@ -1,0 +1,47 @@
+# Contributor: Jeff Parent <jecxjo@sdf.lonestar.org>
+# Maintainer : vic.pozd <vic.pozd at gmail.com>
+
+pkgname=cqrlog
+pkgver=1.6.0
+pkgrel=1
+pkgdesc="An advanced ham radio logger based on MySQL database ( MariaDB replaces MySQL in repositories ). (Binary Version)"
+arch=('i686' 'x86_64')
+url="http://www.cqrlog.com"
+license=('GPL')
+groups=()
+
+# cwdaemon not actuality now in AUR
+#depends=('mysql' 'hamlib' 'trustedqsl' 'xplanet' 'cwdaemon' 'glabels')
+
+
+depends=('mariadb' 'libmariadbclient' 'mariadb-clients' 'hamlib' 'trustedqsl' 'xplanet' 'glabels' )
+
+# If you use original MySQL uncomment string after and comment bellow
+
+#depends=('mysql' 'hamlib' 'trustedqsl' 'xplanet' 'glabels')
+
+
+if [ "$CARCH" = "i686" ]; then
+    _arch='i386'
+    md5sums=('398d9f629f9c5bf2cd5a8eaa13503b95')
+
+  elif [ "$CARCH" = "x86_64" ]; then
+    _arch='amd64'
+    md5sums=('b192e06a934434b89471e70002df9542')
+fi
+
+_pkg="${pkgname//_/-}_${pkgver//_/-}_${_arch}"
+source=(${url}/files/${pkgname//_/-}_${pkgver}/${_pkg}.tar.gz)
+
+
+package() {
+    if [ "$CARCH" = "i686" ]; then 
+        cd "$srcdir/$pkgname-$pkgver"
+    elif [ "$CARCH" = "x86_64" ]; then
+        cd "$srcdir/${pkgname}_${pkgver}_${_arch}"
+    else 
+        echo "Error 13"
+        exit 13
+    fi
+    cp -rfv ./* $pkgdir
+}
