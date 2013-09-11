@@ -1,0 +1,34 @@
+# Contributor: Brad Fanella <bradfanella@archlinux.us>
+# Contributor: jrutila
+# Contributor: grimi <grimi@poczta.fm>
+# Contributor: jht <stefano@inventati.org>
+
+pkgname=wxglade
+pkgver=0.6.8
+pkgrel=1
+pkgdesc="A GUI designer for wxWidgets that can generate Python, C++, Perl, Lisp and XRC code. "
+arch=("any")
+license=("MIT")
+url="http://wxglade.sourceforge.net"
+depends=(wxpython desktop-file-utils)
+makedepends=(python2)
+install=wxglade.install
+source=("http://downloads.sourceforge.net/sourceforge/wxglade/wxGlade-$pkgver.tar.gz"
+"wxglade.desktop"
+"wxglade.sh")
+md5sums=('414dd5ac69dae665f1dd4f9f8ea36a98'
+         '50a9ad5d58bb6cd7f71bfa93aa131162'
+         '9734cac3d037f68440c75564d1110161')
+
+package() {
+mkdir -p $pkgdir/usr/bin $pkgdir/usr/share/doc/wxGlade
+install -Dm 644 wxGlade-$pkgver/docs/man/wxglade.1 $pkgdir/usr/share/man/man1/wxglade.1
+rm -rf wxGlade-$pkgver/docs/man
+mv  wxGlade-$pkgver/docs/* $pkgdir/usr/share/doc/wxGlade/
+cp -R wxGlade-$pkgver/ $pkgdir/usr/share/wxGlade/
+python2 -m compileall $pkgdir/usr/share/wxGlade/
+install -Dm755 "$srcdir/wxglade.sh" $pkgdir/usr/bin/wxglade
+install -D -m644 wxGlade-$pkgver/license.txt $pkgdir/usr/share/licenses/wxglade/license.txt
+install -D -m644 wxGlade-$pkgver/icons/icon.xpm $pkgdir/usr/share/pixmaps/wxglade.xpm
+install -D -m644 wxglade.desktop $pkgdir/usr/share/applications/wxglade.desktop
+}
