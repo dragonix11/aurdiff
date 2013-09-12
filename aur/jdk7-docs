@@ -1,0 +1,23 @@
+# Mantainer: M0Rf30
+# Contributor: joschi
+pkgname=jdk7-docs
+_major=7
+_minor=40
+_build=b43
+pkgver=${_major}.${_minor}
+pkgrel=1
+pkgdesc='Java SE Development Kit Documentation 7'
+arch=('any')
+url='http://www.oracle.com/technetwork/java/index.html'
+license=('custom')
+options=('docs' '!strip')
+source=("http://download.oracle.com/otn-pub/java/jdk/7u${_minor}-${_build}/jdk-7u${_minor}-apidocs.zip")
+conflicts=('jdk-docs')
+
+package(){
+  cd "$srcdir/docs"
+  mkdir -p "$pkgdir/usr/share/doc/java7" 
+  cp -rf * "$pkgdir/usr/share/doc/java7" 
+}
+
+md5sums=('af41e21fd844ad94645c38c3b130f8b5')

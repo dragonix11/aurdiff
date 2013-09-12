@@ -1,0 +1,37 @@
+# Maintainer: Tom Richards <tom@tomrichards.net>
+# Contributor: Ebubekir KARUL <ebubekirkarul@yandex.com>
+# Contributor: LinuxUser <linuxuser@inbox.com>
+# Contributor: Krzysztof Raczkowski <raczkow@gnu-tech.pl>
+# Contributor: Techlive Zheng <techlivezheng@gmail.com>
+
+pkgname=netbeans-php
+pkgver=7.3.1
+pkgrel=1
+pkgdesc="Netbeans IDE - PHP version"
+arch=('any')
+url="http://www.netbeans.org"
+license=('CDDL')
+depends=('java-runtime' 'desktop-file-utils')
+conflicts=('netbeans')
+options=('!strip')
+install=netbeans-php.install
+source=('http://dlc.sun.com.edgesuite.net/netbeans/7.3.1/final/zip/netbeans-7.3.1-201306052037-php.zip'
+        'netbeans.desktop')
+md5sums=('eab6f4c435d81a83555fa2cea89cfe23'
+         '4365b0af18717c031c38f422d0ad5466')
+
+build() {
+  cd $srcdir/netbeans/
+
+  rm bin/netbeans.exe
+
+  find . -type f -exec install -D -m644 {,$pkgdir/usr/share/netbeans/}{} \;
+
+  chmod a+x $pkgdir/usr/share/netbeans/bin/netbeans
+
+  install -D -m644 $srcdir/netbeans.desktop $pkgdir/usr/share/applications/netbeans.desktop
+
+  mkdir -p $pkgdir/usr/bin
+
+  ln -s /usr/share/netbeans/bin/netbeans $pkgdir/usr/bin/netbeans
+}

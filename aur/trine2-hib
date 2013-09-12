@@ -9,11 +9,12 @@ arch=('i686' 'x86_64')
 license=('custom: commercial')
 if [ "$CARCH" == 'i686' ]; then
   depends=('glu' 'nvidia-cg-toolkit' 'gtk2' 'libpng12'
-           'openal' 'alsa-lib' 'libogg'  'lib32-libvorbis')
+           'openal' 'alsa-lib' 'libogg'  'libvorbis')
 else
   depends=('lib32-glu' 'lib32-nvidia-cg-toolkit' 'lib32-gtk2' 'lib32-libpng12'
            'lib32-openal' 'lib32-alsa-lib' 'lib32-libogg'  'lib32-libvorbis')
 fi
+conflicts=('trine2')
 options=('!strip' '!upx')
 PKGEXT='.pkg.tar'
 DLAGENTS+=('hib::/usr/bin/echo "Could not find %u. Manually download it to \"$(pwd)\", or set up a hib:// DLAGENT in /etc/makepkg.conf."; exit 1')
@@ -22,7 +23,7 @@ source=('hib://trine2_linux.tar.gz'
         "$pkgname.launcher"
         "$pkgname.desktop")
 md5sums=('783cde05d588435a352aaca1daa29f9e'
-         'eace9fbcfd5f53ca74598a2930c1d8d6'
+         '5166c155066bc0b1dccc68830030d11c'
          '80509ff6b10602acb2beeaa41a4847ec')
 
 package() {
@@ -37,8 +38,10 @@ package() {
   rm "$pkgdir"/$_target/lib/lib32/libCg*
   
   # Install icon & desktop entry
-  install -Dm644 trine2_linux/trine2.png "$pkgdir"/usr/share/pixmaps/trine2.png
-  install -Dm644 $pkgname.desktop "$pkgdir"/usr/share/applications/$pkgname.desktop
+  install -Dm644 trine2_linux/trine2.png \
+                 "$pkgdir"/usr/share/pixmaps/trine2.png
+  install -Dm644 $pkgname.desktop \
+                 "$pkgdir"/usr/share/applications/$pkgname.desktop
   
   # Install launch script
   install -Dm755 $pkgname.launcher "$pkgdir"/usr/bin/trine2

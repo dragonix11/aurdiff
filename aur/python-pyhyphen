@@ -1,0 +1,34 @@
+# Maintainer: Veli-Jussi Raitila <vjr AT iki DOT fi>
+
+pkgname=python-pyhyphen
+_pkgname=PyHyphen
+pkgver=2.0.4
+pkgrel=1
+pkgdesc="Hyphenation library for Python"
+arch=('x86_64' 'i686')
+url="http://pyhyphen.googlecode.com/"
+license=('GPL2' 'LGPL2.1' 'MPL')
+depends=('python')
+install=pyhyphen.install
+
+source=(http://pypi.python.org/packages/source/P/PyHyphen/${_pkgname}-${pkgver}.zip)
+md5sums=('6c121d8b00ae6bc1d4e0a06a7b2fceb2')
+
+build() {
+  cd "${srcdir}/${_pkgname}-${pkgver}"
+
+  sed -i \
+    -e 's|\$path|/usr/lib/python3.3/site-packages/hyphen|' \
+    -e 's|\$repo|http://cgit.freedesktop.org/libreoffice/dictionaries/plain/|' \
+    2.x/config.py
+
+  sed -i "s|'install' in sys.argv|False|" setup.py
+
+  python setup.py build
+}
+
+package() {
+  cd "${srcdir}/${_pkgname}-${pkgver}"
+
+  python setup.py install --root="${pkgdir}" --optimize=1
+}
