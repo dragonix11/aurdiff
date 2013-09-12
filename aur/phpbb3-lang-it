@@ -1,0 +1,26 @@
+# Current Maintainer:
+#   Andrey Mivrenik <6c86742e@opayq.com>
+_lang=it
+
+pkgname=phpbb3-lang-${_lang}
+pkgver=1.1.0
+_filename=italian_1_1_0
+pkgrel=1
+pkgdesc="A high powered, fully scalable, and highly customisable open-source bbs package. Italian Language Pack"
+arch=('any')
+url="https://www.phpbb.com/customise/db/translation/italian/"
+license=('GPL')
+depends=('phpbb3')
+source=(https://www.phpbb.com/customise/db/download/id_84480)
+md5sums=('23d144b15b59d7d67dd269042bc04ff5')
+
+package() {
+  local _wwwroot=`grep ^DocumentRoot /etc/httpd/conf/httpd.conf | sed 's|DocumentRoot ||' | sed 's|"||g'`
+  if [ -z $_wwwroot ] ; then
+    _wwwroot="/srv/http"
+  fi
+
+  instdir=$pkgdir$_wwwroot/phpBB3/language/${_lang}
+  mkdir -p $instdir
+  cp -ra $srcdir/${_filename}/* $instdir
+}

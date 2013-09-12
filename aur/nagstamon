@@ -1,0 +1,23 @@
+_pkgname=Nagstamon
+pkgname=nagstamon
+pkgver=0.9.11
+pkgrel=1
+pkgdesc="Nagios status monitor for the desktop"
+depends=('python2' 'pygtk' 'gnome-python-extras' 'python2-lxml' 'python2-rsvg' 'python2-distribute')
+arch=('any')
+url="http://nagstamon.ifw-dresden.de/"
+license=('GPL')
+source=("http://sourceforge.net/projects/nagstamon/files/nagstamon/nagstamon%20$pkgver/$_pkgname-$pkgver.tar.gz" "nagstamon.desktop")
+
+package() {
+  cd "$srcdir/$_pkgname-$pkgver"
+  python2 setup.py install --prefix=/usr --root="$pkgdir"
+  install -Dm644 "$srcdir/nagstamon.desktop" "$pkgdir/usr/share/applications/nagstamon.desktop"
+
+  install -Dm644 "$srcdir/nagstamon.desktop" "$pkgdir/etc/xdg/autostart/nagstamon.desktop"
+
+  ln -s /usr/bin/nagstamon.py $pkgdir/usr/bin/nagstamon
+}
+
+md5sums=('d6845179a807eebb3345ba116fe31b8b'
+         '484a012b99f483dc293251e329ba760d')
