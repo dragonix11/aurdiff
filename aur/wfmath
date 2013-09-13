@@ -1,0 +1,29 @@
+# Maintainer:	Jesse	 Jaara		<gmail.com: jesse.jaara>
+# Contributor:	Jaroslav Lichtblau	<aur.archlinux.org: dragonlord>
+# Contributor:	Mildred			<online.fr: silkensedai>
+
+pkgname=wfmath
+pkgver=1.0.2
+pkgrel=1
+pkgdesc="WorldForge math library"
+arch=('i686' 'x86_64')
+url="http://sourceforge.net/projects/worldforge/"
+license=('GPL2')
+depends=('gcc-libs')
+source=("http://downloads.sourceforge.net/sourceforge/worldforge/${pkgname}-${pkgver}.tar.bz2")
+options=(!libtool)
+
+build() {
+  cd "${srcdir}/${pkgname}-${pkgver}"
+
+  ./configure --prefix=/usr
+  make
+}
+
+package() {
+  cd "${srcdir}/${pkgname}-${pkgver}"
+
+  make DESTDIR="${pkgdir}" install
+}
+
+md5sums=('76cf8195077ffd854b1340cc62a5d5e9')

@@ -1,0 +1,35 @@
+# Maintainer: 3ED <krzysztof1987 _at_ gmail _dot_ com>
+
+pkgname=milena-data
+pkgver=0.2.61.5
+pkgrel=1
+pkgdesc="Milena is a Polish speech synthesizer for Linux (data)"
+arch=('any')
+url="http://milena.polip.com/"
+license=('GPL')
+source=(http://tts.polip.com/files/${pkgname}-${pkgver}.tar.gz
+        10-makefile_prefix.patch)
+sha256sums=('1c973d79f0c77fab08882a886e0562fd3cdbfabf212efb9fbd81d850a7de01cf'
+            'c81dbf98db63baadd5bd7536160627664ddeef679d4f10d107ae6a18f99efc51')
+
+prepare() {
+  cd "$srcdir/$pkgname-$pkgver"
+
+  for (( i=0; i < ${#source[@]}; i++ )); do
+    if [ "${source[i]##*.}" = "patch" ]; then
+      patch -p1 -i "${srcdir}/${source[i]##*/}"
+    fi
+  done
+}
+
+build() {
+  cd "$srcdir/$pkgname-$pkgver"
+  make
+}
+
+package() {
+  cd "$srcdir/$pkgname-$pkgver"
+  make DESTDIR="$pkgdir" prefix="/usr" install
+}
+
+# vim:set ts=2 sw=2 et:

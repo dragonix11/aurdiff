@@ -1,0 +1,24 @@
+# Maintainer: Massimiliano Torromeo <massimiliano.torromeo@gmail.com>
+
+pkgname=hp-health
+pkgver=9.1.0.42_58
+pkgrel=3
+pkgdesc="HP System Health Application and Command line Utility Package"
+arch=(i686 x86_64)
+url="http://downloads.linux.hp.com/SDR/downloads/ProLiantSupportPack"
+depends=(bash dmidecode pciutils)
+groups=(hpproliant)
+license=("CUSTOM")
+
+[ $CARCH = "x86_64" ] && depends=(${depends[@]} lib32-glibc)
+
+source=(http://downloads.linux.hp.com/SDR/downloads/ProLiantSupportPack/RedHatEnterpriseServer/6.2/packages/i386/${pkgname}-${pkgver//_/-}.rhel6.i386.rpm)
+
+package() {
+	cd "$srcdir"
+	mv sbin usr/bin
+	cp -a {etc,opt,usr,var} "$pkgdir"
+}
+
+sha256sums=('a3ad4d1b7bbc6336fa0978f82ccce5b38fa98f9127f0d24adbc46ab6ef52e040')
+

@@ -1,0 +1,29 @@
+# Maintainer: Jesse Jaara <gmail.com: jesse.jaara>
+
+pkgname=ember
+pkgver=0.7.0
+pkgrel=2
+epoch=1
+pkgdesc="A 3D client using the OGRE 3d library, valid for WorldForge server."
+arch=('i686' 'x86_64')
+url="http://wiki.worldforge.org/wiki/Ember"
+license=('GPL3')
+depends=('varconf' 'eris' 'libwfut' 'cegui-0.7-toluapp' 'sdl' 'tinyxml' 'ogre' 'freealut' "ember-media")
+makedepends=('boost')
+source=("http://downloads.sourceforge.net/worldforge/${pkgname}-${pkgver}.tar.bz2")
+
+
+build() {
+  cd "${srcdir}/${pkgbase}-${pkgver}"
+
+  ./configure --prefix=/usr --enable-cegui-toluapp --sysconfdir=/etc
+  make BOOST_THREAD_LIB="-lboost_system -lboost_thread "
+}
+
+package() {
+  cd "${srcdir}/${pkgname}-${pkgver}"
+
+  make -j1 DESTDIR="${pkgdir}" install
+}
+
+md5sums=('7e7932129b0c0dce354d471ac052596f')

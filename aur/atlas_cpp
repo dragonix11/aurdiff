@@ -1,0 +1,27 @@
+# Contributor: Jesse Jaara <jesse.jaara@gmail.com>
+
+pkgname=atlas_cpp
+pkgver=0.6.3
+pkgrel=1
+pkgdesc="WorldForge Atlas protocol library"
+arch=(i686 x86_64)
+url="http://worldforge.org/dev/eng/libraries/atlas_cpp"
+license=('LGPL')
+depends=('zlib' 'bzip2')
+options=(!libtool)
+source=("http://switch.dl.sourceforge.net/sourceforge/worldforge/Atlas-C++-$pkgver.tar.bz2")
+
+build() {
+  cd "${srcdir}/Atlas-C++-${pkgver}"
+
+  ./configure --prefix=/usr
+  make
+}
+
+package() {
+  cd "${srcdir}/Atlas-C++-${pkgver}"
+
+  make DESTDIR="${pkgdir}" install
+}
+
+md5sums=('fa20e9f8d572abef09dad80d94f4cb03')
