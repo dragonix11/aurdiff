@@ -1,0 +1,32 @@
+# Maintainer: Rich Lindsley <rich at dranek dot com>
+pkgname=python2-fftw
+_py_pkgname=pyFFTW # The pypi package name
+pkgver=0.9.1
+pkgrel=1
+pkgdesc="A pythonic wrapper around FFTW"
+arch=('i686' 'x86_64')
+url="http://pypi.python.org/pypi/pyFFTW/"
+license=('GPL3')
+depends=('python2-numpy' 'fftw')
+options=(!emptydirs)
+source=(http://pypi.python.org/packages/source/p/$_py_pkgname/$_py_pkgname-$pkgver.tar.gz)
+md5sums=('a370f15f2c8caa509511cb39087b2b0c')
+sha1sums=('48ffc030e41183204d963ec64a7d99a54807cebf')
+sha256sums=('f97db568b9c9ab65e12fffa605c85dcaf0b74f3ca628734ec5452306ef8c3858')
+
+build() {
+  cd "$srcdir/$_py_pkgname-$pkgver"
+
+  # Enforce this to be a strictly python2 package
+  sed -i -e "s|^#![ ]*/usr/bin/python$|#!/usr/bin/python2|" \
+         -e "s|^#![ ]*/usr/bin/env python$|#!/usr/bin/env python2|" \
+         -e "s|^#![ ]*/bin/env python$|#!/usr/bin/env python2|" \
+             $(find ${srcdir} -name '*.py')
+}
+
+package() {
+  cd "$srcdir/$_py_pkgname-$pkgver"
+  python2 setup.py install --root="$pkgdir/" --optimize=1
+}
+
+# vim:set ts=2 sw=2 et:
