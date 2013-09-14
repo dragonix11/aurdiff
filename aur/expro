@@ -1,0 +1,32 @@
+# Maintainer: ninian <mcfadzean.org.uk ta linux>
+
+pkgname=expro
+pkgver=2.2.2
+pkgrel=2
+pkgdesc="Opens objects in associated applications by matching regular expressions against object name or MIME-type"
+arch=('any')
+url="http://appstogo.mcfadzean.org.uk/linux.html#expro"
+license=('MIT')
+depends=('dmenu' 'libnotify' 'file')
+optdepends=('gksu' 'zenity' 'ktsuss' 'gxmessage' 'perl-file-mimeinfo')
+backup=('etc/expro.conf')
+source=("http://appstogo.mcfadzean.org.uk/dl/$pkgname/$pkgname-$pkgver.tar.gz")
+md5sums=('b5b4928e31ab2e218b319b5f9b793946')
+
+package() {
+  cd "$srcdir/$pkgname-$pkgver"
+
+  # script
+  install -Dm755 $pkgname "$pkgdir/usr/bin/$pkgname"
+  # delete the following 3 lines if you do not wish expro to provide xdg-open and xdg-email
+  mkdir -p "$pkgdir/usr/local/bin"
+  ln -s "/usr/bin/$pkgname" "$pkgdir/usr/local/bin/xdg-open" 
+  ln -s "/usr/bin/$pkgname" "$pkgdir/usr/local/bin/xdg-email" 
+
+  # configuration
+  install -Dm644 $pkgname.conf "$pkgdir/etc/$pkgname.conf"
+  msg "Remember to customize $pkgname.conf after installation"
+
+  # licensing
+  install -Dm644 LICENSE "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
+}

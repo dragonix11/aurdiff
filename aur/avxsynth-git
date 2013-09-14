@@ -1,0 +1,35 @@
+# Maintainer: Gustavo Alvarez <sl1pkn07@gmail.com>
+
+pkgname=avxsynth-git
+pkgver=20130904.120375a
+pkgrel=1
+pkgdesc="Linux Port of AviSynth. (Git version)"
+arch=('i686' 'x86_64')
+url="http://www.avxsynth.org"
+license=('GPL2')
+depends=('qt4' 'mplayer' 'log4cpp' 'pango')
+makedepends=('git' 'svn' 'yasm' 'subversion' 'python2')
+provides=('avxsynth')
+conflicts=('avxsynth')
+options=('!libtool')
+source=('git://github.com/avxsynth/avxsynth.git')
+md5sums=('SKIP')
+
+_gitname="avxsynth"
+
+pkgver() {
+  cd "${_gitname}"
+  echo "$(git log -1 --format="%cd" --date=short | tr -d '-').$(git log -1 --format="%h")"
+}
+
+build() {
+  cd "${srcdir}/${_gitname}"
+  autoreconf -if
+  ./configure --prefix=/usr --enable-silent-rules
+  make
+}
+
+package() {
+  cd "${_gitname}"
+  make DESTDIR="${pkgdir}" install
+}

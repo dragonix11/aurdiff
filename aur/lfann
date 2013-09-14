@@ -1,0 +1,23 @@
+# Maintainer: Lucas Hermann Negri <lucashnegri@gmail.org>
+
+pkgname=lfann
+pkgver=1.2.0
+pkgrel=1
+pkgdesc="FANN bindings to Lua" 
+arch=(i686 x86_64)
+url="http://oproj.tuxfamily.org" 
+depends=('fann>=2.2' 'lua51') 
+makedepends=('gcc')
+license=(LGPL)
+source=(https://bitbucket.org/lucashnegri/lfann/downloads/$pkgname-$pkgver.tar.gz)
+md5sums=('bd1a2ba9561a8bc8f2e6ef2e9d6b79eb')
+
+build() {
+    cd $srcdir/$pkgname-$pkgver
+    make
+}
+
+package() { 
+    cd $srcdir/$pkgname-$pkgver
+    make install DESTDIR=$pkgdir/usr || 1
+}

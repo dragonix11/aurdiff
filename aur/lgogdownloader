@@ -1,0 +1,27 @@
+# Maintainer: Joe Davison <joe@warhaggis.com>
+
+pkgname=lgogdownloader
+pkgver=2.8
+pkgrel=1
+pkgdesc="An open source downloader for GOG.com games, uses the GOG.com API"
+url="https://sites.google.com/site/gogdownloader/"
+arch=(i686 x86_64)
+license=(WTFPL)
+depends=('boost' 'jsoncpp' 'liboauth' 'rhash' 'tinyxml' 'htmlcxx' 'curl')
+source=(http://sites.google.com/site/gogdownloader/$pkgname-$pkgver.tar.gz)
+sha256sums=('2f33724ffe78651fe9e03792896a4b6dd52a109968361904a899963d3055a1a4')
+
+build() {
+	cd "$srcdir/$pkgname-$pkgver"
+
+	# Change 'release' to 'debug' for debug build for more detailed output
+	make release
+
+}
+
+package() {
+	install -D -m 755 $srcdir/$pkgname-$pkgver/bin/Release/$pkgname \
+		$pkgdir/usr/bin/lgogdownloader
+}
+
+

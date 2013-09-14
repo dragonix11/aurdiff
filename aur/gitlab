@@ -1,7 +1,8 @@
 # Contributor: Jonas Heinrich <onny@project-insanity.org>
+# Maintainer: Jonas Heinrich <onny@project-insanity.org>
 
 pkgname=gitlab
-pkgver=6.0.0
+pkgver=6.0.1
 pkgrel=1
 pkgdesc="Project management and code hosting application"
 arch=('any')
@@ -9,7 +10,7 @@ url="https://www.gitlab.org"
 license=('MIT')
 depends=('ruby' 'ruby-bundler')
 source=("https://github.com/gitlabhq/gitlabhq/archive/v${pkgver}.tar.gz")
-sha512sums=("a3499915de7e02ada14dc84870b67fc009712f4bfe8403f9ed5ef0483531e82ac70d36bacf9a5e23e47bed608ee55609786a6df4839e5f373f5917edfbc78c3f")
+sha512sums=("b725d21a0d0f818694901ea19706f27ecb6b1e46ecd041b92f858907adf5362a223059ca5c59949d79401cd9b3b23612214f38c94d4830104db2dd39a1fc25b5")
 
 package() {
     install -d "$pkgdir/usr/share/webapps"
