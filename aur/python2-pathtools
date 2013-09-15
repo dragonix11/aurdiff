@@ -1,0 +1,26 @@
+# Contributor: Francois Boulogne <fboulogne at april dot org>
+# Maintainer: Francois Boulogne <fboulogne at april dot org>
+
+pkgname=python2-pathtools
+pkgver=0.1.0
+pkgrel=1
+pkgdesc="This decorator will turn your normal python functions into proper shell commands"
+arch=('any')
+url="http://packages.python.org/watchdog/index.html"
+license=('MIT')
+depends=('python2')
+source=(https://github.com/gorakhargosh/pathtools/archive/v$pkgver.tar.gz)
+md5sums=("9a858109cd6b08786e101474e82c7c5d")
+
+build() {
+  cd "$srcdir/pathtools-$pkgver"
+  python2 setup.py build
+}
+
+package() {
+  cd "$srcdir/pathtools-$pkgver"
+  python2 setup.py install --root="${pkgdir}"
+  install -D -m644 LICENSE "${pkgdir}/usr/share/licenses/${pkgname}/LICENSE"
+}
+
+# vim:ts=2:sw=2:et:
