@@ -1,0 +1,53 @@
+# Maintainer: Chen Zhiqiang <chenzhiqiang@mail.com>
+
+pkgname=dia-git-opt
+pkgver=0.97.0.1291.g98d4602
+pkgrel=1
+pkgdesc="A GTK+ based diagram creation program"
+arch=('i686' 'x86_64')
+license=('GPL')
+url="http://live.gnome.org/Dia"
+depends=('libxslt' 'desktop-file-utils' 'libart-lgpl' 'gtk2' 'hicolor-icon-theme')
+makedepends=('gettext' 'intltool' 'python2' 'git' 'pkg-config')
+provides=('dia')
+options=('!libtool' '!emptydirs')
+source=('git://git.gnome.org/dia')
+md5sums=('SKIP')
+
+_gitroot="git://git.gnome.org/dia"
+_gitname="dia"
+
+_dest="/opt/gnome.org/dia"
+
+pkgver() {
+  cd "${srcdir}/$_gitname"
+  git describe --always | sed -e 's/-/./g' -e 's/DIA_//' -e 's/_/./g'
+}
+
+prepare() {
+  [ -d  $srcdir/_build ] && rm -rf $srcdir/_build
+  git clone $srcdir/$_gitname $srcdir/_build
+}
+
+build() {
+
+  msg "Starting make..."
+  export PYTHON=$(which python2)
+
+  cd $srcdir/_build
+  ./autogen.sh --prefix=$_dest
+  make
+}
+
+package() {
+  cd $srcdir/_build
+  make DESTDIR=$pkgdir install
+  mkdir -p $pkgdir/usr/local/bin
+  ln -nsf $_dest/bin/dia $pkgdir/usr/local/bin/
+  mkdir -p $pkgdir/usr/local/share/{mime-info,applications}
+  ln -nsf $_dest/share/mime-info/{dia.keys,dia.mime} $pkgdir/usr/local/share/mime-info/
+  mkdir -p $pkgdir/usr/local/share/icons/hicolor/scalable/apps
+  ln -nsf $_dest/share/icons/hicolor/scalable/apps/dia.svg $pkgdir/usr/local/share/icons/hicolor/scalable/apps/
+  ln -nsf $_dest/share/applications/dia.desktop $pkgdir/usr/local/share/applications/
+}
+

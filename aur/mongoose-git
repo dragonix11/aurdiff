@@ -1,0 +1,35 @@
+# Maintainer: WallaceIT
+_pkgname=mongoose
+pkgname=$_pkgname-git
+pkgver=20130916
+pkgrel=3
+pkgdesc="Small and quick-to-use web server; https/php/cgi support - git development version"
+arch=('i686' 'x86_64')
+url="http://code.google.com/p/mongoose/"
+license=('MIT')
+groups=()
+depends=()
+makedepends=('git')
+optdepends=('php-cgi: for php support')
+provides=("$_pkgname")
+conflicts=("$_pkgname")
+backup=('etc/mongoose/mongoose.conf')
+source=("$_pkgname::git+git://github.com/valenok/mongoose.git" "$_pkgname.conf" "$_pkgname.service")
+md5sums=('SKIP'
+         '0a84c31ce93fa230251e40eff0e2d556'
+         '30c2fad1e3130a913b3d8beadbccbdf0')
+
+build() {
+  cd "$srcdir/$_pkgname/build"
+  make unix
+}
+
+package() {
+  install -Dm755 "$srcdir/$_pkgname/build/$_pkgname" "$pkgdir/usr/bin/$_pkgname"
+  install -Dm644 "$srcdir/$_pkgname.conf" "$pkgdir/etc/mongoose/$_pkgname.conf"
+  install -Dm644 "$srcdir/$_pkgname.service" "$pkgdir/usr/lib/systemd/system/$_pkgname.service"
+  install -d "$pkgdir/usr/share/$_pkgname"
+  install -m644 "$srcdir/$_pkgname/UserManual.md" "$srcdir/$_pkgname/README.md" "$pkgdir/usr/share/$_pkgname"
+}
+
+# vim:set ts=2 sw=2 et:
