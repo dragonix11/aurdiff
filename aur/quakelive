@@ -1,0 +1,32 @@
+# Maintainer: Jean-Alexandre Anglès d'Auriac <jagw40k@free.fr>
+
+pkgname=quakelive
+pkgver=0.1.0.520
+pkgrel=4
+pkgdesc="A plugin allowing you to play Quake Live within any browser compatible with Netscape plugins"
+arch=('i686' 'x86_64')
+url="http://quakelive.com/"
+license=('custom')
+depends=('libxxf86vm'
+         'libxxf86dga'
+         'alsa-lib'
+         'zlib')
+source=(QuakeLivePlugin_520.xpi::http://cdn.quakelive.com/assets/2012091101/QuakeLivePlugin_520.xpi?v=0,1,0,520
+        license)
+md5sums=('ab5d56e06539226650687a7683e69f55'
+         'f485eb5b6b19c36db93842aa33e18639')
+
+build() {
+  cd .
+}
+
+package() {
+  mkdir -p "${pkgdir}/usr/lib/mozilla/plugins/"
+  if [ $CARCH == 'x86_64' ]; then
+    install -m644 "${srcdir}/plugins/npquakelive.x64.so" -t "${pkgdir}/usr/lib/mozilla/plugins/"
+  else
+    install -m644 "${srcdir}/plugins/npquakelive.i386.so" -t "${pkgdir}/usr/lib/mozilla/plugins/"
+  fi
+  mkdir -p "${pkgdir}/usr/share/licenses/quakelive"
+  install -m644 "${startdir}/license" "${pkgdir}/usr/share/licenses/quakelive/"
+}

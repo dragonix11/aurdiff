@@ -1,0 +1,34 @@
+#	AUR Package Maintainer: 3V0LU710N <db_eee-at-hotmail-dot-com>
+
+_pkgbase=libusbx
+pkgname=lib32-${_pkgbase}
+pkgver=1.0.17
+pkgrel=1
+pkgdesc="Library to enable user space application programs to communicate with USB devices (32-bit)."
+arch=('x86_64')
+url="http://libusbx.sourceforge.net/"
+license=('LGPL')
+depends=('lib32-glibc' "${_pkgbase}" 'lib32-systemd')
+makedepends=('gcc-multilib')
+provides=("lib32-libusb=${pkgver}")
+conflicts=('lib32-libusb')
+
+source=(http://downloads.sourceforge.net/${_pkgbase}/${_pkgbase}-${pkgver}.tar.bz2)
+
+options=(!libtool)
+md5sums=('99467ca2cb81c19c4a172de9f30e7576')
+
+build() {
+  export CC="gcc -m32"
+  export PKG_CONFIG_PATH="/usr/lib32/pkgconfig"
+  
+  cd "libusbx-${pkgver}"
+  ./configure --prefix=/usr --libdir=/usr/lib32 --disable-static
+  make
+}
+
+package () {
+  cd "${srcdir}/libusbx-${pkgver}"
+  make DESTDIR="${pkgdir}" install
+  rm -rf ${pkgdir}/usr/include
+}
