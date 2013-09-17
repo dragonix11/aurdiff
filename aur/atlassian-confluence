@@ -1,0 +1,33 @@
+# Maintainer: Sebastien Bariteau <numkem@gmail.com>
+pkgname=atlassian-confluence
+pkgver=5.2.3
+pkgrel=1
+pkgdesc="Atlassian's Confluence Enterprise wiki"
+arch=('i686' 'x86_64')
+license=(custom)
+url="http://www.atlassian.com/software/confluence/overview"
+backup=(etc/conf.d/confluence opt/atlassian-confluence/conf/server.xml)
+source=(http://www.atlassian.com/software/confluence/downloads/binary/atlassian-confluence-${pkgver}.tar.gz
+        confluence.conf.d
+        confluence.install
+        confluence.service)
+md5sums=('bae53daeb9bd97dc22416c9ed56fdd9e'
+         'f802a8504e49804663fbd79ba2d030ba'
+         'ebf75b489c0c0da6cc048cb84f5fc5e8'
+         'd7020d3cfa1bfaa22279e7b54f532478')
+depends=('java-environment')
+optdepends=('mysql-connector: connect to MySQL'
+            'libcups: used by bin/config.sh'
+            'fontconfig: used by bin/config.sh')
+
+build() {
+	cd $srcdir/
+	mkdir -p ${pkgdir}/opt/atlassian-confluence/
+	cp -r ${srcdir}/atlassian-confluence-${pkgver}/* ${pkgdir}/opt/atlassian-confluence/
+
+	# Setup systemd service
+	install -m755 -d "${pkgdir}/usr/lib/systemd/system"
+	install -D -m644 ${srcdir}/confluence.service ${pkgdir}/usr/lib/systemd/system/
+	install -D -m644 ${srcdir}/confluence.conf.d ${pkgdir}/etc/conf.d/confluence
+}
+

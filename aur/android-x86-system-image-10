@@ -1,0 +1,25 @@
+# Maintainer: Joel Pedraza <joel@joelpedraza.com>
+
+_sdkver=2.3.7
+_apiver=10
+_rel=r02
+pkgname=android-x86-system-image-${_apiver}
+pkgver=${_sdkver}_${_rel}
+pkgrel=3
+pkgdesc="Android x86 Atom System Image, API-${_apiver}"
+arch=('any')
+url="http://software.intel.com/en-us/articles/android-ice-cream-sandwich-x86-emulator-image"
+license=('custom')
+depends=("android-platform-${_apiver}")
+optdepends=('qemu-kvm' 'libvirt')
+options=('!strip')
+source=("http://dl.google.com/android/repository/sys-img/x86/sysimg_x86-${_apiver}_${_rel}.zip")
+sha1sums=('34e2436f69606cdfe35d3ef9112f0c64e3ff021d')
+
+package() {
+  install -d -m755 "${pkgdir}/opt/android-sdk/system-images/android-${_apiver}"
+  cp -dr --no-preserve=ownership "${srcdir}/x86" "${pkgdir}/opt/android-sdk/system-images/android-${_apiver}"
+
+  # fix broken perms on source.properties
+	chmod 644 "${pkgdir}/opt/android-sdk/system-images/android-${_apiver}/x86/source.properties"
+}

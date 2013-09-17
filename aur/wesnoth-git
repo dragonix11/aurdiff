@@ -1,0 +1,34 @@
+# Maintainer: Archadept
+#   Revision: 2013-09-17
+
+pkgname=wesnoth-git
+_gitname=wesnoth
+pkgver=1.11.6.366.g2351b07
+pkgrel=1
+pkgdesc="The latest version of a turn-based strategy game on a fantasy world"
+arch=('x86_64')
+url="http://www.wesnoth.org/"
+license=('GPL')
+depends=('boost' 'fribidi' 'lua' 'sdl' 'sdl_ttf' 'sdl_net' 'sdl_mixer' 'sdl_image')
+makedepends=('openssh' 'python' 'scons' 'git')
+conflicts=('wesnoth' 'wesnoth-data' 'wesnoth-devel')
+provides=('wesnoth')
+
+source=('git://github.com/wesnoth/wesnoth-old.git')
+md5sums=('SKIP')
+
+pkgver() {
+  cd ${_gitname}-old
+  git describe --always | sed 's/-/./g'
+}
+
+build() {
+  cd "${srcdir}"
+
+  rm -rf ${srcdir}/$_gitname-build
+  cp -r ${_gitname}-old ${_gitname}-build || return 1
+  cd ${_gitname}-build
+
+  scons prefsdir=.config/wesnoth-git prefix=/usr debug=yes || return 1
+  scons destdir=${pkgdir} install || return 1
+}

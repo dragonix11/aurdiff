@@ -1,0 +1,67 @@
+# Maintainer vtyulb <vtyulb@vtyulb.ru>
+pkgname=leechcraft-git
+pkgver=20121016
+pkgrel=1
+pkgdesc="Opensource network client providing a full-featured web browser, BitTorrent client and much more."
+arch=('i686' 'x86_64')
+url="http://leechcraft.org"
+license=('GPL3')
+depends=('qt4' 'libtorrent-rasterbar>=0.15.0' 'phonon' 'qross' 'qjson' 'qscintilla' 'qxmpp-git' 'qca' 'qca-gnupg' 'curl' 'qwt' 'libotr' 'libqxt' 'poppler-qt' 
+'liblastfm')
+makedepends=('gcc' 'boost' 'make' 'cmake' 'git')
+conflicts=(leechcraft)
+provides=(leechcraft)
+replaces=(leechcraft)
+install=leechcraft.install
+     
+_gitname=leechcraft
+_gitroot=git://github.com/0xd34df00d/leechcraft.git
+     
+     
+build() {
+cd ${srcdir}
+  
+msg "Connecting to GIT server...."
+if [ -d ${_gitname} ] ; then
+cd ${_gitname} && git pull origin
+msg "The local files are updated."
+cd ${srcdir}
+else
+git clone ${_gitroot} ${_gitname}
+fi
+msg "GIT checkout done or server timeout"
+ 
+msg "Starting make..."
+  
+cd ${srcdir}
+rm -rf ${_gitname}-build
+mkdir ${_gitname}-build
+cd ${_gitname}-build
+    
+msg "Building ..."
+     
+msg "Apply ArchLinux hacks for build..."
+_git_version=`(cd ${srcdir}/${_gitname} && git describe | awk '{print $1}')`
+     
+cmake ${srcdir}/${_gitname}/src \
+  -DLEECHCRAFT_VERSION="${_git_version}" \
+  -DCMAKE_INSTALL_PREFIX=/usr \
+  -DCMAKE_BUILD_TYPE=RelWithDebInfo \
+  -DENABLE_PYLC:BOOL=False \
+  -DENABLE_POPISHU=TRUE \
+  -DENABLE_QROSP=TRUE \
+  -DENABLE_SYNCER=TRUE \
+  -DENABLE_POTORCHU=TRUE \
+  -DENABLE_OTZERKALU=TRUE \
+  -DENABLE_EISKALTDCPP=FALSE \
+  -DENABLE_LASTFMSCROBBLE=True \
+  -DENABLE_AZOTH_OTROID=True \
+  -DENABLE_GACTS=True \
+  -DENABLE_TORRENT=False \
+  -DENABLE_POLEEMERY=False \
+  -DENABLE_OTLOZHU=False
+   
+    make DESTDIR=$pkgdir install
+   
+    rm -rf ${_gitname}-build
+}

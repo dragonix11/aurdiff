@@ -1,0 +1,31 @@
+# Maintainer: Jens Adam <jra@byte.cx>
+
+pkgname=ekgping
+pkgver=1.31
+pkgrel=1
+pkgdesc='Electrocardiograph-like graphical and audible ping'
+url='http://finalrewind.org/projects/ekgping/'
+license=('custom:WTFPL')
+arch=('any')
+depends=('perl-file-sharedir' 'perl-ipc-run' 'perl-sdl' 'perl-term-size')
+makedepends=('perl-test-compile' 'perl-test-pod')
+options=('!emptydirs')
+source=("http://finalrewind.org/projects/${pkgname}/${pkgname}-${pkgver}.tar.gz")
+sha256sums=('8e0b361432e51791828a6eb55f1d587312e1f549d2dfb553aaff88bd22e59776')
+
+build() {
+  cd "${srcdir}"/${pkgname}-${pkgver}
+  perl Build.PL installdirs=vendor destdir="${pkgdir}"
+  ./Build
+}
+
+check() {
+  cd "${srcdir}"/${pkgname}-${pkgver}
+  ./Build test
+}
+
+package() {
+  cd "${srcdir}"/${pkgname}-${pkgver}
+  ./Build install
+  install -Dm644 COPYING "${pkgdir}"/usr/share/licenses/${pkgname}/COPYING
+}

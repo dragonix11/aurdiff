@@ -1,0 +1,22 @@
+# Maintainer: Zhengyu Xu <xzy3186[at]gmail[dot]com>
+pkgname=rhythmbox-plugin-coverart-search-providers
+pkgver=0.9
+pkgrel=2
+pkgdesc="Drop in Rhythmbox replacement for the default CoverArt Search plugin"
+url="https://github.com/fossfreedom/coverart-search-providers"
+arch=('x86_64' 'i686')
+license=('GPLv3')
+depends=('glib2' 'gtk3' 'rhythmbox' 'python-mako' 'mutagen' 'python-requests')
+conflicts=('rhythmbox-plugin-coverart-search-providers-git')
+
+source=("${pkgname}-${pkgver}.tar.gz::https://github.com/fossfreedom/coverart-search-providers/archive/v${pkgver}.tar.gz")
+sha256sums=("c55051a16c4f1c608ad581ff29710a7a40602d1ef20cc69b3ade8eb2ba38ebfa")
+install=$pkgname.install
+package() {
+  cd ${srcdir}/coverart-search-providers-${pkgver}
+
+  sed -i "s/python$/python3/g" coverart_search_providers.plugin
+  make DESTDIR=${pkgdir} install
+}
+
+# vim:set ts=2 sw=2 et:
