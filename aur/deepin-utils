@@ -1,0 +1,26 @@
+# Maintainer: 4679kun <admin[AT]4679.us>
+
+pkgname=deepin-utils
+pkgver=git20130905112011~e60c8431da
+pkgrel=1
+pkgdesc='Utils of DeepinUI Toolkit modules'
+arch=('i686' 'x86_64')
+depends=('python2' 'pygtk' 'python2-cairo' 'python2-imaging' 'libwebkit' 'python-xlib' 'pywebkitgtk')
+url="http://www.linuxdeepin.com/"
+license=('GPL-3')
+source=("http://packages.linuxdeepin.com/deepin/pool/main/d/deepin-utils/deepin-utils_0.0.1-1+${pkgver}.tar.gz")
+md5sums=('ca0fdd0878ba1c10f56613d7ae973b66')
+
+build(){
+	cd "$srcdir"/${pkgname}-0.0.1
+	python2 setup.py build
+}
+package() {
+	cd "$srcdir"/${pkgname}-0.0.1
+	python2 setup.py install --root="$pkgdir/" --optimize=1
+	
+	cd ${pkgdir}/usr/lib/python2.7/site-packages/deepin_utils/
+    sed -i 's_#! /usr/bin/env python$_#! /usr/bin/env python2_' *.py   
+}
+
+
