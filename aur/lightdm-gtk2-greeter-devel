@@ -1,0 +1,35 @@
+# Maintainer: Padfoot <padfoot at exemail dot com dot au>
+# Contributor: Alucryd <alucryd at gmail dot com>
+
+pkgname=lightdm-gtk2-greeter-devel
+pkgver=1.6.1
+pkgrel=1
+pkgdesc="GTK2+ greeter for LightDM"
+arch=('i686' 'x86_64')
+url="https://launchpad.net/lightdm-gtk-greeter"
+license=('GPL3' 'LGPL3')
+depends=('gtk2' 'lightdm>=1.6.0')
+makedepends=('exo' 'gnome-doc-utils' 'gobject-introspection' 'intltool')
+provides=("lightdm-gtk-greeter=${pkgver}")
+conflicts=('lightdm-gtk-greeter')
+backup=('etc/lightdm/lightdm-gtk-greeter.conf')
+
+source=("https://launchpad.net/lightdm-gtk-greeter/1.6/${pkgver}/+download/lightdm-gtk-greeter-${pkgver}.tar.gz")
+sha256sums=('1f0286ab093d50151f0efc46496aef3f8ed8c7306bbc81807a3fdcbcb2a468d9')
+
+build() {
+  cd "${srcdir}"/lightdm-gtk-greeter-${pkgver}
+
+# Build
+  ./configure --prefix=/usr --sbindir=/usr/bin --sysconfdir=/etc --libexecdir=/usr/lib/lightdm --disable-static --with-gtk2
+  make
+}
+
+package() {
+  cd "${srcdir}"/lightdm-gtk-greeter-${pkgver}
+
+# Install
+  make DESTDIR="${pkgdir}" install
+}
+
+# vim: ts=2 sw=2 et:
