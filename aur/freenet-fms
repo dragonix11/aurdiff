@@ -1,0 +1,51 @@
+# Maintainer: Robert Štětka <robert dot stetka at gmail dot com>
+pkgname=freenet-fms
+_realname=fms
+pkgver=0.3.71
+pkgrel=2
+url=http://127.0.0.1:8888/USK@0npnMrqZNKRCRoGojZV93UNHCMN-6UU3rRSAmP6jNLE,~BG-edFtdCC1cSH4O3BWdeIYa8Sw5DfyrSV-TKdO5ec,AQACAAE/fms/137/
+pkgdesc="Freenet Messaging System"
+arch=('i686' 'x86_64')
+license=('GPL')
+depends=('poco>=1.3.6' 'sqlite3>3.6.14' 'freenet' )
+makedepends=('cmake')
+install=fms.install
+# You have to start freenet before down installation
+# or download the package manually and place it to the
+# build directory
+source=(http://127.0.0.1:8888/CHK@zuWvNDAZ0DUGR8VBTiRrAZrl5qDOUQtKNv9ipDsA1w0,BYRUdPvylDPnCIe55~1pbPeilqM1zaqBHP-3JPZwHHQ,AAMC--8/${_realname}-src-${pkgver}.zip
+        'rc.fms'
+        'fms.install'
+        'fms.service')
+md5sums=('1727233b0738223c78c3ef4275d00da3'
+         '9b03c9cfc565885e8e0d09ef6e72dceb'
+         '6764909fc196c42f7b94e202addf6c56'
+         '024669b66f680844249d7d5a6ed8f436')
+
+build() {
+  cd "${srcdir}/"
+
+  cmake -D I_HAVE_READ_THE_README=ON -D USE_BUNDLED_SQLITE=OFF . || return 1
+  make || return 1
+}
+
+package() {
+  mkdir -p ${pkgdir}/opt/${_realname}/ || return 1
+  cp fms ${pkgdir}/opt/${_realname}/ || return 1
+  cp *.htm ${pkgdir}/opt/${_realname}/ || return 1
+  cp readme.txt ${pkgdir}/opt/${_realname}/ || return 1
+  cp -a fonts/ ${pkgdir}/opt/${_realname}/|| return 1
+  cp -R images/ ${pkgdir}/opt/${_realname}/ || return 1
+  cp -a styles/ ${pkgdir}/opt/${_realname}/ || return 1
+  cp -a translations/ ${pkgdir}/opt/${_realname}/ || return 1
+
+  chown -R 114:114 ${pkgdir}/opt/${_realname} || return 1
+  chmod -R ug=rwX,o=rX ${pkgdir}/opt/${_realname}|| return 1
+
+  # rc.d script
+  install -Dm755 rc.${_realname} ${pkgdir}/etc/rc.d/${_realname}
+  install -Dm644 ${_realname}.service ${pkgdir}/usr/lib/systemd/system/${_realname}.service
+}
+
+
+# vim:set ts=2 sw=2 et:

@@ -1,0 +1,35 @@
+# Montainer: 3ED <krzysztof1987 at gmail dot com>
+
+pkgname=perl-parallel-forkmanager
+_lastauthor=S/SZ/SZABGAB
+_pkgname=Parallel-ForkManager
+pkgver=1.05
+pkgrel=1
+pkgdesc="A simple parallel processing fork manager"
+arch=('any')
+license=('PerlArtistic' 'GPL')
+options=('!emptydirs')
+makedepends=('perl-extutils-makemaker')
+url="http://search.cpan.org/dist/${_pkgname}/"
+source=(http://search.cpan.org/CPAN/authors/id/${_lastauthor}/${_pkgname}-${pkgver}.tar.gz)
+sha256sums=('9de777b913eaef46916acbcb4e7d136166495d223f2a4fb2610300bda6c47e81')
+
+build() {
+  cd "${srcdir}/${_pkgname}-${pkgver}"
+
+  export PERL_MM_USE_DEFAULT=1 PERL_AUTOINSTALL="--skipdeps" \
+    PERL_MM_OPT="INSTALLDIRS=vendor DESTDIR='$pkgdir'" \
+    PERL_MB_OPT="--installdirs vendor --destdir '$pkgdir'" \
+    MODULEBUILDRC=/dev/null
+
+  perl Makefile.PL
+  make
+}
+check() {
+  cd "${srcdir}/${_pkgname}-${pkgver}"
+  make test
+}
+package() {
+  cd "${srcdir}/${_pkgname}-${pkgver}"
+  make install
+}

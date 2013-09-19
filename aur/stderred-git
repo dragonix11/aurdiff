@@ -1,0 +1,53 @@
+# Maintainer: AJ Ashton <aj.ashton@gmail.com>
+pkgname=stderred-git
+_gitname=stderred
+pkgver=156.11e4a33
+pkgver() {
+  cd $_gitname
+  echo $(git rev-list --count HEAD).$(git rev-parse --short HEAD)
+}
+pkgrel=2
+pkgdesc="Library to make STDERR output red."
+arch=('i686' 'x86_64')
+url="https://github.com/sickill/stderred"
+license=('MIT')
+makedepends=('cmake' 'git')
+install=install
+source=('git+https://github.com/sickill/stderred.git')
+md5sums=('SKIP')
+
+prepare() {
+  cd $_gitname
+  sed -i 's/&& make test//' Makefile
+}
+
+build() {
+  cd $_gitname
+
+  if [ ${CARCH} = "x86_64" ]; then
+    make 64
+  else
+    make 32
+  fi
+}
+
+check() {
+  cd $_gitname
+  make test
+}
+
+package() {
+  cd $_gitname
+
+  install -d "${pkgdir}"/usr/lib
+  if [ ${CARCH} = "x86_64" ]; then
+    cp ./lib64/libstderred.so "${pkgdir}"/usr/lib/
+  else
+    cp ./lib/libstderred.so "${pkgdir}"/usr/lib/
+  fi
+
+  install -D -m644 LICENSE "${pkgdir}/usr/share/licenses/${pkgname}/LICENSE"
+}
+
+# vim:set ts=2 sw=2 et:
+

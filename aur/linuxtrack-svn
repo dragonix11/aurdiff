@@ -1,0 +1,54 @@
+# Maintainer: Tom Guillen <freetoken at zoho dot com>
+# Contributor: Cristóvão Duarte Sousa <crisjss at gmail dot com>
+pkgname=linuxtrack-svn
+pkgver=730
+pkgrel=1
+pkgdesc="Head motion tracking for use with a webcamera, TrackIR 2-5, SmartNav4 or Wiimote"
+arch=('i686' 'x86_64')
+url="http://code.google.com/p/linux-track/"
+license=('MIT')
+depends=('libusb' 'v4l-utils' 'zlib' 'qt4' 'qtwebkit' 'mxml' 'opencv' 'wine')
+optdepends=('wiiuse: for Wiimote (needed at make time)'
+            'trackir-udev: for trackir udev rules')
+# you might want to add nsis-wine and ./configure --enable-wine-plugin below if you want support for wine games
+makedepends=('subversion' 'gcc-objc-multilib' 'xplane-sdk-devel' )
+if [[ $CARCH == 'i686' ]]; then
+  # Strip "-multilib" on i686
+  makedepends=(${makedepends[@]/*-multilib*/})
+fi
+provides=('linuxtrack')
+conflicts=('linuxtrack')
+install=$pkgname.install
+
+_svntrunk=http://linux-track.googlecode.com/svn/trunk
+_svnmod=linuxtrack
+source=($_svnmod::svn+$_svntrunk)
+md5sums=('SKIP')
+
+# automatically bump $pkgver with latest version from svn
+pkgver() {
+  cd $_svnmod
+  svnversion | tr -d [A-z]
+}
+
+build() {
+  # build sources with specific qmake path
+  cd $_svnmod
+  svn upgrade
+  svn up -r730
+  ./configure --prefix=/usr QMAKE_PATH=/usr/bin/qmake-qt4
+  make
+}
+
+package() {
+  # install pkg
+  cd "$srcdir/$_svnmod"
+  make DESTDIR="$pkgdir/" install
+  # update pixmaps
+  install -Dm644 src/linuxtrack-wii.png src/linuxtrack.png "${pkgdir}/usr/share/pixmaps"
+  # install udev rules
+  #install -Dm644 src/51-TIR.rules "${pkgdir}/etc/udev/rules.d/51-TIR.rules"
+  # install -Dm644 src/51-Mickey.rules "${pkgdir}/etc/udev/rules.d/51-TIR.rules"
+  # install license
+  install -D -m644 COPYING "${pkgdir}/usr/share/licenses/${pkgname}/LICENSE"
+}

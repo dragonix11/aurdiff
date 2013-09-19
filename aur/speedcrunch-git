@@ -1,0 +1,32 @@
+pkgname=speedcrunch-git
+pkgver=20130807
+pkgrel=1
+pkgdesc="Simple, high precision and powerful calculator."
+arch=('i686' 'x86_64')
+url="http://speedcrunch.org/"
+license=('GPL2')
+depends=('qt4')
+makedepends=('git' 'cmake' 'python2')
+conflicts=('speedcrunch' 'speedcrunch-alpha')
+provides=('speedcrunch')
+source=('speedcrunch::git+https://github.com/speedcrunch/SpeedCrunch.git')
+md5sums=('SKIP')
+
+pkgver() {
+  cd speedcrunch
+  git log -1 --format="%cd" --date=short | sed 's|-||g'
+}
+
+build() {
+  cd speedcrunch/src/
+  cmake -DCMAKE_INSTALL_PREFIX=/usr -DQT_QMAKE_EXECUTABLE=qmake4
+  make
+
+  # Convert TS translations into the QM format
+  lrelease-qt4 speedcrunch.pro
+}
+
+package() {
+  cd speedcrunch/src/
+  make DESTDIR="$pkgdir" install
+}

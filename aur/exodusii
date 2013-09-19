@@ -1,0 +1,48 @@
+# Contributor: Andrew Fischer <andrew_at_lightningtoads.com>
+
+pkgname=exodusii
+
+# The sourceforge bundle dropped the ii
+_pkgname=exodus
+
+pkgver=5.26
+
+# The sourceforge package is -1, which we cannot support in AUR
+_pkgver=5.26-1
+
+pkgrel=1
+pkgdesc="EXODUS II is a model format developed to store and retrieve transient data for finite element analyses."
+arch=('i686' 'x86_64')
+license=("BSD")
+url="http://sourceforge.net/projects/exodusii"
+depends=('cmake' 'netcdf-fortran' 'hdf5')
+source=("http://downloads.sourceforge.net/project/exodusii/$_pkgname-$_pkgver.tar.gz")
+md5sums=('f9b9c0c563f8ada2fc14ce14abe79dae')
+
+package() {
+  cd $srcdir/$_pkgname-$pkgver || return 1
+
+  _kernelver=$(eval 'uname -r')
+
+  mkdir -p build-$_kernelver && cd build-$_kernelver || return 1
+
+  # Exodusii cmake wants the NETCDF_DIR environment variable
+  NETCDF_DIR=/usr cmake \
+    -DCMAKE_INSTALL_PREFIX:PATH=/usr \
+    -DCMAKE_BUILD_TYPE:STRING=Release \
+    -DBUILD_SHARED_LIBS:BOOL=ON \
+    ..
+
+  # Supress warnings by creating a non-existent include dir for the build
+  mkdir -p forbind/include || return 1
+
+  make || return 1
+  make DESTDIR=$pkgdir install || return 1
+}
+
+
+
+
+
+
+
