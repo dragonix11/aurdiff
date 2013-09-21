@@ -1,0 +1,38 @@
+# Contributor: lynix <lynix47@googlemail.com>
+# Contributor: justinzane <justin@justinzane.com>
+# Maintainer: lynix <lynix47@googlemail.com>
+
+pkgname=ompp
+pkgver=0.8.0
+pkgrel=1
+pkgdesc="The OpenMP Profiler ompP"
+arch=('i686' 'x86_64')
+url='http://www.cs.utk.edu/~karl/ompp.html'
+license=('GPLv2')
+depends=('gcc')
+makedepends=('make')
+source=("http://projekt17.pub.lab.nm.ifi.lmu.de/ompp/downloads/$pkgname-$pkgver.tgz")
+md5sums=('5909576b8577c18ecdb3e713fabd69f1')
+
+build() {
+  cd "$srcdir/$pkgname-$pkgver"
+  mkdir -p -m 755 $pkgdir/usr/{lib,bin,include,lib/test}
+  make INSTDIR=/usr OMPCC=gcc OMPFLAG=-fopenmp DOCDIR=/usr/share/doc
+}
+
+package() {
+  cd "$srcdir/$pkgname-$pkgver"
+  cp opari/tool/opari $pkgdir/usr/bin
+  cp lib/libompp*.a $pkgdir/usr/lib
+  cp include/opari_omp.h $pkgdir/usr/include
+  cp include/pomp_lib.h $pkgdir/usr/include
+  cp kinst/kinst-ompp* $pkgdir/usr/bin
+  cp -r test/* $pkgdir/usr/lib/test
+  chmod 755 $pkgdir/usr/bin/opari
+  chmod 755 $pkgdir/usr/bin/kinst-ompp*
+  chmod 644 $pkgdir/usr/lib/libompp*.a
+  chmod 644 $pkgdir/usr/include/pomp_lib.h
+  chmod 644 $pkgdir/usr/include/opari_omp.h
+}
+
+# vim:set ts=2 sw=2 et:
