@@ -1,0 +1,25 @@
+# Author: Ypnose <linuxienATlegtuxDOTorg>
+# Maintainer: Ypnose <linuxienATlegtuxDOTorg>
+
+pkgname=envypn-font
+pkgver=1.6
+pkgrel=3
+pkgdesc="Readable bitmap font inspired by Envy Code R"
+url="https://github.com/Ypnose"
+arch=('any')
+license=('custom:MirOS License')
+depends=('fontconfig' 'xorg-fonts-encodings' 'xorg-font-utils')
+install='envypn-font.install'
+changelog='envypn-font.changelog'
+source=("http://linuxien.legtux.org/p/${pkgname}/${pkgname}-${pkgver}.tar.gz")
+
+package() {
+  cd "${srcdir}/${pkgname}-${pkgver}"
+  install -d "$pkgdir/usr/share/fonts/envypn"
+  install -m644 *.pcf "$pkgdir/usr/share/fonts/envypn"
+  install -m644 "fonts.alias" "$pkgdir/usr/share/fonts/envypn/fonts.alias"
+  install -Dm644 "LICENSE" "$pkgdir/usr/share/licenses/envypn/LICENSE"
+  install -Dm644 "README" "$pkgdir/usr/share/doc/envypn/README"
+}
+md5sums=('8870f4cd6c9b4117fd23dd1c6ca00ddd')
+sha256sums=('85239d176c39f67eece90c8e5730247fe1b38f5fd577269b73476a296284130b')
