@@ -1,0 +1,28 @@
+# Contributer: giacomogiorgianni@gmail.com 
+
+pkgname=paper
+pkgver=0.5.0
+pkgrel=3
+pkgdesc="Fast and light-weight comic book viewer"
+arch=('i686' 'x86_64')
+url="http://opendesktop.org/content/show.php/Paper?content=150505"
+license=('LGPL')
+depends=('qt4' 'poppler-qt')
+makedepends=('cmake')
+optdepends=('p7zip')
+#install=${pkgname}.install
+#changelog=$pkgname.changelog
+source=("http://netcologne.dl.sourceforge.net/project/paper-comic/source/0.5/$pkgname-$pkgver.tar.gz")
+md5sums=(2d69f4b2a42287c8065392e5054c1081)
+
+build() {
+  cd $srcdir/$pkgname-$pkgver
+  lrelease-qt4 $pkgname.pro
+  qmake-qt4 PREFIX=/usr
+  make
+}
+
+package() {
+  cd "$srcdir/$pkgname-$pkgver"
+  make INSTALL_ROOT="$pkgdir" install
+}

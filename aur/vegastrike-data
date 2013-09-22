@@ -1,0 +1,42 @@
+# Maintainer: David Kaylor <dpkaylor@gmail.com>
+# Contributor: Jaroslav Lichtblau <dragonlord@aur.archlinux.org>
+
+pkgname=vegastrike-data
+_pkgname=vegastrike
+pkgver=0.5.1.r1
+pkgrel=2
+pkgdesc="3D action-space-sim allowing player to trade and bounty hunt in a vast universe (data files)"
+arch=('any')
+license=('GPL')
+url="http://vegastrike.sourceforge.net/"
+depends=('desktop-file-utils')
+source=(http://downloads.sourceforge.net/${_pkgname}/${pkgname}-${pkgver}.tar.bz2
+        http://downloads.sourceforge.net/${_pkgname}/vegastrike-speech-${pkgver}.tar
+        http://downloads.sourceforge.net/${_pkgname}/vegastrike-music-${pkgver}.tar
+        http://downloads.sourceforge.net/${_pkgname}/vegastrike-extra-${pkgver}.tar.bz2)
+md5sums=('9ee86998f3611fcf9f94380b6be24e10'
+         'e5697fb4d08491ea45f2ef0c1e7602af'
+         '66eb03b08504cd51a12c9bd919fa78a0'
+         '909e08838e41740642be121453192342')
+
+build() {
+  cd ${srcdir}
+}
+
+package() {
+  # place data files
+  install -d ${pkgdir}/usr/share/${_pkgname}/
+  cp -rf ${srcdir}/${_pkgname}-data-${pkgver}/* ${pkgdir}/usr/share/${_pkgname}/
+  cp -rf ${srcdir}/${_pkgname}-data-${pkgver}/\.vegastrike ${pkgdir}/usr/share/${_pkgname}/
+  cp -rf ${srcdir}/${_pkgname}-extra-${pkgver}/* ${pkgdir}/usr/share/${_pkgname}/
+  cp -rf ${srcdir}/${_pkgname}-music-${pkgver}/* ${pkgdir}/usr/share/${_pkgname}/
+  cp -rf ${srcdir}/${_pkgname}-speech-${pkgver}/* ${pkgdir}/usr/share/${_pkgname}/
+
+  # install man page, .desktop file and icon
+  install -D -m644 ${pkgdir}/usr/share/${_pkgname}/documentation/${_pkgname}.1 \
+    ${pkgdir}/usr/share/man/man1/${_pkgname}.1
+  #install -D -m644 ${pkgdir}/usr/share/${_pkgname}/${_pkgname}.desktop \
+  #  ${pkgdir}/usr/share/pixmaps/${_pkgname}.desktop
+  install -D -m644 ${pkgdir}/usr/share/${_pkgname}/${_pkgname}.xpm \
+    ${pkgdir}/usr/share/pixmaps/${_pkgname}.xpm
+}

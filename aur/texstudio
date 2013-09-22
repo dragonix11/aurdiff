@@ -1,0 +1,27 @@
+# Maintainer: Clément DEMOULINS <clement@archivel.fr>
+
+pkgname=texstudio
+pkgver=2.6.2
+pkgrel=2
+pkgdesc="Fork of the LaTeX IDE TexMaker. Gives you an environment where you can easily create and manage LaTeX documents."
+arch=('i686' 'x86_64')
+url="http://texstudio.sourceforge.net/"
+license=('GPL')
+depends=('poppler-qt4')
+optdepends=('evince: pdf reader', 'okular: alternate pdf reader')
+replaces=('texmakerx')
+install=$pkgname.install
+
+source=(http://downloads.sourceforge.net/project/texstudio/texstudio/TeXstudio%20${pkgver}/${pkgname}-${pkgver}.tar.gz)
+md5sums=('3a6f63c823d7c1a0417136e6e6b44265')
+
+build() {
+    cd "$srcdir/$pkgname$pkgver"
+    qmake-qt4 CONFIG-="debug" texstudio.pro
+    make
+}
+
+package() {
+    cd "$srcdir/$pkgname$pkgver"
+    make INSTALL_ROOT="$pkgdir" install
+}

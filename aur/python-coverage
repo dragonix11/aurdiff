@@ -1,0 +1,25 @@
+# Maintainer: Clément Démoulins <clement@archivel.fr>
+# Contributor: Fazlul Shahriar <fshahriar@gmail.com>
+
+pkgname=python-coverage
+pkgver=3.6
+pkgrel=3
+pkgdesc="A tool for measuring code coverage of Python programs."
+arch=('i686' 'x86_64')
+url="http://nedbatchelder.com/code/coverage/"
+license=('BSD')
+depends=('python')
+makedepends=('python-distribute')
+
+source=("http://pypi.python.org/packages/source/c/coverage/coverage-$pkgver.tar.gz")
+md5sums=('67d4e393f4c6a5ffc18605409d2aa1ac')
+
+build() {
+    cd "$srcdir/coverage-$pkgver"
+    python3 setup.py build
+}
+
+package() {
+    cd "$srcdir/coverage-$pkgver"
+    python3 setup.py install --root="$pkgdir" --optimize=1
+}

@@ -1,0 +1,38 @@
+# Contributor: Andrea Scarpino <andrea@archlinux.org>
+
+pkgname=libkpeople-git
+pkgver=646.9021b68
+pkgrel=1
+pkgdesc="A library that provides access to all contacts and the people who hold them"
+arch=('i686' 'x86_64')
+url="https://projects.kde.org/projects/playground/network/libkpeople"
+license=('GPL')
+depends=('kdelibs')
+makedepends=('cmake' 'automoc4' 'git')
+source=('git://anongit.kde.org/libkpeople.git')
+md5sums=('SKIP')
+
+pkgver() {
+  cd libkpeople
+  printf "%s.%s" "$(git rev-list --count HEAD)" "$(git rev-parse --short HEAD)"
+}
+
+prepare() {
+  mkdir -p build
+}
+
+build() {
+  cd build
+  cmake ../libkpeople \
+    -DCMAKE_INSTALL_PREFIX=$(kde4-config --prefix) \
+    -DCMAKE_BUILD_TYPE=Release \
+    -DQT_QMAKE_EXECUTABLE=qmake-qt4
+
+  make
+}
+
+package() {
+  cd build
+  make DESTDIR="${pkgdir}" install
+}
+

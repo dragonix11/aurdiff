@@ -1,0 +1,56 @@
+# Maintainer: Joris Steyn <jorissteyn@gmail.com>
+# Contributor: David Kaylor <dpkaylor@gmail.com>
+# Contributor: Jaroslav Lichtblau <dragonlord@aur.archlinux.org>
+
+pkgname=vegastrike
+pkgver=0.5.1.r1
+pkgrel=4
+pkgdesc="3D action-space-sim allowing player to trade and bounty hunt in a vast universe"
+arch=('i686' 'x86_64')
+url="http://vegastrike.sourceforge.net/"
+license=('GPL')
+depends=('gcc-libs' 'freetype2' 'freeglut' 'gtk2' 'openal' 'sdl' 
+         'python2' 'libvorbis' 'openal' 'vegastrike-data')
+makedepends=('ogre' 'cegui')
+install=vegastrike.install
+source=("http://downloads.sourceforge.net/sourceforge/$pkgname/$pkgname-src-${pkgver}.tar.bz2"
+        'patch-basemaker-cstring-include.patch'
+        'vegastrike.desktop'
+        'vegastrike.install')
+md5sums=('6f3f2f1ff56a29710b7d0fdd8c3a255f'
+         'de900971467d6e9db58e223eb9b36a78'
+         '00285f595477d69e857fa8d1f2bac415'
+         '58b00210e89ee87e29d8f36199b8a7d3')
+
+build() {
+  cd ${srcdir}/$pkgname-src-$pkgver
+
+  export CXXFLAGS="$CXXFLAGS -fpermissive -O"
+  
+  # fix compile with c++
+  patch -p1 < ../../patch-basemaker-cstring-include.patch
+
+  sed -i 's/AM_CONFIG_HEADER/AC_CONFIG_HEADERS/g' configure.ac
+  ./bootstrap-sh
+  ./configure \
+     --prefix=/usr \
+     --disable-ffmpeg \
+     --with-boost=1.45 \
+     --with-data-dir=/usr/share/vegastrike
+
+  make
+}
+
+package() {
+  cd ${srcdir}/$pkgname-src-$pkgver
+
+  #cd build
+  make DESTDIR=${pkgdir} install
+
+  # move objconv dir to right path and avoiding conflict with mysql's 'replace' file
+  install -d ${pkgdir}/usr/share/$pkgname
+  mv -f ${pkgdir}/usr/objconv ${pkgdir}/usr/share/$pkgname/objconv
+  mv ${pkgdir}/usr/bin/replace ${pkgdir}/usr/bin/vsreplace
+
+  install -Dm644 "$srcdir/vegastrike.desktop" "${pkgdir}/usr/share/applications/vegastrike.desktop"
+}
