@@ -1,18 +1,18 @@
 # Maintainer: Moritz Bunkus <moritz@bunkus.org>
 
-pkgname=perl-file-flock
-pkgver=2013.11
+pkgname=perl-io-event
+pkgver=0.813
 pkgrel=1
-pkgdesc="file locking with flock"
+pkgdesc="Tied Filehandles for Nonblocking IO with Object Callbacks"
 arch=('any')
-url="http://search.cpan.org/dist/File-Flock"
+url="http://search.cpan.org/dist/IO-Event"
 license=('GPL' 'PerlArtistic')
-depends=('perl-anyevent' 'perl-data-structure-util' 'perl-io-event>=0.812')
-makedepends=('perl-file-slurp' 'perl-test-sharedfork')
+depends=('perl-list-moreutils')
+makedepends=('perl-anyevent' 'perl-event')
 options=('!emptydirs')
-source=("http://search.cpan.org/CPAN/authors/id/M/MU/MUIR/modules/File-Flock-$pkgver.tar.gz")
-md5sums=('5f3dad0148030d22b2ebd23792f45944')
-sha512sums=('3cdd3b3a295e019a7847e474a65ad11a29bd5f0d6c75e8b374f2c0b23ce1f775b41bdfa6037e93bf426e629a38b2d45d9db35e3b56b15e538921164d20afac53')
+source=("http://search.cpan.org/CPAN/authors/id/M/MU/MUIR/modules/IO-Event-$pkgver.tar.gz")
+md5sums=('a18be32ce73a2f5e7a1cf24dea86a035')
+sha512sums=('234fe3037e9600b843b7db094b2bb67ff6d573d5a8cf48cec813d5cf6a996ae32bfde0eb35f8593c0cfe4d2d56a56882183e5fa291498df845a3c9fcb0ba7293')
 
 prepare_environment() {
   export PERL_MM_USE_DEFAULT=1 PERL5LIB=""                 \
@@ -20,15 +20,11 @@ prepare_environment() {
     PERL_MM_OPT="INSTALLDIRS=vendor DESTDIR='$pkgdir'"     \
     PERL_MB_OPT="--installdirs vendor --destdir '$pkgdir'" \
     MODULEBUILDRC=/dev/null
-  cd "${srcdir}/File-Flock-${pkgver}"
+  cd "${srcdir}/IO-Event-${pkgver}"
 }
 
 build() {
   prepare_environment
-  # Fix bad file permissions in the tar ball
-  chmod -R u+rw .
-
-  # Build normally
   /usr/bin/perl Makefile.PL
   make
 }

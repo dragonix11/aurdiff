@@ -1,0 +1,30 @@
+# Contributor: Max Devaine <maxdevaine@gmail.com>
+
+pkgname=flexibee
+
+pkgver=10.19.0.6
+pkgbasever=10.19
+#pkgbasever=`echo $pkgver |cut -f1,2 -d.`
+
+pkgrel=1
+pkgdesc="Accounting economic system for person and business. Server and client in one package."
+arch=('i686' 'x86_64')
+url="http://www.flexibee.eu"
+license=('WinStrom')
+depends=('glibc')
+install=flexibee.install
+source=("http://download.flexibee.eu/download/$pkgbasever/$pkgver/flexibee-$pkgver.tar.gz"
+        "flexibee")
+md5sums=('92099d714d65d581701851d96edafb09'
+         'cac2f86b82117d63de48e48ca1dabed2')
+
+package() {
+
+cd ${srcdir}/flexibee-$pkgver
+rm -rf etc/init.d
+mkdir etc/rc.d
+cp ${startdir}/flexibee etc/rc.d/
+mkdir -p ${pkgdir}/
+mv * ${pkgdir}/
+}
+

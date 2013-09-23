@@ -1,0 +1,43 @@
+# Maintainer: Alexander Rødseth <rodseth@gmail.com>
+
+pkgname=moonscript
+pkgver=0.2.4
+pkgrel=1
+pkgdesc='Dynamic scripting language that compiles into Lua'
+arch=('x86_64' 'i686')
+url='http://moonscript.org/'
+license=('MIT')
+depends=('luarocks' 'lua51' 'lua-filesystem') # 'lpeg'
+conflicts=('lpeg')
+makedepends=('git' 'curl')
+source=("http://moonscript.org/rocks/moonscript-dev-1.rockspec"
+        'https://raw.github.com/leafo/moonscript/master/README.md'
+        'https://raw.github.com/leafo/moonscript/master/docs/reference.md'
+        'http://moonscript.org/reference/index.html')
+sha256sums=('267ea6e6da049b79a8e40f68257c656966989390b0ee0299f0db11171d6df409'
+            'd9e055952371e6d23d47459da59f8c517929e65b9e27e55f82e7a1c3051cfdea'
+            '5658c6a464defc253ccaf515f3aa78e0b53ac6136d6a249de431e4ab5b02ccdc'
+            'ac3f5cb1c0a91a003d22e703f8ae638f164f3b58be58e6aa071f232b518cf170')
+
+package() {
+  cd "$srcdir"
+
+  install -d "$pkgdir/usr"
+  luarocks install moonscript-dev-1.rockspec --to="$pkgdir/usr"
+  install -Dm644 reference.md "$pkgdir/usr/share/doc/$pkgname/reference.md"
+  install -Dm644 index.html "$pkgdir/usr/share/doc/$pkgname/index.html"
+  install -Dm644 README.md "$pkgdir/usr/share/licenses/$pkgname/README.md"
+
+  # patching
+  sed -i "s:$pkgdir::" "$pkgdir/usr/bin/"{moon,moonc}
+
+  # cleaning up
+  #rm "$pkgdir/usr/lib/lua/5.1/lfs.so"
+  #rm "$pkgdir/usr/lib/lua/5.1/lpeg.so"
+  rm "$pkgdir/usr/share/lua/5.1/re.lua"
+  chmod 755 "$pkgdir/usr" "$pkgdir/usr/bin/" "$pkgdir/usr/share/lua/$_luaver/" \
+    "$pkgdir/usr/lib/lua/5.1/" "$pkgdir/usr/lib" "$pkgdir/usr/share" \
+    "$pkgdir/usr/share/lua" "$pkgdir/usr/lib/lua"
+}
+
+# vim:set ts=2 sw=2 et:

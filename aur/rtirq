@@ -1,0 +1,34 @@
+# Maintainer: Corey Mwamba <contact.me@coreymwamba.co.uk>
+# Contributor: Corey Mwamba <contact.me@coreymwamba.co.uk>
+pkgname=rtirq
+pkgver=20130909
+pkgrel=3
+pkgdesc="Realtime IRQ thread system tuning."
+arch=('any')
+url="http://www.rncbc.org/jack/"
+license=('GPL')
+groups=('multimedia')
+depends=('bash')
+makedepends=()
+optdepends=()
+provides=()
+conflicts=()
+replaces=()
+backup=('etc/conf.d/rtirq' 'etc/systemd/system/rtirq.service')
+options=()
+install=rtirq.install
+changelog=
+source=(http://www.rncbc.org/jack/$pkgname-$pkgver.tar.gz)
+noextract=()
+md5sums=('5e455383e5dc508d4bd0a50d752946ab')
+
+package() {
+  cd "$srcdir/$pkgname-$pkgver"
+sed -e "s|etc/sysconfig/rtirq|etc/conf.d/rtirq|" -i rtirq.sh
+sed -e "s|IRQ\.|irq/|" -i rtirq.sh
+sed -e "s|etc/init.d|usr/bin|" -i rtirq.service
+install -vD rtirq.sh   -m 0755 $pkgdir/usr/bin/rtirq
+install -vD rtirq.conf -m 0644 $pkgdir/etc/conf.d/rtirq
+install -vD rtirq.service -m 0644 $pkgdir/etc/systemd/system/rtirq.service
+}
+
