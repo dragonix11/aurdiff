@@ -1,0 +1,41 @@
+# Maintainer: speps <speps at aur dot archlinux dot org>
+
+pkgname=box
+pkgver=0.4.0
+pkgrel=1
+pkgdesc="A programming language thought to create graphic figures"
+arch=(i686 x86_64)
+url="http://sourceforge.net/projects/boxc/"
+license=('GPL')
+depends=('cairo' 'libltdl')
+makedepends=('libtool')
+optdepends=('boxer: pygtk GUI')
+conflicts=("$pkgname-core")
+replaces=("$pkgname-core")
+options=('!libtool')
+source=("http://download.sourceforge.net/project/boxc/Box%20-%20the%20compiler/$pkgname-$pkgver/$pkgname-$pkgver.tar.gz")
+md5sums=('6cecd1bce06a6ae09c5e6db9cf9d11db')
+
+build() {
+  cd "$srcdir/$pkgname-$pkgver"
+
+  # remove insecure rpath
+  sed -i "s|\(\${wl}\-rpath\)\( \${wl}\$libdir\)|\1-link\2|" configure
+
+  ./configure --prefix=/usr \
+              --enable-static=no \
+              --with-cairo
+  make
+}
+
+package() {
+  cd "$srcdir/$pkgname-$pkgver"
+  make DESTDIR="$pkgdir/" install
+
+  # examples
+  install -d "$pkgdir/usr/share/$pkgname"
+  cp -a examples "$pkgdir/usr/share/$pkgname"
+  find "$pkgdir/usr/share/$pkgname" -name "Makefile*" -delete
+}
+
+# vim:set ts=2 sw=2 et:

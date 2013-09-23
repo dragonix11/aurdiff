@@ -1,28 +1,32 @@
 #Maintainer: Xyne <ac xunilhcra enyx, backwards>
 pkgname=moz2fs
-pkgver=2013.9
+pkgver=2013.9.23.3
 pkgrel=1
 pkgdesc='Convert Mozilla (Firefox) bookmarks in JSON format to and from a filesystem hierarchy.'
 arch=(any)
 license=(GPL)
 url="http://xyne.archlinux.ca/projects/moz2fs"
 depends=(python3)
+optdepends=('unison: required by moz2fs-sync and moz2fs-profile-sync scripts')
 source=(
-  http://xyne.archlinux.ca/projects/moz2fs/src/moz2fs-2013.9.tar.xz
-  http://xyne.archlinux.ca/projects/moz2fs/src/moz2fs-2013.9.tar.xz.sig
+  http://xyne.archlinux.ca/projects/moz2fs/src/moz2fs-2013.9.23.3.tar.xz
+  http://xyne.archlinux.ca/projects/moz2fs/src/moz2fs-2013.9.23.3.tar.xz.sig
 )
 sha512sums=(
-  39be4ef9ada33755c5e188e90c7ca6cf28f3188627f44fa5b38070d7cb670f55d29cde290e7f364f9ef0fae71dc0a2559179b1ea5700cdf22f748f992770403e
-  4427490465f3eec00ae17bf830e7653cbb49adda0f8afe988abe700d8e34981cec58d2f862552ac426494f92e7b32e4815174e85c2e889359438e048dc6bf23a
+  f37ceec837ea006579eadf3e1874594e3f045f01d6823337872322eca5d930f33e884081ad292d459337c04b78c80b14e6126c5bb70e2628b52ec6c7f1575b65
+  06b118398fb0b8dd757260a060167c3e63ef55a4cacfc8ba2efd695df0f711cba51222db8c3850e4d8510717f80c229fdb962cd8dbc47f9e7d11609e6aa90f08
 )
 md5sums=(
-  3c803b724262c71df17fd8d4fe05ad2a
-  66a614a0eb34d2a96a11465c5ff78143
+  9a0cece7ad4ffebaf3d24251f3147555
+  4eb5b888666962e3381179a4df602ddf
 )
 
 package ()
 {
-  install -Dm755 "$srcdir/$pkgname-$pkgver/$pkgname" "$pkgdir/usr/bin/$pkgname"
+  for exe in moz2fs{,-{,profile-}sync}
+  do
+    install -Dm755 "$srcdir/$pkgname-$pkgver/$exe" "$pkgdir/usr/bin/$exe"
+  done
 }
 
 

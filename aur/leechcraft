@@ -1,0 +1,62 @@
+# Maintainer: archtux <antonio.arias99999 at gmail.com>
+# Contributer: giacomogiorgianni@gmail.com 
+
+pkgname=leechcraft
+pkgver=0.6.0
+pkgrel=1244
+code=gfdae8f0
+pkgdesc="Opensource network client providing a full-featured web browser, BitTorrent-Twitter-Blog client and much more."
+arch=('i686' 'x86_64')
+url="http://leechcraft.org"
+license='GPL3'
+depends=('qwt>=6.0.2' 'kqoauth-git' 'curl' 'libtorrent-rasterbar>=0.15.0' 'phonon' 'qca' 'qca-gnupg' 'qjson' 'qross' 'qscintilla' 'libqxt' 'qt4' 'qxmpp-leechcraft-git')
+makedepends=('boost' 'cmake')
+#source=(http://downloads.sourceforge.net/$pkgname/$pkgname-$pkgver-$pkgrel-$code.tar.xz)
+source=(http://sourceforge.net/projects/$pkgname/files/LeechCraft/0.6.0/$pkgname-$pkgver.tar.xz)
+md5sums='3ecd089e4763c1de546f02599834d232'
+install=$pkgname.install
+
+#Now for compile:
+#Just rename all the occurences of TIME_UTC to TIME_UTC_ in the /usr/include/boost/thread/xtime.hpp. This is safe, since both boost definition of TIME_UTC and glibc definition of TIME_UTC are the same (ie. TIME_UTC = 1).
+#or update boost 1.50 
+
+build() {
+  sed -i "35s|qdbuscontext.h|qt4/Qt/qdbuscontext.h|" $srcdir/$pkgname-$pkgver-$pkgrel-$code/src/plugins/lmp/player.h
+  #sed -i "37s|leechcraft/interfaces|interfaces|" $srcdir/$pkgname-$pkgver-$pkgrel-$code/src/plugins/woodpecker/twitterpage.h
+  #sed -i "35s|qdbuscontext.h|qt4/Qt/qdbuscontext.h|" $srcdir/$pkgname-$pkgver/src/plugins/lmp/player.h
+  cd $srcdir/$pkgname-$pkgver-$pkgrel-$code/src
+  #cd $srcdir/$pkgname-$pkgver/src
+  mkdir build
+  cd build
+  
+  cmake -DLEECHCRAFT_VERSION="$pkgver" \
+        -DCMAKE_INSTALL_PREFIX=/usr \
+        -DCMAKE_BUILD_TYPE=RelWithDebInfo \
+        -DENABLE_PYLC:BOOL=False \
+  	-DENABLE_AZOTH_OTROID=True \
+  	-DENABLE_AZOTH=false \
+  	-DENABLE_SECMAN=TRUE \
+  	-DENABLE_LACKMAN=TRUE \
+  	-DENABLE_POPISHU=TRUE \
+  	-DENABLE_GMAILNOTIFIER=TRUE \
+  	-DENABLE_ADVANCEDNOTIFICATIONS=TRUE \
+  	-DENABLE_QROSP=TRUE \
+  	-DENABLE_SYNCER=TRUE \
+  	-DENABLE_POTORCHU=TRUE \
+  	-DENABLE_OTZERKALU=TRUE \
+  	-DENABLE_LASTFMSCROBBLE=True \
+  	-DENABLE_GACTS=True \
+  	-DENABLE_GLANCE=TRUE \
+  	-DENABLE_TABSLIST=TRUE \
+  	-DENABLE_TWIFEE=TRUE \
+  	-DENABLE_LEMON=TRUE \
+  	-DENABLE_BLOGIQUE=TRUE \
+  	-DENABLE_MONOCLE=true \
+  	-DCMAKE_INSTALL_PREFIX=`kde4-config --prefix` \
+  	-DENABLE_EISKALTDCPP=false  ..
+  
+  make DESTDIR=$pkgdir install
+
+  # Delete garbage
+  rm -rf $pkgdir/usr/include
+}

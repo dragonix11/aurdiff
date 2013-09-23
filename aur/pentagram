@@ -1,0 +1,43 @@
+# Maintainer: Anton Bazhenov <anton.bazhenov at gmail>
+# Contributor: Ali H. Caliskan <ali.h.caliskan//gmail.com>
+
+pkgname=pentagram
+pkgver=20130922
+pkgrel=1
+pkgdesc="An open source implementation of the Ultima 8 engine"
+arch=('i686' 'x86_64')
+url="http://pentagram.sourceforge.net/"
+license=('GPL')
+depends=('alsa-lib' 'gcc-libs' 'libpng' 'sdl_ttf')
+install="${pkgname}.install"
+source=("http://www.math.leidenuniv.nl/~wpalenst/cvs/${pkgname}-svn.tar.gz"
+        "${pkgname}.png"
+        "${pkgname}.desktop")
+md5sums=('cfc82bcb893ec1398c6cd1df89dbbaf2'
+         'dab5166ce4cadb84925543452e007ff9'
+         '9a7bf0db34cec34c25207e3629f9002d')
+
+build() {
+  cd "${srcdir}/${pkgname}"
+
+  ./bootstrap
+  ./configure \
+    --prefix=/usr \
+    --disable-debug \
+    --enable-all-hq-scalers
+  make
+}
+
+package() {
+  cd "${srcdir}/${pkgname}"
+
+  make DESTDIR="${pkgdir}" install
+
+  # Install a desktop entry
+  install -Dm644 ../${pkgname}.png "${pkgdir}/usr/share/pixmaps/${pkgname}.png"
+  install -Dm644 ../${pkgname}.desktop "${pkgdir}/usr/share/applications/${pkgname}.desktop"
+
+  # Install documentation
+  mkdir -p "${pkgdir}/usr/share/doc/${pkgname}"
+  install -m644 AUTHORS FAQ README "${pkgdir}/usr/share/doc/${pkgname}"
+}

@@ -1,0 +1,19 @@
+# Maintainer: Mizuchi <ytj000+aur@gmail.com>
+
+pkgname=python-pymongo-doc
+pkgver=2.6.2
+pkgrel=1
+pkgdesc='Set of HTML documentation for pymongo'
+arch=('any')
+license=('apache')
+url='http://pypi.python.org/pypi/pymongo/'
+makedepends=('python2-sphinx')
+source=("http://pypi.python.org/packages/source/p/pymongo/pymongo-$pkgver.tar.gz")
+sha1sums=('b93097e867d1b4b07a9f8bc37dc6d7ddd529a343')
+
+package() {
+  sphinx-build2 -E $srcdir/pymongo-$pkgver/doc $pkgdir/usr/share/doc/pymongo
+}
+
+# vim:set ts=2 sw=2 et:
+sha1sums=('d5ac3514e2dd28464f16a03f01c6c5c8dd44cb26')

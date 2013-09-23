@@ -1,0 +1,26 @@
+# Maintainer: Tianjiao Yin <ytj000+AUR@gmail.com>
+# Contributor: Bartek Piotrowski <barthalion@gmail.com>
+# Contributor: Laszlo Papp <djszapi @ gmail at com>
+# Contributor: Nathan Owe <ndowens04+AUR @ gmail.com>
+
+pkgname=vim-sudoedit
+pkgver=0.19
+pkgrel=1
+pkgdesc="Edit Files using sudo or su or any other tool"
+arch=('any')
+url="http://www.vim.org/scripts/script.php?script_id=2709"
+license=('custom')
+depends=('vim')
+groups=('vim-plugins')
+install=vimdoc.install
+source=('sudoedit.vmb::http://www.vim.org/scripts/download_script.php?src_id=20650')
+
+package() {
+  cd "$srcdir"
+  mkdir -p ${pkgdir}/usr/share/vim/vimfiles
+  vim -c "UseVimball ${pkgdir}/usr/share/vim/vimfiles" -c "q" sudoedit.vmb
+  rm ${pkgdir}/usr/share/vim/vimfiles/doc/tags
+  rm ${pkgdir}/usr/share/vim/vimfiles/.VimballRecord
+}
+
+md5sums=('cefd710c8b08ac07400d5fcc9b1b7770')
