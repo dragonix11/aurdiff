@@ -1,0 +1,46 @@
+# Maintainer: George Brooke <george+arch.aur@george-brooke.co.uk>
+
+pkgname=telepathy-kde-desktop-applets-git
+_gitname="ktp-desktop-applets"
+pkgver=v0.6.80.0.ge5bc892
+pkgrel=1
+epoch=2
+pkgdesc="Shows the avatar and status of a contact, allowing you to start a call or chat."
+arch=('i686' 'x86_64')
+url="https://projects.kde.org/projects/extragear/network/telepathy/ktp-desktop-applets"
+license=('GPL' 'LGPL')
+depends=('telepathy-kde-common-internals-git' 'kdebase-workspace')
+makedepends=('cmake' 'automoc4' 'git')
+conflicts=('telepathy-kde-contact-applet-git' 'telepathy-kde-presence-applet-git')
+replaces=('telepathy-kde-contact-applet-git' 'telepathy-kde-presence-applet-git')
+source=("git://anongit.kde.org/ktp-desktop-applets")
+md5sums=('SKIP')
+
+pkgver() {
+  cd $_gitname
+  local ver="$(git describe --long)"
+  printf "%s" "${ver//-/.}"
+}
+
+prepare() {
+  mkdir -p build
+}
+
+build() {
+  cd build
+  cmake ../$_gitname \
+    -DCMAKE_INSTALL_PREFIX=/usr \
+    -DQT_QMAKE_EXECUTABLE=/usr/bin/qmake-qt4 \
+    -DQT_MOC_EXECUTABLE=/usr/bin/moc-qt4 \
+    -DQT_RCC_EXECUTABLE=/usr/bin/rcc-qt4 \
+    -DQT_UIC_EXECUTABLE=/usr/bin/uic-qt4 \
+    -DCMAKE_POSITION_INDEPENDENT_CODE=on
+  make
+}
+
+package() {
+  cd build
+  make DESTDIR="$pkgdir/" install
+}
+
+# vim:set ts=2 sw=2 et:

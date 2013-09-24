@@ -1,0 +1,44 @@
+# Maintainer: George Brooke <george+arch.aur@george-brooke.co.uk>
+#Contributor: Adria Arrufat (archdria) <swiftscythe@gmail.com>
+
+pkgname=telepathy-kde-contact-runner-git
+_gitname="ktp-contact-runner"
+pkgver=v0.6.80.0.g3c90759
+pkgrel=1
+epoch=2
+pkgdesc="KRunner plugin for KDE Telepathy."
+arch=('i686' 'x86_64')
+url="http://quickgit.kde.org/index.php?p=ktp-contact-runner.git"
+license=('GPL')
+depends=('telepathy-kde-common-internals-git')
+makedepends=('cmake' 'automoc4' 'git')
+conflicts=('telepathy-kde-contact-runner')
+source=("git://anongit.kde.org/ktp-contact-runner")
+md5sums=('SKIP')
+
+pkgver() {
+  cd $_gitname
+  local ver="$(git describe --long)"
+  printf "%s" "${ver//-/.}"
+}
+
+prepare() {
+  mkdir -p build
+}
+
+build() {
+  cd build
+  cmake ../$_gitname \
+    -DCMAKE_INSTALL_PREFIX=/usr \
+    -DQT_QMAKE_EXECUTABLE=/usr/bin/qmake-qt4 \
+    -DQT_MOC_EXECUTABLE=/usr/bin/moc-qt4 \
+    -DQT_RCC_EXECUTABLE=/usr/bin/rcc-qt4 \
+    -DQT_UIC_EXECUTABLE=/usr/bin/uic-qt4 \
+    -DCMAKE_POSITION_INDEPENDENT_CODE=on
+  make
+}
+
+package() {
+  cd build
+  make DESTDIR="${pkgdir}" install
+}

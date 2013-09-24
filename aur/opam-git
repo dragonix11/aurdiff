@@ -1,0 +1,36 @@
+# Maintainer: Vincent Bernardoff <vb@luminar.eu.org>
+# Contributor: Raphaël Proust <raphlalou@gmail.com>
+
+pkgname=opam-git
+pkgver=1.1.0.beta.26.ga4790ca
+pkgrel=1
+pkgdesc="OCaml Package Manager"
+arch=('i686' 'x86_64' 'armv6h' 'armv7h')
+url="https://github.com/OCamlPro/opam"
+license=('GPL')
+depends=('ocaml')
+makedepends=('git' 'wget')
+provides=('opam')
+conflicts=('opam')
+install='opam-git.install'
+source=("$pkgname"::'git+git://github.com/OCamlPro/opam' 'opam-git.install')
+md5sums=('SKIP' 'e26e35d3f858c0b5474b778821f9d2e8')
+
+pkgver() {
+	cd "$pkgname"
+	local ver="$(git describe --always)"
+	printf "%s" "${ver//-/.}"
+}
+
+build() {
+  cd "$pkgname"
+  ./configure --prefix=/usr
+  make
+}
+
+package() {
+  cd "$pkgname"
+  make DESTDIR="$pkgdir" install
+}
+
+# vim:set ts=2 sw=2 et:
