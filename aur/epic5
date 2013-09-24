@@ -1,0 +1,39 @@
+#Maintainer: aksr "aksr at t-com dot me"
+pkgname=epic5
+pkgver=1.1.6
+pkgrel=1
+pkgdesc="Enhanced Programmable ircII Client"
+arch=('i686' 'x86_64')
+url="http://www.epicsol.org/"
+license=('custom')
+depends=('libarchive' 'ncurses' 'openssl' 'perl' 'tcl')
+source=("http://ftp.epicsol.org/pub/epic/EPIC5-PRODUCTION/$pkgname-$pkgver.tar.gz")
+md5sums=('3cb459c89e83a5c008a2347abdf6101f')
+
+build() {
+    cd "$srcdir/$pkgname-$pkgver"
+
+    ##
+    unset MAKEFLAGS
+    unset CFLAGS
+    unset CPPFLAGS
+
+    ./configure --prefix=/usr \
+                --with-ssl \
+                --with-ipv6 \
+                --with-perl \
+                --with-tcl \
+
+    make
+}
+
+package() {
+    cd "$srcdir/$pkgname-$pkgver"
+    make prefix="$pkgdir/usr" \
+         libexecdir="$pkgdir/usr/bin" \
+         mandir="$pkgdir/usr/share/man" \
+         install
+    install -Dm644 COPYRIGHT "$pkgdir/usr/share/licenses/$pkgname/COPYRIGHT"
+}
+
+# vim:set ts=4 sw=4 et:

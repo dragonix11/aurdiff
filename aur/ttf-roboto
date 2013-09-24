@@ -1,0 +1,22 @@
+# Maintainer: Michael Düll <mail@akurei.me> PGP-Key: C0DEA350
+
+pkgname=ttf-roboto
+pkgver=1.100141
+epoch=1
+pkgrel=6
+pkgdesc='The new system font of Android 4, Codename "Ice Cream Sandwich".'
+arch=('any')
+license=('Apache')
+url="https://developer.android.com/design/style/typography.html"
+depends=('fontconfig' 'xorg-fonts-encodings' 'xorg-font-utils')
+install=$pkgname.install
+source=(
+  "https://developer.android.com/downloads/design/roboto-1.100141.zip"
+)
+package()
+{
+  install -d $pkgdir/usr/share/fonts/TTF/ 
+  install -m644 $srcdir/roboto-$pkgver/*.ttf $pkgdir/usr/share/fonts/TTF/ 
+}
+
+sha512sums=('be4ac24d99b8bc5564568eaa2545b8f45c0ceb6dfd38639f0ccbe7841a4513de1b70a196355e12f3aa1e60441b56ff9a6900d759e4f4438bd8cbf23adf534b23')

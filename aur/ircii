@@ -1,0 +1,38 @@
+# Maintainer: aksr <aksr at t-com dot me>
+# Contributor: Anton Bazhenov <anton.bazhenov at gmail>
+# Contributor: Mateusz Herych <heniekk@gmail.com>
+
+pkgname=ircii
+pkgver=20111115
+pkgrel=1
+pkgdesc="IRC and ICB client that runs under most UNIX platforms."
+arch=('i686' 'x86_64')
+url="http://www.eterna.com.au/ircii/"
+license=('BSD')
+depends=('lftp' 'ncurses')
+conflicts=('ircii-current')
+source=("http://ircii.warped.com/$pkgname-20111115.tar.gz")
+md5sums=('8e38ba5828c02fa44289ae3dcbccd04c')
+
+#source=("ftp://ircii.warped.com/pub/ircII/${pkgname}-${pkgver}.tar.bz2")
+# Needed to download source:
+#DLAGENTS=('ftp::/usr/bin/lftpget -c')
+
+build() {
+  cd "${srcdir}/${pkgname}-${pkgver}"
+
+  # Compile
+  ./configure --prefix=/usr --mandir=/usr/share/man || return 1
+  make || return 1
+}
+
+package() {
+  cd "${srcdir}/${pkgname}-${pkgver}"
+
+  # Install program files
+  sed -i "s_/usr/libexec_/usr/bin_" Makefile
+  make DESTDIR="${pkgdir}" install || return 1
+
+  # Install the license
+  install -Dm644 doc/Copyright "${pkgdir}/usr/share/licenses/${pkgname}/COPYRIGHT"
+}

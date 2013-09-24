@@ -12,7 +12,7 @@ depends=('desktop-file-utils' 'gtkglextmm' 'hicolor-icon-theme' 'sdl' 'sfml1.6')
 makedepends=('cmake' 'mesa')
 [[ $CARCH == i686 ]] && makedepends+=('nasm')
 conflicts=('vba-m-wx')
-install="${pkgname}.install"
+install="${pkgname%-*}.install"
 source=("http://downloads.sourceforge.net/project/vbam/vbam-src/vbam-r${pkgver##*.}-src.tar.bz2")
 sha256sums=('148d866c08d7a810be5c845247d212f1d1d07395f2ccdecef10ad81a76072877')
 

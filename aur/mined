@@ -1,0 +1,25 @@
+#Maintainer: aksr <aksr at t-com dot me>
+#Contributor: Anton Bazhenov <anton.bazhenov at gmail>
+#Contributor: Andreas W. Hauser <andy-aur@splashground.de>
+pkgname=mined
+pkgver=2013.23.4
+pkgrel=1
+pkgdesc="A powerful text editor with a comprehensive and easy-to-use user interface and fast, small-footprint behaviour."
+arch=('i686' 'x86_64')
+url="http://towo.net/mined/"
+license=('GPL3')
+depends=('desktop-file-utils')
+install="${pkgname}.install"
+source=("http://towo.net/mined/download/${pkgname}-${pkgver}.tar.gz")
+md5sums=('f587731baf9172d45e5a409a398b1c97')
+
+build() {
+  cd "${srcdir}/${pkgname}-${pkgver}"
+  ./configure --prefix=/usr
+  make
+}
+
+package() {
+  cd "${srcdir}/${pkgname}-${pkgver}"
+  make DESTDIR="${pkgdir}" install
+}
