@@ -1,0 +1,36 @@
+# Maintainer: Muflone <webreg@vbsimple.net>
+
+pkgname=remmina-plugin-teamviewer
+pkgver=1.0.0.2
+pkgrel=1
+_builderver=1.0.0.3
+pkgdesc="A protocol plugin for Remmina to launch a TeamViewer connection."
+arch=(i686 x86_64)
+url="https://github.com/muflone/remmina-plugin-teamviewer"
+license=('GPL')
+depends=('gtk3' 'remmina' 'hicolor-icon-theme' 'teamviewer')
+makedepends=('pkg-config' 'cmake')
+optdepends=()
+install=${pkgname}.install
+source=(
+  "remmina-plugin-builder_${_builderver}.tar.gz::https://github.com/muflone/remmina-plugin-builder/archive/${_builderver}.tar.gz"
+  "${pkgname}_${pkgver}.tar.gz::https://github.com/muflone/${pkgname}/archive/${pkgver}.tar.gz"
+)
+md5sums=(
+  'c74ca55ae6ef92f2706acad3a35511de'
+  '1b3110f4860e18ebf4f3926da0691001'
+)
+
+build() {
+  [ -d build ] && rm -rf build
+  cp -r remmina-plugin-builder-${_builderver} build
+  cp -r "${pkgname}-${pkgver}"/* build/remmina-plugin-to-build
+  cd build
+  cmake -DCMAKE_INSTALL_PREFIX=/usr .
+  make
+}
+
+package() {
+  cd ${srcdir}/build/
+  make DESTDIR=${pkgdir} install
+}

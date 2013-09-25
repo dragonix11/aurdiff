@@ -1,0 +1,41 @@
+# Maintainer: Michael Schubert <mschu.dev at gmail>
+# Contributor: Giulio Guzzinati <skarn86junk@gmail.com>
+
+pkgname=imagej
+pkgver=1.47
+_pkgver=${pkgver//./}
+pkgrel=2
+epoch=2
+pkgdesc="Image manipulation software for scientists"
+arch=('any')
+url="http://rsbweb.nih.gov/ij/index.html"
+license=('Public Domain')
+depends=('java-runtime')
+makedepends=('unzip')
+optdepends=('java-environment')
+source=("http://rsbweb.nih.gov/ij/download/zips/ij$_pkgver.zip"
+        "imagej.sh"
+        "imagej.desktop"
+        "microscope.xpm")
+noextract=("ij$_pkgver.zip")
+md5sums=('1ab3c670f966f5322c7ef1882a3cc9f9'
+         'b5e92a40ea828bc86ae8d71fde38baee'
+         '9d60878b6adad0e1895ce875bf299147'
+         'e7a7cef1b44ad3a8752ba63885fd88fb')
+
+package() {
+    cd "$pkgdir"
+    unzip -d "$pkgdir" "$srcdir/ij$_pkgver.zip"
+    rm -rf ImageJ/ImageJ.exe ImageJ/ImageJ.app ImageJ/run 
+
+    mkdir -p "$pkgdir/usr/share"
+    mv ImageJ "$pkgdir/usr/share/imagej"
+
+    find "$pkgdir" -type d -exec chmod 755 {} \; -o -exec chmod 644 {} \;
+
+    cd "$srcdir"
+    install -Dm755 imagej.sh "$pkgdir/usr/bin/imagej"
+    install -Dm644 imagej.desktop "$pkgdir/usr/share/applications/imagej.desktop"
+    install -Dm644 microscope.xpm "$pkgdir/usr/share/pixmaps/microscope.xpm"
+}
+
