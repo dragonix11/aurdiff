@@ -1,0 +1,47 @@
+# Maintainer: Christian Hesse <mail@eworm.de>
+
+pkgname=clearlooks-phenix-gtk-theme-git
+pkgver=3.0.15.r0.g8ed3afb
+pkgrel=3
+pkgdesc="GTK3 theme visually close to Clearlooks"
+arch=('any')
+url="http://www.jpfleury.net/"
+license=('GPL')
+depends=('gtk-engines')
+provides=('clearlooks-phenix-gtk-theme')
+conflicts=('clearlooks-phenix-gtk-theme')
+makedepends=('git')
+# this site is down, so use my copy on github for now
+#source=('git://jpfleury.indefero.net/jpfleury/clearlooks-phenix.git')
+source=('git+https://github.com/eworm-de/clearlooks-phenix.git')
+
+pkgver() {
+	cd clearlooks-phenix/
+
+	if GITTAG="$(git describe --abbrev=0 --tags 2>/dev/null)"; then
+		echo "$(sed -e "s/^${pkgname%%-git}//" -e 's/^[-_/a-zA-Z]\+//' -e 's/[-_+]/./g' <<< ${GITTAG}).r$(git rev-list --count ${GITTAG}..).g$(git log -1 --format="%h")"
+	else
+		echo "0.r$(git rev-list --count master).g$(git log -1 --format="%h")"
+	fi
+}
+
+build() {
+	cd clearlooks-phenix/
+	
+	rm -rf .git/
+}
+
+package() {
+	cd clearlooks-phenix/
+
+	for FILE in $(find doc/ -type f); do
+		install -D -m0644 ${FILE} ${pkgdir}/usr/share/doc/clearlooks-phenix-gtk-theme/${FILE}
+	done
+	rm -rf doc/
+
+	for FILE in $(find -type f); do
+		install -D -m0644 ${FILE} ${pkgdir}/usr/share/themes/Clearlooks-Phenix/${FILE}
+	done
+}
+
+sha256sums=('SKIP')

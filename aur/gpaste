@@ -1,0 +1,40 @@
+# Maintainer: bobi
+
+pkgname=gpaste
+pkgver=3.1
+pkgrel=1
+pkgdesc="Clipboard management system with a gnome-shell extension"
+
+license=('GPL3')
+url="https://github.com/Keruspe/GPaste"
+source=("http://www.imagination-land.org/files/$pkgname/$pkgname-$pkgver.tar.xz")
+
+makedepends=('gnome-control-center' 'gobject-introspection' 'vala' 'intltool')
+options=(!libtool)
+
+depends=('gtk3' 'systemd')
+install=$pkgname.install
+
+arch=('i686' 'x86_64')
+md5sums=('9499c5ba8c6f0ac3e21ff5b505970020')
+
+build () {
+    cd "$srcdir/$pkgname-$pkgver"
+
+    ./configure --sysconfdir=/etc       \
+                --enable-systemd	\
+		--libexecdir=/usr/lib
+    make
+}
+
+package () {
+    cd "$srcdir/$pkgname-$pkgver"
+    make DESTDIR="$pkgdir" install
+
+    # bash/zsh completion support
+    install -Dp -m0644 data/completions/$pkgname     \
+        "$pkgdir/etc/bash_completion.d/$pkgname"
+    install -Dp -m0644 data/completions/_$pkgname    \
+        "$pkgdir/usr/share/zsh/site-functions/_$pkgname"
+}
+# expandtab:tabstop=4:shiftwidth=4
