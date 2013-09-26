@@ -1,0 +1,41 @@
+# $Id$
+# Maintainer: David Roheim <david dot roheim at gmail dot com>
+
+pkgname=('magento2')
+pkgver=2.0.0.0dev45
+pkgrel=1
+arch=('any')
+pkgdesc="Magento Community Edition v2 - PHP based e-commerce"
+url='http://www.magentocommerce.com/'
+license=('OSLv3')
+
+source=("${pkgname}-${pkgver}.zip::https://github.com/magento/${pkgname}/archive/master.zip")
+sha256sums=('a247c1af8ed83f17e9628f997f9f55c7f6823e1142d836f7cbf6b153df4bf4d9')
+
+depends=('php>=5.3.3' 'php-mcrypt' 'php-gd' 'mariadb-clients' 'curl')
+optdepends=('redis')
+options=(!strip)
+install=${pkgname}.install
+
+backup=("")
+
+build() {
+  cd ${srcdir}
+  mv magento2-master ${pkgname}
+}
+
+package() {
+  install -d -m755 ${pkgdir}/usr/share/webapps
+  install -d -m755 ${pkgdir}/etc/webapps/${pkgname}
+  
+  install -D -m644 ${srcdir}/${pkgname}/LICENSE.txt     "${pkgdir}/usr/share/licenses/${pkgname}/LICENSE.txt"     || return 1
+  install -D -m644 ${srcdir}/${pkgname}/LICENSE.html    "${pkgdir}/usr/share/licenses/${pkgname}/LICENSE.html"    || return 1
+  install -D -m644 ${srcdir}/${pkgname}/LICENSE_AFL.txt "${pkgdir}/usr/share/licenses/${pkgname}/LICENSE_AFL.txt" || return 1
+
+  mv ${srcdir}/${pkgname}/.htaccess ${pkgdir}/etc/webapps/${pkgname}/htaccess
+  mv $srcdir/$pkgname/app/etc $pkgdir/etc/webapps/${pkgname}
+  mv ${srcdir}/${pkgname} ${pkgdir}/usr/share/webapps
+
+  ln -s /etc/webapps/${pkgname}/etc ${pkgdir}/usr/share/webapps/${pkgname}/app/etc
+  ln -s /etc/webapps/${pkgname}/htaccess ${pkgdir}/usr/share/webapps/${pkgname}/.htaccess
+}
