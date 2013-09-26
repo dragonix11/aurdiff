@@ -1,0 +1,36 @@
+# Maintainer: T. Jameson Little <t.jameson.little at gmail dot com>
+# Previous Maintainer: Stephen Michael <ihateseptictanks at gmail dot com>
+# Previous Maintainer: Simon Tunnat <simon+aur@tunn.at>
+# Contributor: Bartlomiej Piotrowski <nospam@bpiotrowski.pl>
+
+pkgname=firefox-esr-bin
+_pkgname=${pkgname/-bin/}
+pkgver=17.0.9
+pkgrel=1
+pkgdesc='Standalone web browser from mozilla.org - Extended Support Release'
+url='http://www.mozilla.org/en-US/firefox/organizations/'
+arch=('i686' 'x86_64')
+depends=('gtk2' 'dbus-glib' 'desktop-file-utils' 'libxt' 'mime-types' 'nss' 'shared-mime-info' 'desktop-file-utils')
+optdepends=('libgnome: fixes file association/default browser issues on GNOME desktops.')
+
+license=('MPL' 'GPL' 'LGPL')
+install=$_pkgname.install
+source=(http://ftp.mozilla.org/pub/mozilla.org/firefox/releases/${pkgver}esr/linux-$CARCH/en-US/firefox-${pkgver}esr.tar.bz2
+        $_pkgname.desktop 
+        $_pkgname-safe.desktop)
+md5sums=('52444b337436bc01ece7580917d7ea4a'
+         'fefa008dba23e1290f6257cb8840c83f'
+         '8e79960212c996679484026bcf7fffb0')
+[ "$CARCH" == "i686" ] && md5sums[0]='ff8f2af0910f4ab7cee514642c269c4e'
+
+
+package() {
+	cd $srcdir
+	
+	install -d $pkgdir/{usr/{bin,share/{applications,pixmaps}},opt}
+	cp -r firefox/ $pkgdir/opt/$_pkgname
+
+	ln -s /opt/$_pkgname/firefox $pkgdir/usr/bin/$_pkgname
+	install -m644 $srcdir/{$_pkgname.desktop,$_pkgname-safe.desktop} $pkgdir/usr/share/applications/
+	install -m644 $srcdir/firefox/icons/mozicon128.png $pkgdir/usr/share/pixmaps/$_pkgname.png
+}
