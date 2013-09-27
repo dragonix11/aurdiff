@@ -1,0 +1,64 @@
+# Maintainer: Danilo Kuehn <dk at nogo-software dot de>
+# Git: https://github.com/nogo/archlinux-pkgbuild
+
+_sync=ocsync
+_syncver=0.90.2
+_client=mirall
+
+pkgname=owncloud-client-ngs
+pkgver=1.4.1
+pkgrel=1
+pkgdesc="ownCloud client based on mirall"
+arch=('i686' 'x86_64')
+url="http://owncloud.org/"
+license=('GPL2')
+depends=('sqlite3' 'iniparser' 'neon' 'smbclient' 'libssh' 'qt4')
+optdepends=('qtkeychain')
+makedepends=('cmake')
+provides=('mirall' 'owncloud-client')
+conflicts=('mirall-git' 'ocsync' 'ocsync-ngs')
+install=${pkgname}.install
+options=(!strip)
+backup=('etc/owncloud-client-ngs/sync-exclude.lst')
+source=("http://download.owncloud.com/download/${_sync}-${_syncver}.tar.bz2"
+        "http://download.owncloud.com/download/${_client}-${pkgver}.tar.bz2")
+md5sums=('c2a8a19289e4d7e7e8eebf8304ac39bd'
+         'd65de66b0387e9c18127d4baeae61e04')
+
+prepare() {
+  if [[ -e ${srcdir}/${_sync}-${_syncver}-build ]]; then rm -rf ${srcdir}/${_sync}-${_syncver}-build; fi
+  if [[ -e ${srcdir}/${_client}-${pkgver}-build ]]; then rm -rf ${srcdir}/${_client}-${pkgver}-build; fi
+}
+
+build() {
+  mkdir ${srcdir}/${_sync}-${_syncver}-build
+  cd ${srcdir}/${_sync}-${_syncver}-build
+
+  cmake -DCMAKE_BUILD_TYPE=Release \
+        ../${_sync}-${_syncver} \
+        -DCMAKE_INSTALL_PREFIX=/usr \
+        -DSYSCONF_INSTALL_DIR=/etc
+  make
+
+  mkdir ${srcdir}/${_client}-${pkgver}-build
+  cd ${srcdir}/${_client}-${pkgver}-build
+
+  cmake -DQT_QMAKE_EXECUTABLE=qmake-qt4 \
+        -DCMAKE_BUILD_TYPE=Release \
+        ../${_client}-${pkgver} \
+        -DCMAKE_INSTALL_PREFIX=/usr \
+        -DCMAKE_INSTALL_LIBDIR=/usr/lib \
+        -DCSYNC_BUILD_PATH=${srcdir}/${_sync}-${_syncver}-build \
+        -DCSYNC_INCLUDE_PATH=${srcdir}/${_sync}-${_syncver}/src \
+        -DCMAKE_INSTALL_SYSCONFDIR=/etc/${pkgname}
+  make
+}
+
+package() {
+  cd ${srcdir}/${_sync}-${_syncver}-build
+  make DESTDIR=${pkgdir} install
+
+  cd ${srcdir}/${_client}-${pkgver}-build
+  make DESTDIR=${pkgdir} install
+}
+

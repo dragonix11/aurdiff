@@ -1,0 +1,44 @@
+# Maintainer: localizator <localizator@ukr.net>
+
+pkgname=seafile-client-bin
+pkgver=1.8.1
+pkgrel=1
+pkgdesc="Seafile is an online file storage and collaboration tool. This is the seafile client for synchronizing your local files with a seafile server."
+url="http://seafile.com"
+license=(GPL)
+groups=('network')
+depends=(
+'util-linux'
+'openssl'
+'glib2'
+'sqlite'
+'libevent'
+'gtk2'
+'libappindicator1'
+'libnotify'
+'python2-webpy'
+'python2-mako'
+'python2-simplejson')
+options=(!strip !zipman)
+_realname=seafile
+
+arch=('i686' 'x86_64')
+if [ "$CARCH" = 'i686' ]; then
+   source=("${_realname}_${pkgver}_i386.deb::http://seafile.googlecode.com/files/${_realname}_${pkgver}_i386.deb" "seafile-web.patch")
+   sha256sums=('4799f4f04fd22c9e49f00643dad4eac49eba66c06b9f334c9cf748938e8b20ce'
+               '3b4f40a4260b1a0b8e9a52d2799536d0a7c637aebb76717853cd034647389172')
+elif [ "$CARCH" = "x86_64" ]; then
+   source=("${_realname}_${pkgver}_amd64.deb::http://seafile.googlecode.com/files/${_realname}_${pkgver}_amd64.deb" "seafile-web.patch")
+   sha256sums=('254501deea0f173c4d7a8f0ed20769d582f96d92f6c8bedc03a9d47dacf1d6dc'
+               '3b4f40a4260b1a0b8e9a52d2799536d0a7c637aebb76717853cd034647389172')
+fi
+
+build() {
+    cd $srcdir
+    tar xvf data.tar.gz
+    patch -p0 -i "$srcdir/seafile-web.patch"
+}
+
+package() {
+    cp -rp usr $pkgdir
+}

@@ -1,4 +1,4 @@
-# Maintainer: Daniel YC Lin <dlin.tw at gmail>
+# Maintainer: Daniel YC Lin <dlin.tw gmail>
 # Contributor: Alexander Rødseth <rodseth@gmail.com>
 # Contributor: Vesa Kaihlavirta <vegai@iki.fi>
 # Contributor: Rémy Oudompheng  <remy@archlinux.org>
@@ -7,10 +7,10 @@
 # Contributor: Christian Himpel <chressie@gmail.com>
 # Contributor: Mike Rosset <mike.rosset@gmail.com>
 
-pkgname=go-crosstool
-pkgver=1.2rc1
+pkgname=go-hg
+pkgver=18233.d2e4
 pkgrel=1
-pkgdesc='Google Go compiler support multi-platforms'
+pkgdesc='Google Go compiler support multi-platforms(hg tip)'
 # ref valid platforms http://golang.org/doc/install/source#environment
 _platforms="linux_arm windows_386"
 if [ "$CARCH" == 'x86_64' ]; then
@@ -21,7 +21,7 @@ elif [ "$CARCH" == 'i686' ]; then
 fi
 conflicts=('go')
 replaces=('go')
-provides=('go=1.2rc1')
+provides=('go=1.2')
 arch=('x86_64' 'i686')
 url='http://golang.org/'
 license=('custom')
@@ -29,10 +29,14 @@ depends=('perl' 'gawk')
 makedepends=('inetutils')
 options=('!strip')
 install='go.install'
-#backup=('usr/lib/go/bin')
-source=("http://go.googlecode.com/files/go$pkgver.src.tar.gz" 'go.sh')
-md5sums=('615ae280542bb50ce34a611668da3342'
-         'd4444874ff1ae3c3cbeea042a75a530b')
+source=('go::hg+https://go.googlecode.com/hg' 'go.sh')
+md5sums=('SKIP' 'd4444874ff1ae3c3cbeea042a75a530b')
+
+pkgver() {
+  cd "$srcdir/go"
+  local _id=$(hg identify -i)
+  echo $(hg identify -n).${_id:0:4}
+}
 build() {
   cd "$srcdir/go/src"
 
@@ -96,7 +100,7 @@ package() {
   install -Dm755 $srcdir/godoc $pkgdir/usr/bin/godoc
 
   install -Dm644 LICENSE \
-    $pkgdir/usr/share/licenses/go-crosstool/LICENSE
+    $pkgdir/usr/share/licenses/go-hg/LICENSE
   install -Dm644 misc/bash/go \
     $pkgdir/usr/share/bash-completion/completions/go
   install -Dm644 misc/emacs/go-mode-load.el \
@@ -154,7 +158,7 @@ package() {
 
   rm -f $pkgdir/usr/share/go/doc/articles/wiki/get.bin
 
-  install -Dm644 VERSION $pkgdir/usr/lib/go/VERSION
+  install -Dm644 VERSION.cache $pkgdir/usr/lib/go/VERSION
 
   # Clean up
   for platform in $_platforms ; do
@@ -183,6 +187,10 @@ package() {
     strip_file "$binary" ${strip_flags}
   done
 
+  msg2 "changelog(last 10)"
+  (cd  $srcdir/go ; \
+    hg log -l 10 --template '{rev} {node|short} {date|shortdate} {desc|firstline}\n' ; \
+    true )
 }
 
 # vim:set ts=2 sw=2 et:

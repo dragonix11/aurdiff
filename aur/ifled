@@ -1,0 +1,41 @@
+# Maintainer: Gilles CHAUVIN <gcnweb at gmail dot com>
+#
+pkgname=ifled
+pkgver=0.6
+pkgrel=12
+pkgdesc="A program that uses the keyboard LEDs to indicate network activity"
+url="http://web.archive.org/web/20011210154318/www.sudac.org/~napolium/linux/"
+license=('GPL')
+depends=('bash')
+arch=('i686' 'x86_64')
+install="ifled.install"
+backup=('etc/sysconfig/ifled')
+
+
+# Mirror #1 (Ext: .tar.bz2)
+_src="http://lara.craft.net.br/$pkgname-$pkgver.tar.bz2"
+_md5='b96cd29862e73fdb7a679fbcf2e85f4e'
+# Mirror #2 (Ext: .tar.gz)
+#_src="http://archive.org/download/tucows_39124_ifled/$pkgname-$pkgver.tar.gz"
+#_md5='9bd00482ec4aef5521b80b35e3767ba3'
+
+source=('ifled_init_script' 'ifled_sysconfig' 'ifled.patch' "$_src")
+md5sums=('d1a6e0b672eef01b71c88441247496f5' 'e2ee30b9f65c451a46370b1c4a1f899d'
+         '69b34de4429d0c1974b4c21180267bec' "$_md5")
+
+
+build() {
+  cd "${srcdir}/${pkgname}-${pkgver}"
+
+  # Fix: Warnings
+  patch -p0 < ../ifled.patch
+
+  make
+}
+
+package() {
+  mkdir   -p    ${pkgdir}{/etc/{rc.d,sysconfig},/usr/sbin}
+  install -m755 ${srcdir}/${pkgname}-${pkgver}/ifled ${pkgdir}/usr/sbin/ifled
+  install -m755 ${srcdir}/ifled_init_script          ${pkgdir}/etc/rc.d/ifled
+  install -m644 ${srcdir}/ifled_sysconfig            ${pkgdir}/etc/sysconfig/ifled
+}
