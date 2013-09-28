@@ -1,0 +1,30 @@
+pkgname=lensfun-svn
+_svnmod=lensfun
+pkgver=262
+pkgrel=1
+pkgdesc="Database of photographic lenses and a library that allows advanced access to the database"
+arch=(i686 x86_64)
+url="http://lensfun.berlios.de/"
+license=('LGPL3')
+depends=('glibc' 'glib2')
+makedepends=('python2' 'libpng')
+provides=('lensfun')
+conflicts=('lensfun')
+source=(${_svnmod}::svn://svn.berlios.de/lensfun/trunk)
+md5sums=(SKIP)
+
+pkgver() {
+  cd $SRCDEST/$_svnmod
+  svnversion | tr -d [A-z]
+}
+
+build() {
+    cd $_svnmod
+    ./configure --prefix=/usr
+    make all
+}
+
+package() {
+  cd $_svnmod
+  make INSTALL_PREFIX="$pkgdir/" install
+}

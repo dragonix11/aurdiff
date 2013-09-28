@@ -1,0 +1,35 @@
+#Maintainer: Xyne <ac xunilhcra enyx, backwards>
+pkgname=ecryptfs-simple
+pkgver=2012.12.24.1
+pkgrel=3
+pkgdesc='A very simple utility for working with eCryptfs.'
+arch=(i686 x86_64)
+license=(GPL)
+url="http://xyne.archlinux.ca/projects/ecryptfs-simple"
+depends=(util-linux ecryptfs-utils)
+source=(
+  http://xyne.archlinux.ca/projects/ecryptfs-simple/src/ecryptfs-simple-2012.12.24.1.tar.xz
+  http://xyne.archlinux.ca/projects/ecryptfs-simple/src/ecryptfs-simple-2012.12.24.1.tar.xz.sig
+)
+sha512sums=(
+  55a5562f66a6e5486acec6b5c76bd6fbd14c9d12ffc049f0a71ff0ea3e1dcc1806ccfac2a462ded38e180b5ea23ae837ce08956f6ba269fa8b07aba0d0e5ba6e
+  4a18ea3e0c3cef2d98ec181a81efd634f2b9104c1903d869bea9a4a3ac3df3557f80d462784dba786e44bd658db8bdd8d18e543cc250f9ca5320a8ab03f28cac
+)
+md5sums=(
+  60ce1fab538942b64b8f8a1a33d3a17c
+  860467ee05ca610445715bf92a016398
+)
+
+build ()
+{
+  cd -- "$srcdir/$pkgname-$pkgver"
+  ./scripts/helper.sh build
+}
+
+package ()
+{
+  cd -- "${srcdir}/${pkgname}-${pkgver}"
+  install -Dm4755 "$pkgname" "$pkgdir/usr/bin/$pkgname"
+}
+
+# vim: set ts=2 sw=2 et:

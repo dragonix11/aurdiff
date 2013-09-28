@@ -1,0 +1,67 @@
+# Contributor: robb_force <robb_force@holybuffalo.net>
+# Contributor: Anton Shestakov <engored*ya.ru>
+# Maintainer: Eric Anderson <ejona86@gmail.com>
+
+pkgname=sdlmess
+_patch=0
+_basever=0150
+pkgver=0.150.${_patch}
+pkgrel=1
+pkgdesc='Multiple Emulator Super System, computer and game console emulator'
+url='http://www.mess.org/'
+license=('custom:MAME License')
+arch=('i686' 'x86_64')
+depends=('libxinerama' 'sdl_ttf' 'qt4' \
+         'flac' 'portmidi')
+makedepends=('mesa' 'python2')
+[ "$CARCH" = 'i686' ] && makedepends+=('nasm')
+optdepends=('ttf-liberation: recommended UI font')
+source=("${pkgname}.sh"
+        "mame${_basever}s.zip::http://mamedev.org/downloader.php?file=releases/mame${_basever}s.zip"
+        )
+sha256sums=('d05d95061c69fefef728b9c0ea22c983912ca37b42739d7c170c7913e19904f3'
+            'e672b033baa001e1a909498b6c9206c68d0456fd883e410ad50f1a4f4c2253f7'
+            )
+install="${pkgname}.install"
+noextract=("mame${_basever}s.zip")
+PKGEXT='.pkg.tar.gz'
+
+prepare() {
+  mkdir "${srcdir}/${pkgname}-${pkgver}"
+  cd "${srcdir}/${pkgname}-${pkgver}"
+
+  bsdtar -xOf "${srcdir}/mame${_basever}s.zip" | bsdtar -xf -
+
+  for (( i=1; i <= ${_patch}; i++ )); do
+    msg "Applying patch ${i}"
+    patch -p0 -E --binary --quiet < "${srcdir}/${_basever}u${i}.diff"
+  done
+}
+
+build() {
+  cd "${srcdir}/${pkgname}-${pkgver}"
+
+  make NOWERROR=1 PYTHON=python2 \
+      BUILD_EXPAT=0 BUILD_ZLIB=0 BUILD_FLAC=0 BUILD_JPEGLIB=0 BUILD_MIDILIB=0 \
+      TARGET=mess SUFFIX64=
+}
+
+package() {
+  cd "${srcdir}/${pkgname}-${pkgver}"
+
+  # Installing the wrapper script
+  install -Dm755 "$srcdir/${pkgname}.sh" "$pkgdir/usr/bin/$pkgname"
+
+  # Installing binaries
+  install -Dm755 mess "$pkgdir/usr/share/$pkgname/$pkgname"
+
+  # Installing extra bits
+  install -d "$pkgdir/usr/share/$pkgname/"{artwork,ctrlr,hash,keymaps}
+
+  install -m644 artwork/* "$pkgdir/usr/share/$pkgname/artwork/"
+  install -m644 hash/* "$pkgdir/usr/share/$pkgname/hash/"
+  install -m644 src/osd/sdl/keymaps/* "$pkgdir/usr/share/$pkgname/keymaps/"
+
+  # The license
+  install -Dm644 docs/license.txt "$pkgdir/usr/share/licenses/custom/$pkgname/license.txt"
+}

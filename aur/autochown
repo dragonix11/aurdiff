@@ -1,0 +1,44 @@
+#Maintainer: Xyne <ac xunilhcra enyx, backwards>
+pkgname=autochown
+pkgver=2013.9.28
+pkgrel=1
+pkgdesc='Monitor multiple directories using glob patterns and automatically adjust file ownership and permissions.'
+arch=(i686 x86_64)
+license=(GPL)
+url="http://xyne.archlinux.ca/projects/autochown"
+makedepends=(cmake rabbit_tree)
+source=(
+  http://xyne.archlinux.ca/projects/autochown/src/autochown-2013.9.28.tar.xz
+  http://xyne.archlinux.ca/projects/autochown/src/autochown-2013.9.28.tar.xz.sig
+)
+sha512sums=(
+  94787eebae82867741600fa050a5b8392171596ec020f8873c020df3f4267f6264d04b7a85a10550dc26a624a9b20e653482fe6ee95faac67a575663e3aefed0
+  53ba22883f8e12fbac3146b44beda6eebdc87fbee8400d01c97acd2b5065424904429e073043d78766dde3e55f133a1c2b099ef86c14fe18027e3cd1ea69cbb9
+)
+md5sums=(
+  70152f1e1d0a2d52cd622871cb6f6102
+  4a54a2e8ea7911ef326e7196d4ec5006
+)
+
+build ()
+{
+  mkdir -p "$srcdir/build"
+  rm -fr "$srcdir/build/"*
+  cd -- "$srcdir/build"
+  cmake ../"$pkgname-$pkgver" -DCMAKE_INSTALL_PREFIX=/usr
+  make
+}
+
+package ()
+{
+  cd -- "${srcdir}/${pkgname}-${pkgver}"
+  install -Dm644 "$pkgname.service" "$pkgdir/usr/lib/systemd/system/$pkgname.service"
+  install -Dm644 "${pkgname}d.conf" "${pkgdir}/etc/${pkgname}d.conf"
+  install -Dm644 "man/${pkgname}.1.gz" "${pkgdir}/usr/share/man/man1/${pkgname}.1.gz"
+
+  cd -- "$srcdir/build"
+  make install DESTDIR="$pkgdir"
+}
+
+
+# vim: set ts=2 sw=2 et:
