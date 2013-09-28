@@ -1,0 +1,27 @@
+# Maintainer: grimsock <lord.grimsock at gmail dot com>
+# Contributor: kkb110
+
+pkgname=jgit
+pkgver=3.0.3.201309161630_r
+pkgrel=1
+pkgdesc="A 100% pure java implementation of git"
+arch=('any')
+url="http://www.eclipse.org/jgit/"
+license=('custom:EDL')
+depends=('java-runtime')
+source=("https://repo.eclipse.org/content/groups/releases//org/eclipse/${pkgname}/org.eclipse.${pkgname}.pgm/${pkgver//_/-}/org.eclipse.${pkgname}.pgm-${pkgver//_/-}.sh"
+        "license.txt"
+        "jgit")
+md5sums=('134074b829ffcb0afbe34f5334e28f46'
+         'e67c5b842365a14ff39a3bd4a02842cb'
+         '1abe959c2998c411e825cbae20d358f9')
+sha256sums=('1e93d6d6c195c62b9e8a63f3097891a028afb2977fa86cd5af8489aad34f8169'
+            '7df6bb0c62b53240372c458dc6f88940f5ed81bde82e54403e1826134592dde5'
+            '728bcb67239e5de5db12454be490550a5624cce272f9df261fe940fb360c8ede')
+
+package() {
+  install -Dm 755 "${srcdir}/org.eclipse.${pkgname}.pgm-${pkgver//_/-}.sh" "${pkgdir}/usr/share/java/${pkgname}/org.eclipse.${pkgname}.pgm-${pkgver//_/-}.sh"
+  install -Dm 644 "license.txt" "${pkgdir}/usr/share/licenses/${pkgname}/LICENSE"
+
+  install -Dm 755 "${pkgname}" "${pkgdir}/usr/bin/${pkgname}"
+}

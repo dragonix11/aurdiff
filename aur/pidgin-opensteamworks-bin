@@ -1,0 +1,31 @@
+# Maintainer: onny <onny@project-insanity.org>
+# Contributor: onny <onny@project-insanity.org>
+
+pkgname=pidgin-opensteamworks-bin
+pkgver=1.3
+pkgrel=1
+pkgdesc="A plugin to connect to Steam Friends/Steam IM (purple plugin). "
+url=('https://code.google.com/p/pidgin-opensteamworks')
+arch=('i686' 'x86_64')
+license=('GPL3')
+depends=('libpurple' 'json-glib')
+makedepends=('unzip')
+if [ "${CARCH}" = "x86_64" ]; then
+  source=("https://pidgin-opensteamworks.googlecode.com/files/libsteam64-${pkgver}.so"
+	  "https://pidgin-opensteamworks.googlecode.com/files/icons.zip")
+  sha512sums=('7ae64bf53172bfb6027b185943aecd8795f622ee70471b84e27d252d964fc5b7e75619a1a2ee8319688acbd2ccd45a0191098e7dd27c15d19ba1945109be99d7'
+	      '823f400bb4df9c6ddb65d8a01ec182fbbadeb955bc3e9590e88773b092b0cf79e50fc6c20d9b72def7fe9f8d6e1ac7cc087fbdb3f6ed4b76c343a29f18e6ea06')
+else
+  source=("https://pidgin-opensteamworks.googlecode.com/files/libsteam-${pkgver}.so"
+	  "https://pidgin-opensteamworks.googlecode.com/files/icons.zip")
+  sha512sums=('4180434b0a75bf343f8e400bc97cdc0614e5ecbca020cda1e98f827e0726aa2fb7f897bd530539931e3c667f55b60e6d0ca3ae8ff8d4f7569f41f66fd7087b9e'
+	      '823f400bb4df9c6ddb65d8a01ec182fbbadeb955bc3e9590e88773b092b0cf79e50fc6c20d9b72def7fe9f8d6e1ac7cc087fbdb3f6ed4b76c343a29f18e6ea06')
+fi
+
+package() {
+  # installing purple plugin
+  install -Dm755 ${srcdir}/libsteam*-${pkgver}.so "${pkgdir}/usr/lib/purple-2/libsteam.so"
+  # installing icons
+  mkdir -p "${pkgdir}/usr/share/pixmaps/pidgin/protocols"
+  unzip "${srcdir}/icons.zip" -d "${pkgdir}/usr/share/pixmaps/pidgin/protocols/"
+}

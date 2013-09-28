@@ -1,0 +1,28 @@
+# Maintainer: Gustavo Alvarez <sl1pkn07@gmail.com>
+# Contributor: Alexandre Bique <bique.alexandre@gmail.com>
+
+pkgname=re2
+pkgver=20130712
+pkgrel=1
+pkgdesc="efficient, principled regular expression library"
+url="http://code.google.com/p/re2/"
+arch=('i686' 'x86_64')
+license=('BSD')
+source=("https://re2.googlecode.com/files/${pkgname}-${pkgver}.tgz")
+sha1sums=('0037817d0e0a30ab97fc3ccb8522d44d37658841')
+
+build() {
+  cd "${srcdir}/${pkgname}"
+  make prefix=/usr
+}
+
+check() {
+  cd "${srcdir}/${pkgname}"
+  make static-test
+}
+
+package() {
+  cd "${srcdir}/${pkgname}"
+  make prefix=/usr DESTDIR="${pkgdir}" install
+  rm "${pkgdir}/usr/lib/libre2.a"
+}
