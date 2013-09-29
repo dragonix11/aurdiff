@@ -1,0 +1,39 @@
+# Maintainer: Michael Düll <mail@akurei.me> PGP-Key: C0DEA350
+
+pkgname=python2-potr
+pkgver=1.0.0beta7
+pkgrel=1
+pkgdesc="This is a pure Python2 OTR implementation; it does not bind to libotr."
+arch=(any)
+url="https://github.com/afflux/pure-python-otr"
+license=('LGPL')
+depends=('python2' 'python2-crypto')
+conflicts=('python-potr-git' 'python-potr')
+replaces=('python-potr')
+options=(!emptydirs)
+source=("https://github.com/afflux/pure-python-otr/tarball/${pkgver}")
+
+PYTHON=`which python2`
+
+build() {
+  cd $srcdir/afflux*
+  set_python2
+  $PYTHON ./setup.py build
+}
+
+package() {
+  cd $srcdir/afflux*
+  $PYTHON ./setup.py install --root=$pkgdir/
+}
+
+# To use python2 instead of default python v3.
+set_python2() {
+  for file in $(find . -name '*.py' -print); do
+    sed -i 's_^#!.*/usr/bin/python_#!/usr/bin/python2_' "${file}"
+    sed -i 's_^#!.*/usr/bin/env.*python_#!/usr/bin/env python2_' "${file}"
+  done
+}
+
+
+# vim:set ts=2 sw=2 et:
+sha512sums=('f67cf4862d4d5c206b709005b0edc3d3a224be5ee41e0638b8ca549704b44afb6444742c18399ae98c7dffbd02002bc2248e5c413a4a2a9f4ddcbbdc84ff69cb')

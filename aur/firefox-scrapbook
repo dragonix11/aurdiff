@@ -1,0 +1,27 @@
+# Maintainer: Tianjiao Yin <ytj000+aur@gmail.com>
+# Contributor: Sergej Pupykin <pupykin.s+arch@gmail.com>
+
+_plugin_name=scrapbook
+_plugin_version=1.5.8
+_plugin_id=427
+license=('MPL')
+
+pkgname=firefox-$_plugin_name
+pkgver=$_plugin_version
+pkgdesc="plugin for firefox which can save and organize saved pages"
+pkgrel=1
+arch=('any')
+url="https://addons.mozilla.org/firefox/addon/$_plugin_id"
+depends=("firefox")
+source=("https://addons.mozilla.org/firefox/downloads/file/228587/scrapbook-1.5.8-fx.xpi")
+
+build() {
+  cd $srcdir
+  emid=$(sed -n '/.*<em:id>\(.*\)<\/em:id>.*/{s//\1/p;q}' install.rdf) || return 1
+  local dstdir=$pkgdir/usr/lib/firefox/browser/extensions/${emid}
+  install -d $dstdir
+  #sed -i 's#<em:maxVersion>.*</em:maxVersion>#<em:maxVersion>9.*</em:maxVersion>#' install.rdf
+  rm *.xpi
+  mv * $dstdir
+}
+md5sums=('acad6bc743bde02455d4d58b2ee34281')
