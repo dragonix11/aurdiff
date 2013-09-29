@@ -1,0 +1,18 @@
+# Maintainer: Limao Luo <luolimao+AUR@gmail.com>
+
+pkgname=emacs-prolog-mode
+pkgver=1.25
+pkgrel=1
+pkgdesc="Prolog mode for Emacs"
+arch=(any)
+url=http://turing.ubishops.ca/home/bruda/emacs-prolog/
+license=(GPL3)
+depends=(emacs)
+install=$pkgname.install
+source=(http://bruda.ca/_media/emacs/prolog.el)
+sha256sums=('d01bc2184a07b59d62f58635a81a75b00055a858d322c0f6ebb8b03e7213cd41')
+sha512sums=('fa240a932275a2d841ef1af7d088a3599761a4397f8628feb4b8f79fe02116bc3dd89a9637faf4da545dd7c1de82a047edd6d40a06ac7c3821eccc3e773a7b86')
+
+package() {
+    install -Dm644 prolog.el "$pkgdir"/usr/share/emacs/site-lisp/prolog.el
+}

@@ -1,0 +1,83 @@
+# Maintainer: Limao Luo <luolimao+AUR@gmail.com>
+# Contributor: Techlive Zheng <techlivezheng@gmail.com>
+# Contributor: Matt Parnell/ilikenwf
+
+# Note: Techlive Zheng is also the
+# de-facto head developer of the nightingale project...
+
+# If you're reading this, WE NEED MORE DEVELOPERS!
+# If you know C++, XUL, and are familiar with the mozilla SDK,
+# contact parwok@gmail.com or join our irc on MozNet #nightingale
+# or the forums at getnightingale.com/forum
+
+pkgname=nightingale
+pkgdesc="Community port of Songbird to be more Linux native, up to date, and opensource."
+pkgver=1.12
+_fullname=nightingale-hacking-$pkgname-$pkgver
+_pkgdate=20130101
+pkgrel=3
+arch=(i686 x86_64)
+url=http://getnightingale.com/
+license=(BSD GPL2 MPL)
+depends=(gstreamer0.10-bad-plugins gstreamer0.10-ffmpeg gstreamer0.10-good-plugins
+    gstreamer0.10-ugly-plugins gtk2 libxt nss sqlite3 unzip zip)
+makedepends=(git libidl2 python2 subversion)
+install=$pkgname.install
+source=($pkgname.desktop
+    nscore.h.patch
+    https://downloads.sourceforge.net/project/ngale/$pkgver-Build-Deps/linux-$CARCH-$pkgver-$_pkgdate-release.tar.lzma
+    https://downloads.sourceforge.net/project/ngale/$pkgver-Build-Deps/vendor-$pkgver.zip
+    https://github.com/nightingale-media-player/nightingale-hacking/archive/$pkgname-$pkgver.tar.gz)
+sha256sums=('741a90ed4734605e6e1afc1b818fa25e0fc11fce5de6e4e4934f429b0ec76c5b'
+    '8584543b7f1dec9fb6c8a533771ffd623ce3a7482c8d90d01baeef6228b02371'
+    'd5daf2181c6303ca649dbe667941b169dac529e54120f6bb17f5777a446f9a5f'
+    '65c3d9d7805f26ef19e77ff5a39e85261b6901af0b6e01ec372b9108e2e1f910'
+    'c6eade36ec4ad0c57c282c1ba89cff14b269b5ff0c109212f63ed2b09dc4aca3')
+sha512sums=('5cffc0632a71f5244ad00da7ff2d413c98a0002d550868caa59830923edac1fb0cdff1a6907dc586da214be4a70ceaa84d64ed0b79736442b700c67565186826'
+    '12afbf5fc693588ab216c9bab0177c34966e4c8b4ce3b3ed9a1a1c3af8d325a2af5dc81805eb642d01541ed68fe5a3d88dddf3671155be79c23f9100e9e84175'
+    '87e240bbc2e2b7e44c5a564efdc021624ca8373b11bf99ab9f6f06406717d7beb4672a4a2a3ce2d9ba2ace77c43e318b78c45e55492a4751187d1535e28cf950'
+    '2e95a7f3955c06c95d7573349f243394eb2e20b73f29a69acf023265f9feb7a6dd2db36740df074f40459e3a0bed97a8d4cdfe3c01f8d768b7ed8b755ee8a426'
+    '04feb12b82cf0acbf66ccb427d2ab7bf2ed7ea9d9a5a7348919a839a86e4b468aa00f966bd54bb013b87ad32a056299d9a9b0a75f52ff46bd77ee8c0eeb38710')
+if [[ $CARCH = "x86_64" ]]; then
+    sha256sums[2]='ea41ecb279951a82801b9b816a4a6647ecdbc502202175a27cc9e6582b7b0b24'
+    sha512sums[2]='2d6cdd004b3d1e5d8bb3d8859eea124254fc14b64aab4acc91faf4cf74da6438467efd71a8e9d0782f87adac3b7ef44b55dbb101fe9b4c7bea4002d679e27bbb'
+fi
+
+build() {
+    cd $_fullname/dependencies/
+
+    # just in case we already have the symlinks there...to avoid errors
+    rm -rf vendor &> /dev/null
+    rm -rf linux-$CARCH &> /dev/null
+
+    ln -s "$srcdir"/vendor ./
+    ln -s "$srcdir"/linux-$CARCH ./
+
+    cd ../
+    export GST_PLUGIN_PATH="/usr/lib/gstreamer-0.10"
+    echo 'ac_add_options --with-media-core=gstreamer-system' >> nightingale.config
+    export PYTHON="/usr/bin/python2"
+    export CXXFLAGS="-fpermissive"
+    make clobber
+    make
+}
+
+package() {
+    install -dg users "$pkgdir"/opt/$pkgname/
+
+    cp -a $_fullname/compiled/dist/* "$pkgdir"/opt/$pkgname/
+
+    # copy the extensions first
+    rm -rf xpi-stage
+
+    cp -a $_fullname/compiled/xpi-stage .
+
+    chmod 755 "$pkgdir"/opt/$pkgname/nightingale
+    chmod 755 "$pkgdir"/opt/$pkgname/nightingale-bin
+    chmod 755 "$pkgdir"/opt/$pkgname/xulrunner/xulrunner
+    chmod 755 "$pkgdir"/opt/$pkgname/xulrunner/xulrunner-bin
+    chmod -R a+r "$pkgdir"/opt/$pkgname
+
+    install -Dm644 $_fullname/compiled/dist/chrome/icons/default/default.xpm "$pkgdir"/usr/share/pixmaps/$pkgname.xpm
+    desktop-file-install $pkgname.desktop --dir "$pkgdir"/usr/share/applications/
+}

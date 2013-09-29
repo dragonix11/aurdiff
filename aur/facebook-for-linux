@@ -1,0 +1,42 @@
+# Maintainer: archtux <antonio dot arias99999 at gmail dot com>
+
+pkgname=facebook-for-linux
+pkgver=3.0
+pkgrel=1
+pkgdesc="Desktop application to connect to Facebook, Twitter and Google+"
+arch=('i686' 'x86_64')
+url="https://launchpad.net/facebookwindoof"
+license=('GPL3')
+depends=('qtwebkit')
+source=(https://launchpad.net/facebookwindoof/trunk/facebookforlinux/+download/FB4LINUX-$pkgver-SRC.tar.gz
+        fb4linux-intro
+        FB4Linux.desktop)
+md5sums=('cb0efed622220e99ed7e1c79e5be3325'
+         'edb5ef0fcbdb5155b4852fd4593043b4'
+         'c16afc30d3e02ec6241cedd6681f309b')
+
+prepare() {
+  cd $srcdir
+  qmake-qt4
+  make clean
+}
+
+build() {
+  cd $srcdir
+  make
+}
+
+package(){
+  cd $srcdir
+  
+  # Startup with speech announcement
+  install -Dm755 fb4linux-intro $pkgdir/usr/bin/fb4linux-intro
+  install -Dm644 res/pages/audio-file.ogg $pkgdir/usr/share/sounds/FB4Linux-intro.ogg
+  
+  # Binary
+  install -Dm755 FB4LINUX $pkgdir/usr/bin/FB4Linux
+  
+  # Desktop icon
+  install -Dm644 ../FB4Linux.desktop $pkgdir/usr/share/applications/FB4Linux.desktop
+  install -Dm644 res/logo/facebook-256x256.png $pkgdir/usr/share/pixmaps/FB4Linux.png
+}

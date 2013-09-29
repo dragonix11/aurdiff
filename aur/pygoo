@@ -1,0 +1,18 @@
+# Maintainer: archtux <antonio dot arias99999 at gmail dot com>
+
+pkgname=pygoo
+pkgver=0.1.4
+pkgrel=4
+pkgdesc="PyGoo is an Object-Graph mapper, similar to SQLAlchemy but for graph DBs"
+arch=('any')
+url="http://pypi.python.org/pypi/pygoo"
+license=('GPL3')
+depends=('python2')
+source=(http://pypi.python.org/packages/source/p/pygoo/$pkgname-$pkgver.tar.gz)
+md5sums=('47f62faf6101f755db8d0b93bf061a5f')
+
+package() {
+  cd $srcdir/$pkgname-$pkgver
+
+  python2 setup.py install --root=$pkgdir --optimize=1
+}

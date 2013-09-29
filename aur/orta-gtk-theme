@@ -1,0 +1,78 @@
+# Maintainer: Limao Luo <luolimao+AUR@gmail.com>
+# Contributor: twa022 <twa022@gmail.com>
+# Contributor: Adria Arrufat <swiftscythe@gmail.com>
+
+pkgname=orta-gtk-theme
+pkgver=1.4.1
+pkgrel=10
+pkgdesc="Orta GTK+, Metacity, Xfwm4 and more themes"
+arch=(any)
+url=http://skiesofazel.deviantart.com/art/Orta-184118297
+license=(unknown)
+depends=(gtk-engines gksu)
+conflicts=(orta-gtk3-theme)
+options=(!emptydirs)
+install=orta.install
+source=(http://fc01.deviantart.net/fs70/f/2011/013/9/e/orta_by_skiesofazel-d31mal5.zip
+    orta.desktop
+    orta-install-chrome-themes
+    OrtaSettingsManager.py)
+sha256sums=('f2c0709475ccaf057c0c3252e88b0c57e45735eb557014d2e729fc7aaa85f619'
+    '0c048e234eb737433d8fd68e66ded5946f9c2de5ea5d298e4d7a9e96705612d0'
+    '6dbb211106f2ed5a8c6d20de4e3f3ef88fcdf305a755c2beee7481a643a38cf1'
+    '61c4c87efbf1a867ab85244ebfcdba0c5223d3c08cd5559749c3c9273c815e92')
+sha512sums=('2f5ea88c399acc56b0130118c7cb87be92cb6311979335578abb7fe6dd87845f51f280b1264a097a75dfb46837450e5072045df76b8201af753564521147fcbb'
+    'f8ac44b9072de3d5f08fee53c2bda129ba35b2302fe2d2411d9908656bb3aaea5b53e2361e6d17b5e947bab80a5a7c0f4b17b4a1d41b7343d73b7ed48a5b493f'
+    '5cbcb8b8602b21e49366105d6470d8754664cfbd4a3310400013467556cf304fa955934daa52e133f39661fb982c7264773bed851067e2b734609e3ce3ef9a53'
+    '4ad7bb324fbe4079821bdaa64a79fb8e563e76851f8f3d6abb2fcbecfb43a6cc14bd01c8a5af90dd1fed34555874017c014efcd05b8008b39fca3fee4ddb69ae')
+
+prepare() {
+    rm -rf $pkgname/
+    install -d $pkgname/
+    bsdtar -xf extractme.tar.gz -C $pkgname
+}
+
+package() {
+    cd $pkgname/
+    msg "Installing AWN themes.."
+    install -d "$pkgdir"/usr/share/avant-window-navigator/themes/
+    bsdtar -xf Awn/OrtaAWN-0.2.0.tgz -C "$pkgdir"/usr/share/avant-window-navigator/themes/
+
+    msg "Installing Emerald themes.."
+    pushd Emerald/
+    for i in *.emerald; do
+        _folder="$pkgdir"/usr/share/emerald/themes/${i//emerald}
+        install -d $_folder
+        bsdtar -xf $i -C $_folder
+    done
+    popd
+
+    msg "Installing Chromium theme files..."
+    find Chromium/ -name '*.crx' -execdir install -Dm644 '{}' "$pkgdir"/usr/share/themes/orta-chromium-themes/'{}' \;
+    install -Dm755 "$srcdir"/orta-install-chrome-themes "$pkgdir"/usr/bin/orta-install-chrome-themes
+
+    msg "Installing Settings Manager..."
+    install -Dm755 "$srcdir"/OrtaSettingsManager.py "$pkgdir"/usr/lib/orta/OrtaSettingsManager.py
+    sed -i -e 's:RestoreBackup:WriteError:g' -e 's:Failed":FailedDialog":g' -e 's:panelRadio1Light:PanelRadio1Light:g' orta/OrtaSettingsManager.ui
+    cp -r orta/ "$pkgdir"/usr/lib/orta/
+    file_perms "$pkgdir"/usr/lib/orta/orta/
+    ln -s /usr/lib/orta/OrtaSettingsManager.py "$pkgdir"/usr/bin/orta-settings-manager
+
+    msg "Installing GTK Themes..."
+    install -d "$pkgdir"/usr/share/themes/
+    for i in Orta{,-Old,-Old-Squared,-Squared}.tar.gz; do
+        bsdtar -xf $i -C "$pkgdir"/usr/share/themes/
+        install -Dm644 $i "$pkgdir"/usr/lib/orta/$i
+    done
+    file_perms "$pkgdir"/usr/share/themes/
+
+    desktop-file-install "$srcdir"/orta.desktop --dir "$pkgdir"/usr/share/applications/
+
+    ## Fixing incorrect file ownerships
+    chown -R root:root "$pkgdir"/usr/
+}
+
+file_perms() {
+    find $1 -type d -exec chmod 755 '{}' \;
+    find $1 -type f -exec chmod 644 '{}' \;
+}

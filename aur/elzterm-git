@@ -3,7 +3,7 @@
 pkgname=elzterm-git
 _gitname=touhy
 _pkgprog=elzterm
-pkgver=58.7d9420c
+pkgver=67.dcd9ed2
 pkgrel=1
 pkgdesc="Elzen's terminal emulator"
 arch='any'
@@ -12,9 +12,8 @@ url='http://fadrienn.irlnc.org/touhy/'
 groups='touhy'
 depends=('touhy-git' 'pygtk' 'vte')
 makedepends='git'
-md5sums=('SKIP'
-  'f0f470bea5e509ddc2735f5686a8612f')
-source=('git://fadrienn.irlnc.org/touhy' 'elzterm.desktop')
+md5sums='SKIP'
+source=('git://fadrienn.irlnc.org/touhy')
 
 pkgver() {
   cd ${srcdir}/${_gitname}
@@ -25,6 +24,6 @@ package() {
   cd ${srcdir}/${_gitname}
   mkdir -p ${pkgdir}/usr/bin
   install ${_pkgprog} ${pkgdir}/usr/bin
-  install -Dm 644 ${srcdir}/${_pkgprog}.desktop \
+  install -Dm 644 resources/appinfos/${_pkgprog}.desktop \
     ${pkgdir}/usr/share/applications/${_pkgprog}.desktop
 }

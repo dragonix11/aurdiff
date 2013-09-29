@@ -1,0 +1,33 @@
+# Maintainer: Limao Luo <luolimao+AUR@gmail.com>
+
+_gitname=browse-kill-ring
+pkgname=emacs-$_gitname-git
+pkgver=1.4.20.g6a95c14
+pkgrel=1
+pkgdesc="Interactively insert items from the kill-ring"
+arch=(any)
+url=http://www.emacswiki.org/emacs/BrowseKillRing
+license=(GPL3)
+depends=(emacs)
+makedepends=(git)
+provides=(${pkgname%-*}=$pkgver)
+install=$pkgname.install
+source=($pkgname::git://github.com/$_gitname/$_gitname.git)
+sha256sums=('SKIP')
+sha512sums=('SKIP')
+
+pkgver() {
+    cd $pkgname/
+    git describe | sed 's/^v//;s/-/./g'
+}
+
+build() {
+    cd $pkgname/
+    emacs --batch --eval '(progn
+                           (push "." load-path)
+                           (byte-compile-file "browse-kill-ring.el"))'
+}
+
+package() {
+    find $pkgname/ -name '*.el*' -exec install -Dm644 '{}' "$pkgdir"/usr/share/emacs/site-lisp/'{}' \;
+}

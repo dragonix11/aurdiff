@@ -1,0 +1,41 @@
+# Contributor: Fernando Carmona Varo <ferkiwi @t gmail dot com>
+# Contributor: BenObiWan <benobiwan @t gmail dot com>
+pkgname=solarus-git
+pkgver=5466.fb63ca6
+pkgrel=1
+epoch=
+pkgdesc="An open-source Zelda-like 2D game engine used by the games zsxd and zsdx."
+arch=('i686' 'x86_64')
+url="http://www.solarus-engine.org/"
+license=('GPL3')
+groups=()
+depends=('sdl_image' 'sdl_ttf' 'lua51' 'physfs' 'openal' 'libmodplug' 'libvorbis')
+makedepends=('git' 'cmake' 'zip' )
+checkdepends=()
+optdepends=('zsxd-git' 'zsdx-git')
+provides=('solarus-engine')
+conflicts=('solarus')
+backup=()
+options=()
+install=
+changelog=
+source=("$pkgname"::'git://github.com/christopho/solarus.git#branch=master')
+noextract=()
+md5sums=('SKIP')
+
+pkgver() {
+  cd "${srcdir}/${pkgname}"
+  printf "%s.%s" "$(git rev-list --count HEAD)" "$(git rev-parse --short HEAD)"
+}
+
+build() {
+  cd "${srcdir}/${pkgname}"
+
+  cmake -DLUA_INCLUDE_DIR=/usr/include/lua5.1 -DCMAKE_INSTALL_PREFIX="/usr" -DCMAKE_BUILD_TYPE=Release -DDEFAULT_QUEST=/usr/share/solarus/zsdx .
+  make
+}
+
+package() {
+  cd "${srcdir}/${pkgname}"
+  make DESTDIR="${pkgdir}/" PREFIX="/usr" install
+}

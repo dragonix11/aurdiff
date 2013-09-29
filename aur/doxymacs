@@ -1,0 +1,24 @@
+# Maintainer: Limao Luo <luolimao+AUR@gmail.com>
+
+pkgname=doxymacs
+pkgver=1.8.0
+pkgrel=2
+pkgdesc="Use Doxygen from within {X}Emacs"
+arch=(i686 x86_64)
+url=http://doxymacs.sourceforge.net
+license=(GPL2)
+depends=('libxml2>=2.6.13')
+install=$pkgname.install
+source=(http://downloads.sourceforge.net/sourceforge/$pkgname/$pkgname-$pkgver.tar.gz)
+sha256sums=('a23fd833bc3c21ee5387c62597610941e987f9d4372916f996bf6249cc495afa')
+sha512sums=('7461a8a415aadf331f856e4f122712cbedc2907eff9e452f24e6ee83b96903d9944d2cfdbcfeab8a66144a0be508eae723c29f82a081df9723560b10c444f8ac')
+
+build() {
+    cd $pkgname-$pkgver/
+    ./configure --prefix=/usr
+    make
+}
+
+package() {
+    make -C $pkgname-$pkgver DESTDIR="$pkgdir" install
+}

@@ -1,0 +1,30 @@
+# Maintainer: Christophe-Marie Duquesne <chmd@chmd.fr>
+
+pkgname=netmon-git
+pkgdesc="A lightweight tray network monitor useful with netctl"
+url="http://github.com/chmduquesne/netmon"
+depends=(
+    'python2'
+    'iproute2'
+    'iputils'
+    'wpa_supplicant'
+    'pygtk')
+makedepends=('git')
+provides=('netmon')
+license=('GPL')
+arch=('any')
+pkgver=20132504
+pkgrel=2
+source=('git+http://github.com/chmduquesne/netmon.git')
+md5sums=('SKIP')
+_gitname='netmon'
+
+pkgver() {
+    cd "$_gitname"
+    git describe --always | sed 's|-|.|g'
+}
+
+package() {
+  cd "$_gitname"
+  install -Dm 755 netmon $pkgdir/usr/bin/netmon
+}

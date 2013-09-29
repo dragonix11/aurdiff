@@ -1,0 +1,52 @@
+# Maintainer: Limao Luo <luolimao+AUR@gmail.com>
+
+pkgname=granola-connect
+pkgver=5.0.11
+pkgrel=5
+pkgdesc="MiserWare Granola daemon to upload energy stats"
+arch=(i686 x86_64)
+url=http://grano.la/
+license=(custom)
+depends=('granola>=5' 'openssl>=1')
+backup=(etc/$pkgname.conf)
+options=(!strip)
+install=$pkgname.install
+if [[ $CARCH = "i686" ]]; then
+    _arch=i386
+    sha256sums=('ac4bfba269c993bd2e46144ca02ba71211377129d3604efd9b12d65ff175b8dd')
+    sha512sums=('8b1d9a93f241cd8d498e61f3ec60e75d2529beecd2c3ebefcaca4a62a43dabc135d17786bfdce227c342cb5fa0f521e75855bb360570118847019d354ef3f5bf')
+else
+    _arch=$CARCH
+    sha256sums=('7ce02b6808402bfb3f28739918765787d1dff0aa2221be278de20088afffee8d')
+    sha512sums=('e7521064b27a11f2fe0f574571ab8168d7a2c20cd7586ac4868f49dd8473b402155072af01f5385bed99c3ed537869a6572732e2ba6c54fa76299b25b015102d')
+fi
+source=(https://download.miserware.com/linux/tar/$_arch/$pkgname-$pkgver-$_arch.tar.gz
+    $pkgname.confd
+    $pkgname.rcd.sh
+    $pkgname.service)
+sha256sums+=('a6f3e4183f4e3440e028f17e2c5807f051d992239116d297939f606f753bb634'
+    '83b6d9cd28d7292547382557680c85416460456552179c5c4708a9d4353474d2'
+    '7eebd8038aec9ef2d9b7d994c652f9b629b132acb5f4d15150254cdee97c8f56')
+sha512sums+=('90a96137511ffa0f8a583eabf36379180abbe509e176d8a76b8b31f1fec5e47c8abbf81d46e0a0ceb8526cfd209eabc0e225ee5567265e89ab7efb44c1fc0440'
+    '679243e4442199ef14a1deef6006a39eafb7f476f87cbd7242d45be199862305e7c6ab5078a9492325af4f072b1e696c26440ec0150425ad32878fa3f3473e30'
+    'e7e555b83485cb75abae64a24e22dcb9c7aab6c6f1f7a1e2c3e3a08f0a52e3aeab088a7335b3fd373c716978eb20a1870f89bfd7a6be619e1a87b6e29a50e747')
+
+package() {
+    cd $pkgname-$pkgver-$_arch/
+
+    cp -r opt usr "$pkgdir"
+    install -Dm644 etc/$pkgname.conf "$pkgdir"/etc/$pkgname.conf
+
+    install -Dm644 ../$pkgname.confd "$pkgdir"/etc/conf.d/$pkgname.conf
+    install -Dm755 ../$pkgname.rcd.sh "$pkgdir"/etc/rc.d/$pkgname
+    install -Dm644 ../$pkgname.service "$pkgdir"/usr/lib/systemd/system/$pkgname.service
+
+    rm -rf "$pkgdir"/usr/share/doc
+    install -Dm644 usr/share/doc/$pkgname-$pkgver/LICENSE.txt "$pkgdir"/usr/share/licenses/$pkgname/LICENSE
+
+    # nasty, dirty hack to make openssl work like on Fedora because that is
+    # what granola-connect looks for
+    install -d "$pkgdir"/usr/lib/
+    ln -s libcrypto.so.1.0.0 "$pkgdir"/usr/lib/libcrypto.so.10
+    ln -s libssl.so.1.0.0 "$pkgdir"/usr/lib/libssl.so.10
+}
