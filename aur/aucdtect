@@ -1,0 +1,29 @@
+# Maintainer: Anton Larionov <diffident dot cat at gmail dot com>
+
+pkgname=aucdtect
+pkgver=0.8.2
+pkgrel=5
+pkgdesc="Free console program for determining the authenticity of musical CDs, stored in WAV format"
+arch=('i686' 'x86_64')
+url="http://en.true-audio.com/"
+license=('custom: freeware')
+
+if [ "$CARCH" == "i686" ]; then
+  depends=('lib-compat' 'glibc')
+else
+  depends=('lib-compat' 'lib32-glibc')
+fi
+
+source=("http://www.true-audio.com/ftp/${pkgname}-${pkgver}.tgz")
+md5sums=('a8fa7e9940dbdd190399a3593efce291')
+
+package() {
+  # binary file
+  install -D -m755 "${srcdir}/${pkgname}-${pkgver}/auCDtect" "${pkgdir}/usr/bin/${pkgname}"
+
+  # documentation
+  install -dm755 "${pkgdir}/usr/share/doc/${pkgname}"
+  install -m644 "${srcdir}/${pkgname}-${pkgver}/Readme" "${pkgdir}/usr/share/doc/${pkgname}"
+}
+
+# vim:set ts=2 sw=2 et:

@@ -1,0 +1,28 @@
+# Maintainer: Jon Gjengset <jon@tsp.io>
+
+pkgname=hasmail
+pkgver=20130604
+pkgrel=4
+pkgdesc="System tray application that checks for and notifies about new mail"
+arch=('x86_64' 'i686')
+url="http://github.com/Jonhoo/hasmail"
+license=('BSD')
+depends=('gtk2')
+makedepends=('go' 'git' 'mercurial')
+options=('!strip' '!emptydirs')
+_gourl=github.com/jonhoo/hasmail
+
+build() {
+  cd "$srcdir"
+  GOPATH="$srcdir" go get -u -v -x ${_gourl}/...
+}
+
+package() {
+  source /etc/profile.d/go.sh
+  mkdir -p "${pkgdir}/usr/bin"
+  mkdir -p "${pkgdir}/etc/skel"
+  install -p -m755 ${srcdir}/bin/* "$pkgdir/usr/bin"
+  install -p -m755 ${srcdir}/src/${_gourl}/hasmailrc "$pkgdir/etc/skel/.hasmailrc"
+}
+
+# vim:set ts=2 sw=2 et:
