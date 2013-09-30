@@ -1,0 +1,35 @@
+#Maintainer: Xyne <ac xunilhcra enyx, backwards>
+pkgname=python3-nist
+pkgver=2013
+pkgrel=3
+pkgdesc='Modules for accessing and working with data from the National Institute of Standards and Technology (NIST).'
+arch=(any)
+license=(GPL)
+url="http://xyne.archlinux.ca/projects/python3-nist"
+depends=(python3 python3-scinum python-xdg)
+optdepends=('python3-tabulator: support for command-line query scripts')
+source=(
+  http://xyne.archlinux.ca/projects/python3-nist/src/python3-nist-2013.tar.xz
+  http://xyne.archlinux.ca/projects/python3-nist/src/python3-nist-2013.tar.xz.sig
+)
+sha512sums=(
+  76305f2f90e1027a713c74d85f8faf0fcae2ebaa1a15a46a760cd941da76daa46a16ddb0c8143596074e48328d6626f30bc49826e97e6977b621ae73264202d8
+  06f6ec12ec554518611096f785d826ed3db78ff5c32469f1cc8c5ad6332fc6af03b452117d7862a0c8f4577df5e5bb934f90c01c6ffe3ff284d64e44e9b16849
+)
+md5sums=(
+  f85b2bda78c62b037a6ac6b46273a6fb
+  65f5cc930cc122c79ca53f16ef37a223
+)
+
+package ()
+{
+  cd "$srcdir/$pkgname-$pkgver"
+  python3 setup.py install --prefix=/usr --root="$pkgdir" --optimize=1
+  for script_ in nist-*
+  do
+    install -Dm755 $script_ "$pkgdir"/usr/bin/$script_
+  done
+}
+
+
+# vim: set ts=2 sw=2 et:

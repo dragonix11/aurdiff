@@ -1,0 +1,20 @@
+# $Id$
+# Maintainer: onny <onny@project-insanity.org>
+# Contributor: onny <onny@project-insanity.org>
+
+pkgname=python-pycountry
+pkgver=1.0
+pkgrel=1
+pkgdesc="ISO country, subdivision, language, currency and script definitions and their translations"
+arch=('any')
+url="http://pypi.python.org/pypi/pycountry"
+license=('LGPL')
+depends=('python-lxml' 'python-distribute')
+source=("http://pypi.python.org/packages/source/p/pycountry/pycountry-$pkgver.zip")
+sha512sums=('f2ca782c1ac6050d992dc83428e5bc3f95a797c4d86c1745e050ce386785cfb7d9b5df0a359bf80089f9e0addada510d5f54c71a2dccb278617d7544ba2b329c')
+
+package() {
+    cd "${srcdir}/pycountry-${pkgver}"
+
+      python setup.py install --root="$pkgdir/" --optimize=1
+    }

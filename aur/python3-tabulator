@@ -1,0 +1,30 @@
+#Maintainer: Xyne <ac xunilhcra enyx, backwards>
+pkgname=python3-tabulator
+pkgver=2013
+pkgrel=3
+pkgdesc='A table formatter class with support for a variety of outputs.'
+arch=(any)
+license=(GPL)
+url="http://xyne.archlinux.ca/projects/python3-tabulator"
+depends=(python3)
+source=(
+  http://xyne.archlinux.ca/projects/python3-tabulator/src/python3-tabulator-2013.tar.xz
+  http://xyne.archlinux.ca/projects/python3-tabulator/src/python3-tabulator-2013.tar.xz.sig
+)
+sha512sums=(
+  288157819b7a451bbebf6c8c15decfbf6773014e6815b3ad6f2fd8e38f7c7b26bd50662d7fbf9c6944b66b439a48594c29018ed5fd5bfadcf9ed47633fc26abd
+  5204523a4642eff5f32b1d51de7a0b95d3d6d1d46324d8e1c33a4da87f3c5811052f112d44833079a563f7b7352c9c5cd2f2539c069b4ec42883bc8865fde577
+)
+md5sums=(
+  bdcc14f9769f8bfbb0a91d47394e8a0d
+  557d7e84a685ee15e8e60adbf6e6be2e
+)
+
+package ()
+{
+  cd "$srcdir/$pkgname-$pkgver"
+  python3 setup.py install --prefix=/usr --root="$pkgdir" --optimize=1
+}
+
+
+# vim: set ts=2 sw=2 et:

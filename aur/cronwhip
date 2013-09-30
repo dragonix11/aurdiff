@@ -1,0 +1,31 @@
+#Maintainer: Xyne <ac xunilhcra enyx, backwards>
+pkgname=cronwhip
+pkgver=2013
+pkgrel=3
+pkgdesc='Run missed cronjobs.'
+arch=(any)
+license=(GPL)
+url="http://xyne.archlinux.ca/projects/cronwhip"
+depends=(python3 sysvinit-tools)
+source=(
+  http://xyne.archlinux.ca/projects/cronwhip/src/cronwhip-2013.tar.xz
+  http://xyne.archlinux.ca/projects/cronwhip/src/cronwhip-2013.tar.xz.sig
+)
+sha512sums=(
+  3ab0f0fa4d06e5aa90e1cba09ee76c89b85a64ae065c12a68936a60eb026382dbb28a7ec0ae6f2ff0c20de49231ffafedc4bbeab16bfaedc4bd03825d010f6b0
+  60f13b796ac144f809141beb0cfb3cb49214d4321dd4ed3978cece61de17cd0e4652065794b6d03cf55b223f4347a12cf461680eb497edfc5e983e9a1ef587e7
+)
+md5sums=(
+  21e3667843cf0daa8b8c53f012420ab5
+  e888babe106bacd16eb8b75d3649930d
+)
+
+package ()
+{
+  cd "$srcdir/$pkgname-$pkgver"
+  python3 setup.py install --prefix=/usr --root="$pkgdir" --optimize=1
+  install -Dm755 cronwhip "${pkgdir}/usr/bin/cronwhip"
+  install -Dm644 "$pkgname.service" "$pkgdir/usr/lib/systemd/system/$pkgname.service"
+}
+
+# vim: set ts=2 sw=2 et:

@@ -1,0 +1,35 @@
+# Maintainer: Ner0
+
+pkgname=gpaste-daemon
+pkgver=3.1
+pkgrel=1
+pkgdesc="A clipboard management daemon"
+arch=('i686' 'x86_64')
+url="http://www.imagination-land.org/tags/GPaste.html"
+license=('GPL3')
+depends=('dbus-core' 'gtk3' 'xcb-util-keysyms')
+makedepends=('dbus-core' 'libxml2' 'gtk3' 'intltool' 'vala')
+conflicts=('cinnamon-extension-gpaste' 'gpaste')
+provides=('gpaste')
+options=('!emptydirs' '!libtool')
+install=$pkgname.install
+source=("http://www.imagination-land.org/files/gpaste/gpaste-$pkgver.tar.xz")
+md5sums=('9499c5ba8c6f0ac3e21ff5b505970020')
+
+build () {
+  cd ${pkgname%-*}-${pkgver}
+
+  ./configure --prefix=/usr --sysconfdir=/etc --libexecdir=/usr/lib \
+              --enable-systemd --disable-applet --disable-gnome-shell-extension \
+              --without-controlcenterdir --disable-schemas-compile
+  make
+}
+
+package () {
+  cd ${pkgname%-*}-${pkgver}
+  make DESTDIR="$pkgdir/" install
+
+  install -Dpm644 data/completions/gpaste "$pkgdir/etc/bash_completion.d/gpaste"
+  install -Dpm644 data/completions/_gpaste "$pkgdir/usr/share/zsh/site-functions/_gpaste"
+  rm -rf "$pkgdir/no"
+}

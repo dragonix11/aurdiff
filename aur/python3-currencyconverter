@@ -1,0 +1,31 @@
+#Maintainer: Xyne <ac xunilhcra enyx, backwards>
+pkgname=python3-currencyconverter
+pkgver=2013
+pkgrel=3
+pkgdesc='Module and command-line tool for currency conversion and rate retrieval.'
+arch=(any)
+license=(GPL)
+url="http://xyne.archlinux.ca/projects/python3-currencyconverter"
+depends=(python3 python3-memoizedb python-xdg)
+source=(
+  http://xyne.archlinux.ca/projects/python3-currencyconverter/src/python3-currencyconverter-2013.tar.xz
+  http://xyne.archlinux.ca/projects/python3-currencyconverter/src/python3-currencyconverter-2013.tar.xz.sig
+)
+sha512sums=(
+  086a075ceb71ec59dc3bd4c4193a00224ee909c8c0bddbbf26a30eecf2d571d97ca66da5a93c7379bbe4d61ed94dac4f10aad69dd1186d6506a3da2ba08d1f49
+  fd424d8b150095e8bb4e255bc2ff35c8be756ebb56bdbbe4af9b81f1ad845ac86d09b23a742f3298674f495ee6c228beadeff7762b61c6b2e93c72d62cec24ae
+)
+md5sums=(
+  cf445bcf70e84e91193335c7e263b0f6
+  20cfdedb1f540b683b1742bb8b5d357b
+)
+
+package ()
+{
+  cd "$srcdir/$pkgname-$pkgver"
+  python3 setup.py install --prefix=/usr --root="$pkgdir" --optimize=1
+  install -Dm755 currency_converter "$pkgdir"/usr/bin/currency_converter
+}
+
+
+# vim: set ts=2 sw=2 et:

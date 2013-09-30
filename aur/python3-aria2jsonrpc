@@ -1,0 +1,31 @@
+#Maintainer: Xyne <ac xunilhcra enyx, backwards>
+pkgname=python3-aria2jsonrpc
+pkgver=2013.7.30.1
+pkgrel=2
+pkgdesc='A wrapper class around Aria2'"'"'s JSON RPC interface.'
+arch=(any)
+license=(GPL)
+url="http://xyne.archlinux.ca/projects/python3-aria2jsonrpc"
+depends=(python3)
+source=(
+  http://xyne.archlinux.ca/projects/python3-aria2jsonrpc/src/python3-aria2jsonrpc-2013.7.30.1.tar.xz
+  http://xyne.archlinux.ca/projects/python3-aria2jsonrpc/src/python3-aria2jsonrpc-2013.7.30.1.tar.xz.sig
+)
+sha512sums=(
+  c0b5e744ea04af00ec99809371495dadbdd4d7c85df13d93ef571c8f2fd66419de800ac105558042e47cb488849af87532786de72f6bee30fcc87a1130b7b425
+  37420f549cf97caac2fe651435a6bf204ce516faf174288a8dd16730d362db572abcd9a7206464eebac6257da0f63633200e9b0ad7c4b5e3c6ce628b0a7cd586
+)
+md5sums=(
+  668f32560c5fbe6b84c3846ea00d047d
+  facda554862942df4844a75ab7b6b56b
+)
+
+package ()
+{
+  cd "$srcdir/$pkgname-$pkgver"
+  python3 setup.py install --prefix=/usr --root="$pkgdir" --optimize=1
+  install -Dm755 a2jrg "$pkgdir"/usr/bin/a2jrg
+}
+
+
+# vim: set ts=2 sw=2 et:

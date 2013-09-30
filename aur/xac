@@ -1,0 +1,31 @@
+#Maintainer: Xyne <ac xunilhcra enyx, backwards>
+pkgname=xac
+pkgver=2013.5
+pkgrel=2
+pkgdesc='A markdown- and Pandoc-based content management system (CMS).'
+arch=(any)
+license=(GPL)
+url="http://xyne.archlinux.ca/projects/xac"
+depends=(python3 haskell-pandoc)
+optdepends=('tex2png: plugin support' 'source-highlight: plugin support' 'graphviz: plugin support' 'openbabel: plugin support')
+source=(
+  http://xyne.archlinux.ca/projects/xac/src/xac-2013.5.tar.xz
+  http://xyne.archlinux.ca/projects/xac/src/xac-2013.5.tar.xz.sig
+)
+sha512sums=(
+  5a01941385c370766f53db3946ab5d629294d120a8e64a5f483509dde766b9384a3e67abd93000d729804468c411c702c640f867ec3213c772984100d662280e
+  260e7b66df8756730c35cc7d49fb87398e983622e55c2a049243acd5b1adb868442f1cf3f402e0d5eb35bf38624a37aef27cf2a92efef414d3db748110966bb2
+)
+md5sums=(
+  fff5a544cc60386013e7adee9d3423e3
+  c9c76b0994225158b319719cf8f25572
+)
+
+package ()
+{
+  cd "$srcdir/$pkgname-$pkgver"
+  python3 setup.py install --prefix=/usr --root="$pkgdir" --optimize=1
+}
+
+
+# vim: set ts=2 sw=2 et:
