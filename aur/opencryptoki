@@ -1,0 +1,39 @@
+# Maintainer: Patryk Kowalczyk <patryk at kowalczyk dot ws>
+# Contributor: Gavin Lloyd <gavinhungry@gmail.com>
+# Contributor: VuDu <vudu.curse@gmail.com>
+
+pkgname=opencryptoki
+pkgver=3.0
+pkgrel=4
+pkgdesc="PKCS11 implementation for Linux"
+depends=('openssl' 'trousers' 'bison' 'flex')
+makedepends=('libtool')
+arch=('i686' 'x86_64')
+url="http://sourceforge.net/projects/opencryptoki"
+license=('CPL' 'GPL')
+install=${pkgname}.install
+source=(http://downloads.sourceforge.net/project/${pkgname}/${pkgname}/v${pkgver}/${pkgname}-v${pkgver}.tar.gz
+        ${pkgname}.install
+        pkcsslotd
+	pkcsslotd.service)
+
+build() {
+   cd ${srcdir}/${pkgname}
+  ./bootstrap.sh
+  ./configure --prefix=/usr --sysconfdir=/etc \
+	--with-systemd=/usr/lib/systemd/system/ \
+	--localstatedir=/var \
+	--sbindir=/usr/bin
+  make
+}
+
+package() {
+  cd ${srcdir}/${pkgname}
+  make DESTDIR="$pkgdir/" install -i
+#  install -Dm755 ${srcdir}/pkcsslotd ${pkgdir}/etc/rc.d//pkcsslotd
+}
+
+md5sums=('ec4e2a196c8a336d400d3b17288260af'
+         'df5632557990872ff1fc9b368284b088'
+         '067897017df490451a3df2fb847c808d'
+         'a154198d681fa712056c00f9f1113345')

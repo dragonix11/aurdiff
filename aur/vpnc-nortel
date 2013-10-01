@@ -1,0 +1,48 @@
+pkgname=vpnc-nortel
+pkgver=527
+pkgrel=1
+pkgdesc="client for Cisco VPN concentrators"
+arch=('i686' 'x86_64')
+url="http://svn.unix-ag.uni-kl.de/vpnc/branches/vpnc-nortel/"
+license=('GPL')
+depends=('libgcrypt' 'openssl' 'iproute2')
+makedepends=('subversion')
+provides=('vpnc')
+conflicts=('vpnc', 'vpnc-svn')
+backup=('etc/vpnc/default.conf')
+source=('vpnc.conf')
+md5sums=('a3f4e0cc682f437e310a1c86ae198e45')
+
+_svntrunk=http://svn.unix-ag.uni-kl.de/vpnc/branches/vpnc-nortel/
+_svnmod=vpnc
+
+build() {
+  cd "$srcdir"
+
+  if [[ -d $_svnmod/.svn ]]; then
+    cd $_svnmod && svn up
+  else
+    svn co -r $pkgver $_svntrunk $_svnmod
+  fi
+
+  msg "SVN checkout done or server timeout"
+  msg "Starting make..."
+
+  rm -rf "$srcdir/$_svnmod-build"
+  cp -r "$srcdir/$_svnmod" "$srcdir/$_svnmod-build"
+  cd "$srcdir/$_svnmod-build"
+
+  # Build hybrid support
+  sed -i 's|^#OPENSSL|OPENSSL|g' Makefile
+
+  make
+}
+
+package() {
+  cd "$srcdir/$_svnmod-build"
+
+  make DESTDIR="$pkgdir" PREFIX=/usr SBINDIR=/usr/bin install
+
+  install -m644 "$srcdir/vpnc.conf" "$pkgdir/etc/vpnc/default.conf"
+  rm -f "$pkgdir/etc/vpnc/vpnc.conf"
+}

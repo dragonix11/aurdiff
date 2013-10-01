@@ -1,0 +1,24 @@
+# Contributor: Changaco <changaco ατ changaco δοτ net>
+
+pkgname=slowhttptest
+pkgver=1.5
+pkgrel=1
+pkgdesc="An highly configurable tool that simulates some Application Layer Denial of Service attacks"
+url='http://code.google.com/p/slowhttptest/'
+arch=('any')
+license=('Apache')
+depends=('openssl')
+source=("http://slowhttptest.googlecode.com/files/slowhttptest-$pkgver.tar.gz")
+
+build() {
+	cd $srcdir/$pkgname-$pkgver
+	./configure --prefix=/usr
+	make
+}
+
+package() {
+	cd $srcdir/$pkgname-$pkgver
+	make install DESTDIR=$pkgdir
+}
+
+md5sums=('1437fdac96e99305f765a7f0b075b006')
