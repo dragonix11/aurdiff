@@ -1,0 +1,36 @@
+# Puppetdb: Installer: Arch
+# Maintainer: Niels Abspoel <aboe76 (at) Gmail (dot) com>
+
+# RC style, reserved for later use
+#pkgname=puppetdb-terminus
+#_rc=8
+#_pkgver=3.0.0
+#pkgver=${_pkgver}_rc${_rc}
+
+pkgname=puppetdb-terminus
+pkgver=1.5.0
+pkgrel=1
+pkgdesc="Puppet data warehouse; it manages storage and retrieval of all platform-generated data"
+arch=("any")
+url="http://puppetlabs.com/projects/puppetdb/"
+license=("APACHE")
+depends=("puppetdb")
+options=(emptydirs)
+provides=("puppetdb-terminus")
+conflicts=()
+source=(http://yum.puppetlabs.com/fedora/f19/products/x86_64/puppetdb-terminus-${pkgver//_/-}-${pkgrel}.fc19.noarch.rpm)
+md5sums=('afbf1d0bb58db2b055a0926bce9e5c34')
+
+package () {
+  # _gemdir is defined inside package() because if ruby[gems] is not installed on
+  # the system, makepkg will exit with an error when sourcing the PKGBUILD.
+  local _gemdir="$(ruby -rubygems -e'puts Gem.default_dir')"
+  
+  # find out which puppet:
+  puppetversion=`gem list | grep "^puppet " | sed 's|[^(]*(\([^)]*\)).*|\1|'`
+  
+  # move deb provided dirs to right place
+  mkdir -p ""$pkgdir$_gemdir"/gems/puppet-${puppetversion}/lib"
+  mkdir -p "$pkgdir/usr/"
+  cp -dpr --no-preserve=ownership "$srcdir/usr/share/ruby/vendor_ruby/puppet/" ""$pkgdir$_gemdir"/gems/puppet-${puppetversion}/lib"
+}

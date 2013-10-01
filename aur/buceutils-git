@@ -1,0 +1,47 @@
+# Maintainer: Buce <dmbuce@gmail.com>
+
+pkgname=buceutils-git
+pkgver=0.22.a828af7
+pkgrel=1
+pkgdesc="A collection of simple utilities."
+arch=(any)
+url="https://github.com/DMBuce/buceutils"
+license=('unknown')
+groups=()
+depends=('tar' 'p7zip' 'gzip' 'bzip2' 'unrar' 'xz' 'unzip' 'java-environment' 'rpmextract'
+         'cabextract' 'vim' 'curl' 'openssh' 'diffutils' 'alsa-utils'
+         'xorg-xrandr' 'awk' 'imagemagick' 'python')
+makedepends=('git')
+provides=(buceutils)
+conflicts=(buceutils)
+replaces=()
+backup=()
+options=()
+install=
+source=("$pkgname::git://github.com/DMBuce/buceutils.git")
+md5sums=('SKIP')
+
+pkgver() {
+  cd "$srcdir/$pkgname"
+  echo "0.$(git rev-list --count HEAD).$(git describe --always )"
+}
+
+prepare() {
+  cd "$srcdir/$pkgname"
+
+  sed -i '/^prefix/        s#/usr/local#/usr#
+          /^sysconfdir/    s#=.*#= /etc#
+          /^localstatedir/ s#=.*#= /var#' Makefile
+}
+
+#build() {
+#  cd "$srcdir/$pkgname"
+#  make
+#}
+
+package() {
+  cd "$srcdir/$pkgname"
+  make DESTDIR="$pkgdir" install
+}
+
+# vim:set ts=2 sw=2 et:

@@ -1,0 +1,32 @@
+pkgname=ganglia-web
+pkgver=3.5.10
+pkgrel=1
+pkgdesc="Web front-end to Ganglia (see ganglia package)"
+arch=('any')
+url="http://ganglia.sourceforge.net/"
+license=('BSD')
+depends=('ganglia')
+options=('!libtool' '!strip')
+install='ganglia-web.install'
+source=("http://downloads.sourceforge.net/ganglia/$pkgname-$pkgver.tar.gz"
+        'configuration.patch')
+md5sums=('2945275f8f2b24dd5fb820f2c309ee26'
+         '3adfb099125fcc52bc540583e28b582d')
+
+prepare() {
+  cd "$srcdir/$pkgname-$pkgver"
+
+  for patch in $srcdir/*.patch; do
+    msg2 "Applying patch $(basename $patch)"
+    patch -Np1 < $patch
+  done
+}
+
+package() {
+  cd "$srcdir/$pkgname-$pkgver"
+
+  mkdir -p "$pkgdir/usr/share/webapps"
+  cp -a . "$pkgdir/usr/share/webapps/ganglia"
+
+  install -m 644 -D COPYING "$pkgdir/usr/share/licenses/${pkgname}/COPYING"
+}

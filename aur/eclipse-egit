@@ -1,0 +1,38 @@
+#Maintainer: Alex Ferrando <alferpal@gmail.com>
+# Contributor: Archan Paul <arp@archan.org>
+
+pkgname=eclipse-egit
+pkgver=3.0.3.201309161630
+pkgrel=1
+pkgdesc="An Eclipse Team provider for the Git version control system"
+arch=('i686' 'x86_64')
+url="http://eclipse.org/egit/"
+license=('EPL')
+depends=('eclipse>=3.6' 'eclipse-mylyn>=3.6')
+source=("http://mirror.netcologne.de/eclipse//egit/updates/org.eclipse.egit.repository-${pkgver}-r.zip")
+
+md5sums=('94ede5fd3b1f42999cac206d20953b73')
+
+package() {
+  _dest=${pkgdir}/usr/share/eclipse/dropins/${pkgname/eclipse-}/eclipse
+
+  cd ${srcdir}
+  
+  # Features
+  find features -type f | while read _feature ; do
+    echo ${_feature}
+    if [[ ${_feature} =~ (.*\.jar$) ]] ; then
+      install -dm755 ${_dest}/${_feature%*.jar}
+      cd ${_dest}/${_feature/.jar}
+      jar xf ${srcdir}/${_feature} || return 1
+    else
+      install -Dm644 ${_feature} ${_dest}/${_feature}
+    fi
+  done
+
+  # Plugins
+  find plugins -type f | while read _plugin ; do
+    install -Dm644 ${_plugin} ${_dest}/${_plugin}
+  done
+}
+

@@ -1,0 +1,24 @@
+# Maintainer: Alex Ferrando <alferpal@gmail.com>
+# Contributor: Zhang Li <richselian at gmail.com>
+
+pkgname=vim-syntastic
+pkgver=3.1.0
+_scriptid=20670
+pkgrel=1
+pkgdesc="vim automatic syntax checking"
+arch=('any')
+url="http://www.vim.org/scripts/script.php?script_id=2736"
+license=('MIT')
+depends=("vim")
+groups=('vim-plugins')
+install=vimdoc.install
+source=("${pkgname}.zip::http://www.vim.org/scripts/download_script.php?src_id=${_scriptid}")
+
+md5sums=('3000429a1baa0b83211cea1fc5d95a76')
+
+package() {
+    cd $srcdir
+    mkdir -p ${pkgdir}/usr/share/vim/vimfiles/
+    cp --preserve=mode --recursive autoload doc plugin syntax_checkers ${pkgdir}/usr/share/vim/vimfiles/
+    chmod 755 ${pkgdir}/usr/share/vim/vimfiles/doc/
+}
