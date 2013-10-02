@@ -1,0 +1,27 @@
+# Maintainer: archtux <antonio dot arias99999 at gmail dot com>
+
+pkgname=rsl
+pkgver=1.40
+pkgrel=4
+pkgdesc="Radar Software Library"
+arch=('i686' 'x86_64')
+url="http://pileus.org/aweather/rsl"
+license=('GPL2')
+depends=('libjpeg-turbo')
+source=(http://pileus.org/aweather/files/$pkgname-$pkgver.tar.gz)
+md5sums=('412294b20972a5047f411e3f08b6110d')
+
+prepare() {
+   cd $srcdir/$pkgname-$pkgver
+   ./configure --prefix=/usr
+}
+
+build() {
+   cd $srcdir/$pkgname-$pkgver
+   make
+}
+
+package() {
+   cd $srcdir/$pkgname-$pkgver
+   make DESTDIR=$pkgdir install
+}

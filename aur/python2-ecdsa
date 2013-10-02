@@ -1,7 +1,7 @@
 # Maintainer: Samuel Tardieu <sam@rfc1149.net>
 pkgname=python2-ecdsa
-pkgver=0.8
-pkgrel=3
+pkgver=0.9
+pkgrel=1
 pkgdesc="Implementation of ECDSA in Python"
 arch=('any')
 url="https://github.com/warner/python-ecdsa"
@@ -16,7 +16,7 @@ backup=()
 options=(!emptydirs)
 install=
 source=("http://pypi.python.org/packages/source/e/ecdsa/ecdsa-$pkgver.tar.gz" "LICENSE")
-md5sums=('a3575705afb24d7cbc1694960d3965b1' '66ffc5e30f76cbb5358fe54b645e5a1d')
+md5sums=('2b9c35245ce391d6b7d8f991aad5c630' '66ffc5e30f76cbb5358fe54b645e5a1d')
 
 package() {
   cd "$srcdir/ecdsa-$pkgver"

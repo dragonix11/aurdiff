@@ -1,0 +1,48 @@
+# Maintainer: limser <echo bGltc2VyQHFxLmNvbQo=|base64 -d>
+# Coutributer: ccgo8 <long-1988@foxmail.com>
+
+pkgname=yunio
+pkgver=3.0.2
+pkgrel=1
+pkgdesc="Yunio Cloud Storage and Syncing to http://www.yunio.com"
+arch=('i686' 'x86_64')
+url="https://www.yunio.com/"
+license=("Custom:yunio")
+depends=('fontconfig' 'libsm' 'libxext' 'libxrender')
+provides=('yunio')
+
+if [ "$CARCH" = "i686" ]; then
+    _arch='i386'
+    md5sums[1]='14a00b99e9b758bde51a816d551ddb2b'
+elif [ "$CARCH" = "x86_64" ]; then
+    _arch='amd64'
+    md5sums[1]='aa81374e8b3ac236e6bcc959b77dca94'
+fi
+md5sums[0]='028f3292a27f62be638e7362e3e744e3'
+source=("yunio.png" "https://www.yunio.com/download/${pkgname}-${pkgver}-generic-${_arch}.tgz")
+
+package()
+{
+    cd "${srcdir}"
+    install -dm755 "${pkgdir}"/usr/{bin,share/{icons,applications}}
+    install -Dm755 yunio "${pkgdir}/usr/bin/yunio"
+    install -Dm644 yunio.png "${pkgdir}/usr/share/icons/yunio.png"
+    cat >yunio.desktop <<EOF
+[Desktop Entry]
+Encoding=UTF-8
+Name=Yunio
+Name[zh_CN]=云诺
+Comment=Yunio Cloud Storage for everyone
+Comment[zh_CN]=云诺新一代智能网盘
+Exec=yunio
+Icon=yunio.png
+Terminal=0
+Type=Application
+Categories=Network;Application;
+EOF
+    install -Dm644 yunio.desktop "${pkgdir}/usr/share/applications/yunio.desktop"
+} 
+
+
+
+

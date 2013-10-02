@@ -1,0 +1,56 @@
+# Maintainer: Michael Pusterhofer <pusterhofer at student dot tugraz dot ..>
+# Contributor: polslinux <garrett16 at hotmail dot it>
+# Contributor: jijijaco <jijijaco at gmail dot com>
+# Contributor: Jonathan Vasquez <jvasquez1011 at gmail dot com>
+# Contributor: isak karlsson <isak dot karlsson at gmail dot com>
+
+# If you want nautilus support, make sure you add 'nautilus' to the depends array before compiling.
+
+pkgname=deja-dup-devel
+_pkgname=deja-dup
+pkgver=28.0
+_pkgmain=28
+pkgrel=1
+pkgdesc="A simple backup program. It hides the complexity of doing backups the 'right way' (encrypted, off-site, and regular) and uses duplicity as the backend."
+arch=('i686' 'x86_64')
+url="https://launchpad.net/deja-dup"
+license=('GPL')
+depends=('vala>=0.16' 'duplicity>=0.6.21' 'gnome-common' 'itstool' 'intltool>=0.50.0' 'libpeas' 'libsecret')
+optdepends=('bzr: A decentralized revision control system (bazaar)'
+            'yelp-tools: Tools for creating Yelp documentation'  
+            'xvfb: Virtual framebuffer X server'
+            'nautilus: GNOME file manager'
+            'gnome-control-center: GNOME control center integration'
+            'python2-cloudfiles-git: Rackspace'
+            'python2-ubuntuone-couch: Ubuntu One'
+            'python-boto: Amazon S3'
+            )
+provides=('deja-dup')
+conflicts=('deja-dup' 'deja-dup-new')
+install=deja-dup.install
+source=("http://launchpad.net/${_pkgname}/${_pkgmain}/${pkgver}/+download/${_pkgname}-${pkgver}.tar.xz"
+"py-fix.patch"
+)
+md5sums=('480516869f49813880f2bbb35700c9af'
+         '72057b3fa5fa9429596694aa4accfd0b'
+)
+        
+build() {
+    cd ${srcdir}/deja-dup-${pkgver} 
+    patch libdeja/PythonChecker.vala < ../../py-fix.patch 
+    ./configure --prefix=/usr \
+		--sysconfdir=/etc \
+		--libexecdir=/usr/lib 
+	
+    make
+}
+
+check(){
+    cd ${srcdir}/deja-dup-${pkgver}
+    #make check  #https://bugs.launchpad.net/deja-dup/+bug/939990
+}
+
+package () {
+    cd ${srcdir}/deja-dup-${pkgver}
+    make DESTDIR="${pkgdir}" install
+}
