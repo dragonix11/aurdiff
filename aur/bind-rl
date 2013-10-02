@@ -1,0 +1,86 @@
+# $Id$
+# Maintainer: Allen Zhong <moeallenz@gmail.com>
+# Contributor: Sébastien Luttringer
+# Contributor: Gaetan Bisson <bisson@archlinux.org>
+# Contributor: judd <jvinet@zeroflux.org>
+# Contributor: Mario Vazquez <mario_vazq@hotmail.com>
+
+pkgname=bind-rl
+_pkgname=bind
+pkgver=9.9.4
+pkgrel=1
+pkgdesc='The ISC BIND nameserver with Response Rate Limiting(RRL) enabled.'
+url='http://www.isc.org/software/bind/'
+license=('custom:ISC')
+arch=('i686' 'x86_64')
+options=('!makeflags' '!libtool')
+depends=('openssl' 'krb5' 'libxml2')
+conflicts=('bind')
+provides=('dns-server')
+backup=('etc/logrotate.d/named'
+        'etc/named.conf')
+install=bind.install
+source=("http://ftp.isc.org/isc/bind9/${pkgver}/bind-${pkgver}.tar.gz"{,.asc}
+        'root.hint::http://www.internic.net/zones/named.root'
+        'tmpfiles.d'
+        'named.conf'
+        'named.service'
+        'named.logrotate'
+        'localhost.zone'
+        '127.0.0.zone')
+sha1sums=('d7be390e6c2546f37a7280e1975e1cd134565f62'
+          'SKIP'
+          '029f89c49550c40ec7a95116b6a33f0e5a041094'
+          'c5a2bcd9b0f009ae71f3a03fbdbe012196962a11'
+          'c71a7fc02d4bf0d55e8e29d1e014607ac1d58726'
+          'cb2e81b4cbf9efafb3e81e3752f0154e779cc7ec'
+          '3fe1f0b5c1a51dc1db9ebe5e173d18c52c97169b'
+          '76a0d4cd1b913db177a5a375bebc47e5956866ec'
+          '53be0f1437ebe595240d8dbdd819939582b97fb9')
+
+prepare() {
+	cd "${srcdir}"
+	# remove dig to avoid conflict with dnsutils
+	sed -i 's/dig//' bind-${pkgver}/bin/Makefile.in
+}
+
+build() {
+	cd "${srcdir}/bind-${pkgver}"
+
+	./configure \
+		--prefix=/usr \
+		--sysconfdir=/etc \
+		--sbindir=/usr/bin \
+		--localstatedir=/var \
+		--disable-static \
+		--disable-linux-caps \
+		--with-openssl \
+		--with-libxml2 \
+		--with-libtool \
+		--enable-rrl \
+
+	make
+}
+
+package() {
+	cd "${srcdir}/bind-${pkgver}"
+
+	install -Dm644 COPYRIGHT "${pkgdir}/usr/share/licenses/${_pkgname}/LICENSE"
+
+	make DESTDIR="${pkgdir}" install
+
+	rmdir "${pkgdir}/var/run"
+	install -d "${pkgdir}"/usr/share/doc/bind
+	install doc/arm/*.html "${pkgdir}"/usr/share/doc/bind
+
+	cd "${srcdir}"
+	install -D -m644 tmpfiles.d "${pkgdir}/usr/lib/tmpfiles.d/named.conf"
+	install -D -m644 named.service "${pkgdir}"/usr/lib/systemd/system/named.service
+	install -D -m600 named.logrotate "${pkgdir}"/etc/logrotate.d/named
+	install -D -m640 -o 0 -g 40 named.conf "${pkgdir}"/etc/named.conf
+
+	install -d -m770 -o 0 -g 40 "${pkgdir}"/var/named
+	install    -m640 -o 0 -g 40 root.hint "${pkgdir}"/var/named
+	install    -m640 -o 0 -g 40 127.0.0.zone "${pkgdir}"/var/named
+	install    -m640 -o 0 -g 40 localhost.zone "${pkgdir}"/var/named
+}
