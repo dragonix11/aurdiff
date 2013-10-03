@@ -1,0 +1,42 @@
+pkgname=mingw-w64-gmp
+pkgver=5.1.3
+pkgrel=1
+pkgdesc="A free library for arbitrary precision arithmetic (mingw-w64)"
+arch=(any)
+url="http://gmplib.org"
+license=("LGPL3")
+makedepends=(mingw-w64-gcc)
+depends=(mingw-w64-crt)
+conflicts=(mingw-w64-gmp-static)
+provides=(mingw-w64-gmp-static)
+options=(!libtool !strip !buildflags)
+source=("ftp://ftp.gmplib.org/pub/gmp-${pkgver}/gmp-${pkgver}.tar.xz")
+md5sums=('e5fe367801ff067b923d1e6a126448aa')
+
+_architectures="i686-w64-mingw32 x86_64-w64-mingw32"
+
+build() {
+  unset LDFLAGS
+  for _arch in ${_architectures}; do
+    mkdir -p "${srcdir}/${pkgname}-${pkgver}-build-${_arch}"
+    cd "${srcdir}/${pkgname}-${pkgver}-build-${_arch}"
+    ${srcdir}/${pkgname#mingw-w64-}-${pkgver}/configure \
+      --prefix=/usr/${_arch} \
+      --build=$CHOST \
+      --host=${_arch} \
+      --enable-cxx \
+      --enable-shared \
+      --disable-static
+    make
+  done
+}
+
+package() {
+  for _arch in ${_architectures}; do
+    cd "${srcdir}/${pkgname}-${pkgver}-build-${_arch}"
+    make DESTDIR="$pkgdir" install
+    find "$pkgdir/usr/${_arch}" -name '*.dll' | xargs -rtl1 ${_arch}-strip --strip-unneeded
+    find "$pkgdir/usr/${_arch}" -name '*.a' -o -name '*.dll' | xargs -rtl1 ${_arch}-strip -g
+    rm -r "$pkgdir/usr/${_arch}/share"
+  done
+}
