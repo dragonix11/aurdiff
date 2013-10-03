@@ -1,0 +1,19 @@
+# Maintainer: Trizen <echo dHJpemVueEBnbWFpbC5jb20K | base64 -d>
+
+pkgname=obbrowser
+pkgver=0.03
+pkgrel=1
+
+pkgdesc="Recursively browse the filesystem through openbox3 pipe menus. (with icons)"
+url="http://trizenx.blogspot.ro/2012/12/obbrowser.html"
+
+arch=('any')
+license=('GPLv3')
+
+depends=('perl>=5.14.0' 'perl-data-dump' 'perl-linux-desktopfiles>=0.08' 'perl-file-mimeinfo')
+source="http://trizen.googlecode.com/files/$pkgname-$pkgver.tar.gz"
+md5sums=('d5ed8e841126f713cda1b851dace4e06')
+
+package() {
+  install -Dm 755 "$pkgname" "$pkgdir/usr/bin/$pkgname"
+}

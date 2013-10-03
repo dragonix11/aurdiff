@@ -1,0 +1,27 @@
+pkgname=mosml
+pkgver=2.10
+pkgrel=1
+pkgdesc='Moscow ML is a light-weight implementation of Standard ML (SML)'
+url="http://www.itu.dk/~sestoft/mosml.html"
+license=('GPL')
+arch=('i686' 'x86_64')
+
+source=('https://github.com/kfl/mosml/tarball/Rel-2.10')
+md5sums=('2500b47df3c043ecd38eb6c1ac91abbf')
+
+build() {
+    cd kfl-mosml-a889156/src
+    make BINDIR=/usr/bin LIBDIR=/usr/lib/mosml world
+}
+
+package() {
+    cd kfl-mosml-a889156/src
+    make PREFIX=/usr DESTDIR="$pkgdir" install
+
+    # This isn't done by the Makefile
+    cd ../man
+    for manual in *.1; do
+        install -Dm644 "$manual" "$pkgdir/usr/share/man/man1/$manual"
+    done
+}
+

@@ -1,0 +1,47 @@
+# Maintainer: archtux <antonio dot arias99999 at gmail dot com>
+
+pkgname=cgmadness
+pkgver=1.3
+pkgrel=3
+pkgdesc="CG Madness is based on the classic game Marble Madness."
+arch=('i686' 'x86_64')
+url="http://www.fluxparticle.com/cgmadness/"
+license=('GPL2')
+depends=('freeglut' 'glew')
+source=(http://www.fluxparticle.com/$pkgname/downloads/$pkgname-$pkgver-src.tar.bz2
+        cgm
+        cgmadness.desktop
+        cgmadness.png)
+md5sums=('6846b860921e6c8db34b0ee5349a1690'
+         '879dff725db5ba6330acbe5b88d1379c'
+         '26f91ad30acf4cd14fbfc9d41e365e42'
+         '14dff36bd1533d3ed48e385f93341df1')
+
+prepare() {
+   cd $srcdir/$pkgname
+
+   # Fix Makefile
+   sed -i 's_-Werror__' Makefile
+   sed -i 's_lGLEW_lGLEW -lGL -lGLU_' Makefile
+}
+
+build() {
+   cd $srcdir/$pkgname
+   make
+}
+
+package() {
+   cd $srcdir/$pkgname
+   
+   # Data
+   install -d $pkgdir/usr/share/cgmadness
+   cp -R {data,levels,cgmadness,convert-cgm,dedicated_server} $pkgdir/usr/share/cgmadness
+
+   # Desktop icon
+   cd ..
+   install -Dm644 $pkgname.png $pkgdir/usr/share/pixmaps/$pkgname.png
+   install -Dm644 $pkgname.desktop $pkgdir/usr/share/applications/$pkgname.desktop
+
+   # Start file
+   install -Dm755 cgm $pkgdir/usr/bin/$pkgname
+}

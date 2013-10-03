@@ -1,0 +1,33 @@
+# Maintainer: archtux <antonio dot arias99999 at gmail dot com>
+
+pkgname=chessx
+pkgver=0.9.6
+pkgrel=2
+pkgdesc="ChessX is an Open Source chess database."
+arch=('i686' 'x86_64')
+url="http://chessx.sf.net"
+license=('GPL2')
+depends=('qt4')
+source=(http://prdownloads.sourceforge.net/$pkgname/$pkgname-0-9-6.tar.gz)
+md5sums=('306d6d01d89a34f12c6d0e0d91885b55')
+
+prepare() {
+   cd $srcdir/$pkgname
+   qmake-qt4
+}
+
+build() {
+   cd $srcdir/$pkgname
+   make
+}
+
+package() {
+   cd $srcdir/$pkgname
+
+   # Binary
+   install -Dm755 release/chessx $pkgdir/usr/bin/chessx
+   
+   # Desktop icon
+   install -Dm644 data/images/chessx.png $pkgdir/usr/share/pixmaps/chessx.png
+   install -Dm644 unix/chessx.desktop $pkgdir/usr/share/applications/chessx.desktop
+}

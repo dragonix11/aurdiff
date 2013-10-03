@@ -1,0 +1,33 @@
+# Maintainer: Kwpolska <kwpolska@kwpolska.tk>
+pkgname=python-nikola-git
+_pyname=nikola
+_gitname=nikola
+pkgver=6.0.4
+pkgrel=1
+pkgdesc='A modular, fast, simple, static website generator.  (git version)'
+arch=('any')
+url='http://getnikola.com/'
+license=('custom')
+depends=('python' 'python-doit' 'python-pygments' 'python-docutils'
+         'python-pillow' 'python-mako' 'python-unidecode' 'python-lxml'
+         'python-yapsy' 'python-mock>=1.0.0' 'python-requests' 'python-markdown'
+         'python-jinja' 'python-pyrss2gen' 'python-pytz' 'python-logbook')
+makedepends=('git')
+options=(!emptydirs)
+provides=('nikola')
+conflicts=('nikola')
+source=("git://github.com/getnikola/${_gitname}.git")
+md5sums=('SKIP')
+
+package() {
+  cd "${srcdir}/${_gitname}"
+  python3 setup.py install --root="${pkgdir}/" --optimize=1
+  install -D -m644 LICENSE.txt "${pkgdir}/usr/share/licenses/${pkgname}/LICENSE"
+}
+
+pkgver() {
+  cd "${srcdir}/${_gitname}"
+  git describe --always | sed 's/-/_/g;s/v//'
+}
+
+# vim:set ts=2 sw=2 et:

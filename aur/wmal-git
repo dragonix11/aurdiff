@@ -1,0 +1,45 @@
+# Maintainer: Joost Bremmer < toost dot b at gmail dot com>
+
+pkgname=wmal-git
+pkgver=20131003
+pkgrel=1
+pkgdesc="A lightweight and simple updater for MyAnimeList, Melative or VNDB."
+arch=('x86_64' 'i686')
+url="http://z411.github.io/wmal-python/"
+license=('GPLv3')
+depends=('python2'
+         'lsof'
+	 'python2-pillow'
+        )
+makedepends=('python2'
+             'desktop-file-utils'
+             'git'
+            )
+optdepends=('pygtk'
+            'python2-urwid'
+           )
+source=('git+https://github.com/z411/wmal-python.git'
+        'wmal-gtk.desktop'
+        'wmal-curses.desktop'
+       )
+sha256sums=('SKIP'
+            '4f875379349658c1f0156d1cb8063617e385c9fe394782412274a602fdd88a03'
+	    '15dde975d7ad336cf23bd56e5b8653873273abfe3322fb0a2f656d797cf4500d'
+	   )
+install=wmal-git.install
+
+
+_gitname=wmal-python
+
+pkgver() {
+  cd "${srcdir}/${_gitname}"
+  git log -1 --format="%cd" --date=short | sed 's|-||g'
+}
+
+
+package() {
+   cd $srcdir/${_gitname}
+   python2 setup.py install --prefix=/usr --root=${pkgdir} --optimize=1
+   install -Dm644 ${srcdir}/wmal-gtk.desktop ${pkgdir}/usr/share/applications/wmal-gtk.desktop
+   install -Dm644 ${srcdir}/wmal-curses.desktop ${pkgdir}/usr/share/applications/wmal-curses.desktop
+}

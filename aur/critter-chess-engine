@@ -1,0 +1,27 @@
+# Maintainer: archtux <antonio dot arias99999 at gmail dot com>
+
+pkgname=critter-chess-engine
+pkgver=1.6a
+_pkgver=16a
+pkgrel=2
+pkgdesc="Very strong multiprocessor UCI chess engine"
+arch=('i686' 'x86_64')
+url="http://www.vlasak.biz/critter/"
+license=('free')
+source=("http://www.vlasak.biz/critter/critter_${pkgver}_linux.zip")
+md5sums=('3ecd00243add965ee2843dd55c4db0b4')
+
+
+package() {
+   cd $srcdir
+
+   # Detection of processor
+   if [ ${CARCH} = 'i686' ]; then
+   install -Dm755 critter-${_pkgver}-32bit $pkgdir/usr/share/critter/critter-${_pkgver}-32bit
+     elif [ ${CARCH} = 'x86_64' ]; then 
+   install -Dm755 critter-${_pkgver}-64bit $pkgdir/usr/share/critter/critter-${_pkgver}-64bit
+   fi
+
+   # Opening Book
+   install -Dm644 book.cbk $pkgdir/usr/share/critter/book.cbk
+}
