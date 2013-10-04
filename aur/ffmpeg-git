@@ -1,0 +1,52 @@
+# Maintainer: DrZaius <lou[at]fakeoutdoorsman.com>
+
+pkgname=ffmpeg-git
+_gitname="ffmpeg"
+pkgver=55189.bdccfc3
+pkgrel=1
+pkgdesc="Universal multimedia toolkit"
+arch=('i686' 'x86_64')
+license=('GPL')
+url="http://ffmpeg.org/"
+license=('GPL')
+depends=('alsa-lib' 'bzip2' 'freetype2' 'lame' 'libass' 'libfdk-aac-git' 'libtheora' 'libva' 'libvdpau' 'libvorbis' 'libvpx-git' 'opus' 'sdl' 'x264-git' 'zlib')
+makedepends=('git' 'yasm')
+conflicts=('ffmpeg')
+provides=("ffmpeg=$pkgver" "qt-faststart")
+source=('git://source.ffmpeg.org/ffmpeg.git')
+sha1sums=('SKIP')
+
+pkgver() {
+  cd $_gitname
+  echo $(git rev-list --count HEAD).$(git rev-parse --short HEAD)
+}
+
+build() {
+  cd $_gitname
+
+  ./configure \
+    --prefix=/usr \
+    --extra-libs=-ldl \
+    --enable-gpl \
+    --enable-libass \
+    --enable-libfdk-aac \
+    --enable-libfreetype \
+    --enable-libmp3lame \
+    --enable-libopus \
+    --enable-libtheora \
+    --enable-libvorbis \
+    --enable-libvpx \
+    --enable-libx264 \
+    --enable-nonfree \
+    --enable-x11grab
+
+  make
+  make tools/qt-faststart
+  make doc
+}
+
+package() {
+  cd $_gitname
+  make DESTDIR="$pkgdir" install install-man
+  install -D -m755 tools/qt-faststart "$pkgdir/usr/bin/qt-faststart"
+}

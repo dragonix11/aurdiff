@@ -1,0 +1,61 @@
+# Maintainer: Tony Sokhon <tonyskn@gmail.com>
+pkgname=xmonad-gnome3
+pkgver=20131004
+pkgrel=1
+pkgdesc="Minimal XMonad/GNOME3 hybrid desktop configuration"
+arch=('i686' 'x86_64')
+url="https://github.com/tonyskn/arch-aur-packages/tree/master/xmonad-gnome3"
+license=('MIT')
+
+depends=(xmonad
+         xmonad-contrib
+         xmobar
+         gnome-session
+         gnome-keyring
+         gnome-control-center
+         gnome-settings-daemon
+         gnome-settings-daemon-compat
+         notification-daemon
+         gnome-themes-standard
+         gnome-screensaver
+         xfce4-terminal
+         nautilus
+         file-roller
+         unclutter
+         xorg-xsetroot)
+
+optdepends=('gdm: The GNOME display manager',
+            'slim: Minimal X11 login manager')
+
+source=(xmonad-gnome-session
+        xmonad.desktop
+        xmonad-gnome.session
+        xmonad-gnome-session.desktop
+        xmonad-sample.hs
+        xinitrc.sample)
+md5sums=('b5340cef473dc7f83c793ac604471cd6'
+         'ce501be68f33c494ddf6a2e96d325734'
+         '452ad4d4a15edcf42cab521ff1926af8'
+         'bfedc75113bce0df82cb8fd1774f0a4c'
+         '7fae69b52624cd0d60a05cff428a1222'
+         'c926df24e27716feee89d2a934d25a17')
+
+package() {
+  cd ${srcdir}
+
+  # Main executable: launches gnome-session with XMonad as WM
+  install -D -m755 xmonad-gnome-session "${pkgdir}/usr/bin/xmonad-gnome-session"
+
+  # Sample scripts
+  install -d "${pkgdir}/usr/share/xmonad-gnome3/"
+  install -m644 -t "${pkgdir}/usr/share/xmonad-gnome3/" xmonad-sample.hs xinitrc.sample
+  echo '>> To get started, copy /usr/share/xmonad-gnome3/{xinitrc.sample,xmonad-sample.hs} into ~/{.xinitrc,.xmonad/xmonad.hs} then run `startx`'
+
+  # Session definition file
+  # This is how a login manager (e.g GDM) is able to find GNOME/XMonad
+  install -D -m644 xmonad-gnome-session.desktop "${pkgdir}/usr/share/xsessions/xmonad-gnome-session.desktop"
+
+  # xmonad-gnome GNOME session files
+  install -D -m644 xmonad.desktop "${pkgdir}/usr/share/applications/xmonad.desktop"
+  install -D -m644 xmonad-gnome.session "${pkgdir}/usr/share/gnome-session/sessions/xmonad-gnome.session"
+}
