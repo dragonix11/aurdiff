@@ -1,0 +1,34 @@
+# Maintainer: speps <speps at aur dot archlinux dot org>
+
+pkgname=drumkv1
+pkgver=0.3.5
+pkgrel=1
+pkgdesc="An old-school drum-kit sampler"
+arch=(i686 x86_64)
+url="http://$pkgname.sourceforge.net/$pkgname-index.html"
+license=('GPL')
+groups=('lv2-plugins')
+depends=('jack' 'liblo' 'lv2' 'qt4' 'shared-mime-info')
+install="$pkgname.install"
+source=("http://download.sourceforge.net/$pkgname/$pkgname-$pkgver.tar.gz")
+md5sums=('89217a2a9fdef6bd0db25c6404c682d6')
+
+prepare() {
+  cd $pkgname-$pkgver
+
+  # x86_64 lib path fix
+  sed -i "s/lib64/lib/" src/src_lv2{,ui}.pro
+}
+
+build() {
+  cd $pkgname-$pkgver
+  ./configure --prefix=/usr
+  make
+}
+
+package() {
+  cd $pkgname-$pkgver
+  make DESTDIR="$pkgdir/" install
+}
+
+# vim:set ts=2 sw=2 et:

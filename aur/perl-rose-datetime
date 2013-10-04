@@ -1,0 +1,48 @@
+# Maintainer: Moritz Bunkus <moritz@bunkus.org>
+
+pkgname=perl-rose-datetime
+pkgver=0.539
+pkgrel=1
+pkgdesc="DateTime helper functions and objects"
+arch=(any)
+license=('PerlArtistic')
+url="http://search.cpan.org/dist/Rose-DateTime/"
+depends=('perl-datetime' 'perl-rose-object>=0.82')
+makedepends=(perl-test-pod)
+options=('!emptydirs')
+source=(http://search.cpan.org/CPAN/authors/id/J/JS/JSIRACUSA/Rose-DateTime-${pkgver}.tar.gz)
+md5sums=('0cb5d39b141f15829c0d6ceb529faa27')
+sha512sums=('aafa24d8ded7b1c9cdf87c23ef9b8f08be67ed8d1ed33ac748d115b9c5d3e13676aa39ef19b28bb7c0779c6d7003a018f29af39dd3f5c66ba60e63d13b7b0aec')
+
+prepare_environment() {
+  export PERL_MM_USE_DEFAULT=1 PERL5LIB=""                 \
+    PERL_AUTOINSTALL=--skipdeps                            \
+    PERL_MM_OPT="INSTALLDIRS=vendor DESTDIR='$pkgdir'"     \
+    PERL_MB_OPT="--installdirs vendor --destdir '$pkgdir'" \
+    MODULEBUILDRC=/dev/null
+
+  cd "${srcdir}/Rose-DateTime-${pkgver}"
+}
+
+build() {
+  prepare_environment
+  /usr/bin/perl Makefile.PL
+  make
+}
+
+check() {
+  prepare_environment
+  make test
+}
+
+package() {
+  prepare_environment
+  make install
+  find "$pkgdir" -name .packlist -o -name perllocal.pod -delete
+}
+
+# Local Variables:
+# mode: shell-script
+# sh-basic-offset: 2
+# End:
+# vim:set ts=2 sw=2 et:
