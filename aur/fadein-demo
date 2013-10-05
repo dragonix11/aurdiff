@@ -1,0 +1,28 @@
+# Maintainer: Ebenezer Edelman <contact@EbenezerEdelman.tk>
+
+pkgname=fadein-demo
+pkgver=1.2.448
+pkgrel=1
+pkgdesc="Professional screenwriting software."
+arch=(i686 x86_64)
+url="http://www.fadeinpro.com/"
+license=(unknown)
+depends=(atk glibc cairo fontconfig freetype2 glib gtk2 pango libstdc++5 libx11 libpng12)
+
+if test "$CARCH" = i686; then
+  _arch="i386"
+  md5sums=("8c1553bc4ec481e7b87713cb48ae85c2")
+elif test "$CARCH" = x86_64; then
+  _arch="amd64"
+  md5sums=("fad9d29c099630f7745b695d352fd1bf")
+fi
+
+_srcfile="fadein-linux-${_arch}-demo.tar.gz"
+source=("http://www.fadeinpro.com/download/demo/${_srcfile}")
+
+package() {
+  cp -r "$srcdir"/* "$pkgdir"
+  rm "$pkgdir/${_srcfile}"
+}
+
+# vim:set ts=2 sw=2 et:

@@ -1,0 +1,38 @@
+# Maintainer: prettyvanilla <prettyvanilla@posteo.at>
+# Contributor: Dany Martineau <dany.luc.martineau@gmail.com>
+
+pkgname=klook-git
+pkgver=v2.0_10_5_gf01e033
+pkgrel=1
+pkgdesc='A quick file content preview application that supports integration with Dolphin'
+arch=('i686' 'x86_64')
+url="https://abf.rosalinux.ru/uxteam/KLook"
+license=('GPL')
+depends=('kdebase-runtime')
+makedepends=('git' 'cmake' 'automoc4')
+source=("git+https://abf.rosalinux.ru/uxteam/KLook.git")
+md5sums=('SKIP')
+install=$pkgname.install
+
+_gitname="KLook"
+
+pkgver() {
+  cd "$srcdir/$_gitname"
+  echo $(git describe --tags | sed 's/-/_/g')
+}
+
+build() {
+  cd "$srcdir/$_gitname"
+
+  cmake -DCMAKE_BUILD_TYPE=Release \
+        -DCMAKE_INSTALL_PREFIX=/usr
+
+  make
+}
+
+package() {
+  cd "$srcdir/$_gitname"
+  make DESTDIR="$pkgdir" install
+}
+
+# vim:set ts=2 sw=2 et:
