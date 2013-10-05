@@ -1,0 +1,96 @@
+# Maintainer: onefire <onefire.myself@gmail.com>
+pkgname=nvidia-utils-custom
+pkgver=331.13
+pkgrel=1
+pkgdesc="NVIDIA drivers utilities and libraries. Customized to be compatible with libgl. Use this coupled with my other "custom" packages to have CUDA without bumblebee on laptops."
+depends=('xorg-server' 'libxvmc')
+optdepends=('gtk2: nvidia-settings' 'pkg-config: nvidia-xconfig' 'opencl-nvidia-custom')
+arch=('i686' 'x86_64')
+url="http://www.nvidia.com/"
+license=('custom')
+options=('!strip')
+provides=("nvidia-utils=$pkgver")
+conflicts=('nvidia-utils' 'nvidia-utils-bumblebee')
+groups=('nvidia-cuda' 'custom')
+
+if [ "$CARCH" = "i686" ]; then
+	_arch='x86'
+	_pkg="NVIDIA-Linux-${_arch}-${pkgver}"
+	sha512sums=("97603a193e63dd747a38751e79dfb97425af2c9332d2a40bd0083ad82b35e003e602ba029d5c7b0683bbc4644af19e133214c72e72af0f23bf55976e61637151")
+
+elif [ "$CARCH" = "x86_64" ]; then
+	_arch='x86_64'
+	_pkg="NVIDIA-Linux-${_arch}-${pkgver}-no-compat32"
+	sha512sums=("76456cc7a08aede5580814d81784e2f59d5aa9c0f32a71a86b8d4e1bc3b0d1d78a8ab29727854c3d592ffcf52c212266fdbfab2d48494115e265546a2a11afca")
+fi
+
+source=("ftp://download.nvidia.com/XFree86/Linux-${_arch}/${pkgver}/${_pkg}.run")
+
+create_links() {
+  # create soname links
+  while read -d '' _lib; do
+    _soname="$(dirname "${_lib}")/$(readelf -d "${_lib}" | sed -nr 's/.*Library soname: \[(.*)\].*/\1/p')"
+    [[ -e "${_soname}" ]] || ln -s "$(basename "${_lib}")" "${_soname}"
+    [[ -e "${_soname/.[0-9]*/}" ]] || ln -s "$(basename "${_soname}")" "${_soname/.[0-9]*/}"
+  done < <(find "${pkgdir}" -type f -name '*.so*' -print0)
+}
+
+build() {
+  cd "${srcdir}"
+  sh "$_pkg.run" --extract-only
+}
+
+package() {
+  cd "${srcdir}/$_pkg"
+  # X driver
+  install -D -m755 nvidia_drv.so "${pkgdir}/usr/lib/xorg/modules/drivers/nvidia_drv.so"
+
+  # OpenGL core library
+  install -D -m755 "libnvidia-glcore.so.${pkgver}" "${pkgdir}/usr/lib/libnvidia-glcore.so.${pkgver}"
+  
+  # XvMC
+  #install -D -m644 libXvMCNVIDIA.a "${pkgdir}/usr/lib/libXvMCNVIDIA.a"
+  #install -D -m755 "libXvMCNVIDIA.so.${pkgver}" "${pkgdir}/usr/lib/libXvMCNVIDIA.so.${pkgver}"
+ 
+  # VDPAU
+  install -D -m755 "libvdpau_nvidia.so.${pkgver}" "${pkgdir}/usr/lib/vdpau/libvdpau_nvidia.so.${pkgver}"
+
+  # nvidia-tls library
+  install -D -m755 "tls/libnvidia-tls.so.${pkgver}" "${pkgdir}/usr/lib/libnvidia-tls.so.${pkgver}"
+  install -D -m755 "libnvidia-cfg.so.${pkgver}" "${pkgdir}/usr/lib/libnvidia-cfg.so.${pkgver}"
+
+  install -D -m755 "libnvidia-ml.so.${pkgver}" "${pkgdir}/usr/lib/libnvidia-ml.so.${pkgver}"
+
+  # CUDA
+  install -D -m755 "libcuda.so.${pkgver}" "${pkgdir}/usr/lib/libcuda.so.${pkgver}"
+  install -D -m755 "libnvcuvid.so.${pkgver}" "${pkgdir}/usr/lib/libnvcuvid.so.${pkgver}"
+  
+  # nvidia-xconfig
+  install -D -m755 nvidia-xconfig "${pkgdir}/usr/bin/nvidia-xconfig"
+  install -D -m644 nvidia-xconfig.1.gz "${pkgdir}/usr/share/man/man1/nvidia-xconfig.1.gz"
+ 
+  # nvidia-settings
+  install -D -m755 nvidia-settings "${pkgdir}/usr/bin/nvidia-settings"
+  install -D -m644 nvidia-settings.1.gz "${pkgdir}/usr/share/man/man1/nvidia-settings.1.gz"
+  install -D -m644 nvidia-settings.desktop "${pkgdir}/usr/share/applications/nvidia-settings.desktop"
+  install -D -m644 nvidia-settings.png "${pkgdir}/usr/share/pixmaps/nvidia-settings.png"
+  sed -e 's:__UTILS_PATH__:/usr/bin:' -e 's:__PIXMAP_PATH__:/usr/share/pixmaps:' -i "${pkgdir}/usr/share/applications/nvidia-settings.desktop"
+  
+  # nvidia-bug-report
+  install -D -m755 nvidia-bug-report.sh "${pkgdir}/usr/bin/nvidia-bug-report.sh"
+
+  # nvidia-smi
+  install -D -m755 nvidia-smi "${pkgdir}/usr/bin/nvidia-smi"
+  install -D -m644 nvidia-smi.1.gz "${pkgdir}/usr/share/man/man1/nvidia-smi.1.gz"
+
+  # license
+  install -D -m644 LICENSE "${pkgdir}/usr/share/licenses/nvidia/LICENSE"
+  ln -s nvidia "${pkgdir}/usr/share/licenses/nvidia-utils"
+   
+  # docs
+  install -D -m644 README.txt "${pkgdir}/usr/share/doc/nvidia/README"
+  install -D -m644 NVIDIA_Changelog "${pkgdir}/usr/share/doc/nvidia/NVIDIA_Changelog"
+  ln -s nvidia "${pkgdir}/usr/share/doc/nvidia-utils"
+
+  create_links
+}

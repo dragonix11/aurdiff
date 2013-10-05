@@ -1,0 +1,23 @@
+# Maintainer: Skripko Alexander <skripa1991@gmail.com>
+pkgname=mysql-connector-python
+pkgver=1.0.12
+pkgrel=1
+pkgdesc="MySQL Connector/Python is a standardized database driver for Python platforms and development."
+arch=('i686' 'x86_64')
+url="http://dev.mysql.com/doc/connector-python/en/index.html"
+license=('GPL')
+groups=()
+depends=('python')
+makedepends=('python')
+provides=()
+conflicts=()
+replaces=()
+backup=()
+install=
+source=(http://cdn.mysql.com/Downloads/Connector-Python/$pkgname-$pkgver.tar.gz)
+md5sums=('caac07dc8fa08d1f55ad0c51491d2ba7')
+
+package() {
+  cd "$srcdir/$pkgname-$pkgver"
+  python setup.py install --root="$pkgdir/" --optimize=1
+}
