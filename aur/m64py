@@ -1,0 +1,17 @@
+# Maintainer: olkkoo <olkkoo@outlook.com>
+pkgname=m64py
+pkgver=0.1.6
+pkgrel=1
+pkgdesc="QT4 front-end for Mupen64Plus in Python"
+arch=("any")
+url="http://m64py.sourceforge.net"
+license=("GPL")
+depends=(python2-pyqt mupen64plus sdl2)
+makedepends=(python2-distribute)
+source=("http://downloads.sourceforge.net/m64py/m64py-${pkgver}.tar.gz")
+md5sums=('f84b1a0888ff5c41b7cc6e875adb9f10')
+
+package() {
+  cd "$srcdir/$pkgname-$pkgver"
+  python2 setup.py install --optimize=1 --prefix=/usr --root="${pkgdir}/"
+}

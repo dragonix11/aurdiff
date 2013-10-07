@@ -1,0 +1,47 @@
+# Maintainer: Benjamin Chretien <chretien@lirmm.fr>
+# Contributor: Daniel Fiser <danfis@danfis.cz>
+
+pkgname=ipopt
+pkgver=3.10.3
+pkgrel=2
+pkgdesc="Ipopt (Interior Point OPTimizer) is a software package for large-scale  nonlinear optimization."
+arch=(i686 x86_64)
+url="https://projects.coin-or.org/Ipopt"
+license=('GPL')
+depends=(blas lapack)
+makedepends=(gcc-fortran)
+provides=()
+conflicts=()
+replaces=()
+backup=()
+install=
+source=(http://www.coin-or.org/download/source/Ipopt/Ipopt-$pkgver.tgz)
+noextract=()
+md5sums=('6e5b599cf08be4eb7ba2c9b30d266574')
+
+build() {
+    export PKG_CONFIG_PATH=$PKG_CONFIG_PATH:$srcdir/Ipopt-$pkgver/ThirdParty/Metis/:$srcdir/Ipopt-$pkgver/ThirdParty/Mumps/:$srcdir/Ipopt-$pkgver/ThirdParty/HSL/:$srcdir/Ipopt-$pkgver/Ipopt
+
+    cd $srcdir/Ipopt-$pkgver;
+
+    cd ThirdParty;
+    cd Metis;
+    ./get.Metis;
+    cd ../Mumps;
+    ./get.Mumps;
+    cd ../../;
+
+    ./configure --prefix=/usr
+
+    make
+}
+
+package() {
+    cd $srcdir/Ipopt-$pkgver;
+    make DESTDIR=$pkgdir install
+
+    mkdir -p $pkgdir/etc/ld.so.conf.d/
+    cd $pkgdir/etc/ld.so.conf.d/
+    echo "/usr/lib/coin" >ipopt.conf
+    echo "/usr/lib/coin/ThirdParty" >>ipopt.conf
+}
