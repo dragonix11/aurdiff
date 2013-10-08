@@ -1,0 +1,27 @@
+# Maintainer: Testuser_01 <arch@nico-siebler.de>
+
+pkgname=subgit
+pkgver=2.0.0
+pkgrel=1
+pkgdesc="SubGit is a smooth Subversion to Git migration. Install once on the server side and use both Subversion and Git as long as you like."
+arch=('any')
+url="http://${pkgname}.com"
+license=('Custom:SubGit')
+depends=('subversion' 'git' 'java-runtime>=5' 'java-environment>=5')
+source=("http://${pkgname}.com/download/${pkgname}-${pkgver}.zip"
+	'subgit')
+md5sums=('05e6c905f7df819670a5b88dabf4e110'
+         '0b223c05000932e4ad4d5ea82ad658ae')
+sha512sums=('b4b29923f0f2399f42ecdc06b34204ef3cf7f8329287e3a070d13146b8444b1045fa97920d93f29e4de02ce1d6a77df849935e5a7212f61105e23a153954b028'
+            '91f61b4bf1d18b6642b70ea85578e4135d256f595961ff4378f9b989f7cb3131caec871edcdb7c5dfb8efa01e5ccf370988fd1e61186881e2fe3d75730cd6874')
+
+build() {
+	true
+}
+
+package() {
+	install -d "${pkgdir}/opt" || return 1
+	install -d "${pkgdir}/usr/bin" || return 1
+	cp -rp "${srcdir}/${pkgname}-${pkgver}" "${pkgdir}/opt/subgit" || return 1
+	install -m0755 -D 'subgit' "${pkgdir}/usr/bin/"
+}

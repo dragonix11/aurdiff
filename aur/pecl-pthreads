@@ -1,0 +1,21 @@
+# Maintainer: Testuser_01 <arch@nico-siebler.de>
+# Contributor: Testuser_01 <arch@nico-siebler.de>
+
+pkgname=pecl-pthreads
+pkgver=0.0.45
+pkgrel=1
+pkgdesc="A compatible Threading API for PHP5.3+"
+arch=('any')
+url="http://pecl.php.net/package/pthreads"
+license=('PHP')
+depends=('php')
+makedepends=('autoconf')
+source=("http://pecl.php.net/get/pthreads-${pkgver}.tgz")
+md5sums=('84b932025ee3375fefc56e58751c17ce')
+
+package() {
+  cd ${srcdir}/pthreads-${pkgver} || return 1
+  phpize || return 1
+  ./configure --enable-pthreads --enable-maintainer-zts || return 1
+  make INSTALL_ROOT=${pkgdir} install || return 1
+}

@@ -1,0 +1,49 @@
+# Maintainer: Max Liebkies <mail@maxliebkies.de>
+pkgname="gnome-calendar-git"
+pkgver=0.0.3_a8e573f
+pkgrel=1
+#epoch=
+pkgdesc=""
+arch=('i686', 'x86_64')
+url="https://git.gnome.org/browse/gnome-calendar/"
+license=('GPL')
+groups=()
+depends=('libical>=0.43', 'clutter-gtk>=1.2', 'evolution-data-server>=3.5.3')
+makedepends=('intltool')
+provides=('gnome-calendar')
+options=('strip')
+md5sums=('SKIP')
+install=gnome-calendar-git.install
+#changelog=
+source=("$pkgname"::'git://git.gnome.org/gnome-calendar#branch=master')
+
+pkgver() {
+	cd "$srcdir/$pkgname"
+	# Version in configure.ac
+	local ver=$(grep '^AC_INIT' configure.ac | cut -d',' -f2)
+	local gitrev=$(git rev-parse --short HEAD)
+	printf "%s_%s" "${ver:1:-1}" "$gitrev"
+}
+
+prepare() {
+	cd "$srcdir/$pkgname"
+	NOCONFIGURE="yes" ./autogen.sh
+}
+
+build() {
+	cd "$srcdir/$pkgname"
+	./configure --prefix=/usr
+	make
+}
+
+package() {
+	cd "$srcdir/$pkgname"
+	make DESTDIR="$pkgdir/" install
+
+	cd "$startdir"
+
+	install -Dm644 ${pkgname}.desktop \
+		"${pkgdir}/usr/share/applications/${pkgname}.desktop"
+}
+
+

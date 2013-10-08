@@ -1,0 +1,44 @@
+# Maintainer: Anton Larionov <diffident dot cat at gmail dot com>
+
+pkgname=katawa-shoujo-act1
+pkgver=5
+pkgrel=4
+pkgdesc='Bishoujo-style visual novel game that tells a story of a young man and five other girls suffering with varying disabilities (Demo-version)'
+arch=('any')
+url='http://katawa-shoujo.com/'
+license=('cc-by-nc-nd-3.0' 'MIT')
+install="${pkgname}.install"
+
+source=('http://dl.katawa-shoujo.com/a1v5/mirrors/%5B4ls%5D_katawa_shoujo_act1_v5_%5Blinux-x86%5D%5B97624142%5D.tar.bz2'
+	'katawa-shoujo-act1.sh'
+        'katawa-shoujo-act1.png'
+        'katawa-shoujo-act1.desktop')
+
+md5sums=('e831006f62e820178b5dd492e72bfec1'
+         'f359d6d59a8dee84a00a6abd5f220dff'
+         '6d70e339e33d7c13a8ab03a5d3498c4f'
+         '19a72b904504d20b3cf3b35e4538103f')
+
+package() {
+  # main files
+  cd "${srcdir}/Katawa Shoujo Act 1 v5-linux-x86"
+  install -dm755 "${pkgdir}/usr/share/${pkgname}"
+  cp -r common game lib renpy "${pkgdir}/usr/share/${pkgname}"
+  install -m644 "Katawa Shoujo Act 1.py" "${pkgdir}/usr/share/${pkgname}"
+  install -m755 "Katawa Shoujo Act 1.sh" "${pkgdir}/usr/share/${pkgname}"
+
+  # game manual
+  install -D -m644 "Game Manual.pdf" "${pkgdir}/usr/share/doc/${pkgname}/gamemanual.pdf"
+
+  # license
+  install -D -m644 LICENSE.txt "${pkgdir}/usr/share/licenses/${pkgname}/LICENSE"
+
+  # shell script
+  install -D -m755 "${srcdir}/katawa-shoujo-act1.sh" "${pkgdir}/usr/bin/${pkgname}"
+
+  # desktop entry
+  install -D -m644 "${srcdir}/${pkgname}.desktop" "${pkgdir}/usr/share/applications/${pkgname}.desktop"
+  install -D -m644 "${srcdir}/${pkgname}.png" "${pkgdir}/usr/share/pixmaps/${pkgname}.png"
+}
+
+# vim:set ts=2 sw=2 et:

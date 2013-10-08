@@ -1,0 +1,29 @@
+# Maintainer: Rustam Tsurik <rustam.tsurik@gmail.com>
+# Contributor: Nico Suarez <nicodoggie@gmail.com>
+
+pkgname=galera
+pkgver=23.2.7
+pkgrel=1
+pkgdesc='Galera WSREP provider'
+arch=('i686' 'x86_64')
+license=('GPL')
+depends=('boost>=1.41' 'openssl')
+makedepends=('check' 'scons' 'patch')
+url='http://www.codership.com'
+options=('!libtool')
+source=(https://launchpad.net/galera/2.x/$pkgver/+download/galera-$pkgver-src.tar.gz)
+md5sums=('b765cee7b6f504a59604cf4d404f49bb')
+
+build(){
+  cd "$srcdir"
+  cd "$pkgname-$pkgver-src"
+  scons
+}
+
+package(){
+  install -Dm0644 "$srcdir"/$pkgname-$pkgver-src/libgalera_smm.so "$pkgdir"/usr/lib/libgalera_smm.so
+  install -Dm0755 "$srcdir"/$pkgname-$pkgver-src/garb/garbd "$pkgdir"/usr/bin/garbd
+  install -Dm0644 "$srcdir"/$pkgname-$pkgver-src/scripts/packages/README "$pkgdir"/usr/share/doc/galera/README
+  install -m0644 "$srcdir"/$pkgname-$pkgver-src/scripts/packages/README-MySQL "$pkgdir"/usr/share/doc/galera/README-MySQL
+  install -m0644 "$srcdir"/$pkgname-$pkgver-src/COPYING "$pkgdir"/usr/share/doc/galera/COPYING
+}
