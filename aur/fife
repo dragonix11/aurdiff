@@ -1,0 +1,36 @@
+# Maintainer: speps <speps at aur dot archlinux dot org>
+
+pkgname=fife
+pkgver=0.3.5
+pkgrel=1
+pkgdesc="Flexible Isometric Free Engine is a cross platform game creation framework"
+arch=(i686 x86_64)
+url="http://fifengine.net/"
+license=('GPL')
+depends=('boost-libs' 'guichan' 'libgl' 'libvorbis' 'libxcursor' 'tinyxml'
+         'openal' 'python2' 'sdl_image' 'sdl_ttf')
+makedepends=('scons' 'boost' 'mesa' 'swig' 'zlib')
+source=("http://downloads.sourceforge.net/project/$pkgname/active/src/${pkgname}_$pkgver.tar.gz")
+md5sums=('11ba50b34239535a270d442466632ef7')
+
+prepare() {
+  cd ${pkgname}_$pkgver
+
+  # use python2
+  export PYTHON=python2
+
+  # strip ldconfig
+  sed -i "/LD_RUN_PATH/d" build/linux2-config.py
+}
+
+build() {
+  cd ${pkgname}_$pkgver
+  scons --prefix=/usr fife
+}
+
+package() {
+  cd ${pkgname}_$pkgver
+  scons --prefix=/usr DESTDIR="$pkgdir/" install-all
+}
+
+# vim:set ts=2 sw=2 et:
