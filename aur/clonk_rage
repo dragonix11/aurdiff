@@ -1,0 +1,77 @@
+# Maintainer: shad0w73 <shad0w73@freenet.de>
+# Contributor: suppaman2 <suppaman2@gmail.com>
+#
+
+pkgname=clonk_rage
+_orig=cr_full_linux
+pkgver=4.9.10.5
+pkgrel=1
+pkgdesc="An entertaining, action-packed game of strategy, tactics, and skill."
+arch=('i686' 'x86_64')
+url="http://clonk.de"
+license=('SHAREWARE')
+groups=('games')
+md5sums=('cd4f4bab5a4ff4aa87fde102dd043d15'
+         'fca7370f1e9cb612edfc90b0f7d9d5ed'
+         '56b7e0903752a933a94dd3038b50fc56'
+         'bbeed581309eac14697d030f6ac295ab')
+install=${pkgname}.install
+
+depends=('libxpm' 'sdl_mixer' 'gtk2' 'timidity++' 'libpng12'
+         'libjpeg6-turbo' 'hicolor-icon-theme' 'desktop-file-utils'
+         'mesa' 'libxxf86vm')
+
+source=("http://www.clonkx.de/rage/cr_full_linux.tar.bz2" \
+	clonk_rage.desktop de_clonk.xml clonk_rage.sh)
+
+package() {
+
+  # remove unneeded files
+  rm "$srcdir"/$_orig/install.sh
+  rm "$srcdir"/$_orig/uninstall.sh
+  rm "$srcdir"/$_orig/OpenSSL.txt
+  rm "$srcdir"/$_orig/LGPL.txt
+
+  # create directories
+  install -d "$pkgdir"/usr/share/applications
+  install -d "$pkgdir"/usr/share/mime/packages
+  install -d "$pkgdir"/usr/share/icons/hicolor/48x48/apps
+  install -d "$pkgdir"/usr/share/icons/hicolor/48x48/mimetypes
+  install -d "$pkgdir"/opt
+  
+  # install icons
+  install -Dm644 "$srcdir"/$_orig/icons/cr.png "$pkgdir"/usr/share/icons/hicolor/48x48/apps/clonk_rage.png
+  install -Dm644 "$srcdir"/$_orig/icons/c4{d,f,g,k,p,s,u}.png "$pkgdir"/usr/share/icons/hicolor/48x48/mimetypes/
+  
+  # choose binaries
+  if [ "$CARCH" == "x86_64" ]; then
+    mv -f "$srcdir"/$_orig/clonk64 "$srcdir"/$_orig/clonk
+    mv -f "$srcdir"/$_orig/c4group64 "$srcdir"/$_orig/c4group
+  else
+    rm "$srcdir"/$_orig/clonk64
+    rm "$srcdir"/$_orig/c4group64
+  fi
+  
+  # move everything else (its about 100mb, so moving saves a lot of resources)
+  rm -R "$srcdir"/$_orig/icons
+  mv "$srcdir"/$_orig "$pkgdir"/opt/$pkgname
+  chgrp -R games "$pkgdir"/opt/$pkgname
+  chmod -R g+w "$pkgdir"/opt/$pkgname
+  
+  # chmod exec's
+  chmod 774 "$pkgdir"/opt/$pkgname/clonk
+  chmod 774 "$pkgdir"/opt/$pkgname/c4group
+  
+  # launch script
+  install -Dm755 "$srcdir"/clonk_rage.sh "$pkgdir"/usr/bin/clonk_rage
+  
+  # c4group link
+  ln -s /opt/clonk_rage/c4group "$pkgdir"/usr/bin/
+  
+  # desktop launcher
+  install -Dm644 "$srcdir"/clonk_rage.desktop "$pkgdir"/usr/share/applications/clonk_rage.desktop
+  
+  # mime types
+  install -Dm644 "$srcdir"/de_clonk.xml "$pkgdir"/usr/share/mime/packages/clonk_rage.xml
+
+}

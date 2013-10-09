@@ -1,0 +1,34 @@
+# Contributor: Rorschach <r0rschach@lavabit.com>
+# Contributor: Andrew Kravchuk <awkravchuk@gmail.com>
+# Contributor: aericson <de.ericson@gmail.com>
+
+pkgname=aarchup
+pkgver=1.6.8
+pkgrel=1
+pkgdesc="Fork of archup a small and lightweight update-notifier for archlinux."
+url="https://github.com/aericson/aarchup"
+arch=('i686' 'x86_64')
+license="GPL"
+depends=('pacman' 'libnotify' 'gtk2')
+makedepends=('libnotify' 'autoconf' 'gzip')
+source=('https://github.com/aericson/aarchup/archive/master.zip')
+md5sums=('fae78df4c45fe7296d1785adf21e6536')
+optdepends=('cower: AUR support(--aur)')
+install='aarchup.install'
+
+prepare() {
+	mv -v $pkgname-master/src/* $pkgname-master/
+        rmdir $pkgname-master/src
+}
+
+build() {
+	cd $pkgname-master/
+	autoconf || return 1
+	./configure --prefix=/usr || return 1
+	make || return 1
+}
+
+package() {
+	cd $pkgname-master/
+	make DESTDIR="$pkgdir/" install || return 1
+}

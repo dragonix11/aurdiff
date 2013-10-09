@@ -1,0 +1,23 @@
+# Maintainer: Red Squirrel <iam at redsquirrel87 dot com>
+
+pkgname=xame
+pkgver=2.1
+pkgrel=2
+pkgdesc="XFCE Applications Menu Editor"
+arch=('any')
+url="http://www.redsquirrel87.com/XAME.html"
+license=('freeware')
+depends=('gambas3-gb-gtk' 'gambas3-gb-form' 'gambas3-gb-image' 'gambas3-gb-form-stock')
+optdepends=('gambas3-gb-qt4: if you need the QT support (KDE)')
+install='xame.install'
+source=(https://bitbucket.org/Red_Squirrel/xfce-applications-menu-editor/downloads/xame-AUR-${pkgver}-2.tar.gz)
+md5sums=('d31c1be8a9860b4bca59c30d2aa9f89b')
+
+package() {
+  install -Dm755 "${srcdir}/${pkgname}-${pkgver}/xame.gambas" "${pkgdir}/usr/bin/xame.gambas"
+  ln -s "/usr/bin/xame.gambas" "${pkgdir}/usr/bin/xame" 
+  install -Dm644 "${srcdir}/${pkgname}-${pkgver}/xame.desktop" "${pkgdir}/usr/share/applications/xame.desktop"
+  install -Dm644 "${srcdir}/${pkgname}-${pkgver}/64x64.png" "${pkgdir}/usr/share/icons/hicolor/64x64/apps/xame.png"
+  install -Dm644 "${srcdir}/${pkgname}-${pkgver}/32x32.png" "${pkgdir}/usr/share/icons/hicolor/32x32/apps/xame.png"
+}
+
