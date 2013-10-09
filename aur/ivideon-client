@@ -1,0 +1,23 @@
+# Maintainer: Valentin Elovsky evvsoft@gmail.com
+pkgname=ivideon-client
+pkgver=5.6.1.98
+pkgrel=1
+pkgdesc="Ivideon client"
+arch=("any")
+url="http://ivideon.ru/"
+license=('freeware')
+depends=('qt4>4.8.1')
+
+source=("http://packages.ivideon.com/ubuntu/pool/non-free/i/${pkgname}/${pkgname}_${pkgver}_i386.deb")
+md5sums=('04267d402a59c595291181cc27f561ce')
+
+build() {
+  cd "$srcdir"
+
+  bsdtar xf "$srcdir/data.tar.gz"
+}
+
+package() {
+  cp -dpr --no-preserve=ownership "$srcdir/usr" "$pkgdir"
+  cp -dpr --no-preserve=ownership "$srcdir/opt" "$pkgdir"
+}
