@@ -1,0 +1,16 @@
+pkgname=craftbukkit-plugin-essentials-gm
+pkgver=2.12.1
+pkgrel=1
+pkgdesc="Group manager plugins for CraftBukkit Essentials"
+arch=(any)
+url="http://dev.bukkit.org/server-mods/essentials"
+license=("GPLv3")
+depends=("craftbukkit-plugin-essentials=$pkgver")
+source=("Essentials-gm.zip::http://ci.ess3.net/repository/download/bt3/5583:id/Essentials-gm.zip?guest=1")
+md5sums=('cc0453cfdc3771044029a4a9e40fe5d5')
+
+package() {
+  install -Dm644 "${srcdir}/EssentialsGroupManager.jar" "${pkgdir}/srv/craftbukkit/plugins/EssentialsGroupManager.jar"
+}
+
+# vim:set ts=2 sw=2 et:

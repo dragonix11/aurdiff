@@ -1,0 +1,68 @@
+# Contributor: Bernardo Barros <bernardobarros@gmail.com>
+# Contributor: Neil Santos <nsantos16+aur@gmail.com>
+# Maintainer: Stefan Husmann <stefan-husmann@t-online.de>
+
+pkgname=emacs-lucid-bzr
+pkgver=114615
+pkgrel=1
+pkgdesc='Emacs from official Bazaar repository, lucid toolkit'
+arch=('i686' 'x86_64')
+url='http://www.gnu.org/software/emacs/'
+license=('GPL3')
+depends=('dbus-core' 'librsvg' 'giflib' 'hicolor-icon-theme' 'gpm' 'imagemagick' 'm17n-lib' 'desktop-file-utils' 'gnutls' 'libxrandr' 'libxinerama' 'libxcb')
+makedepends=('bzr' 'texinfo')
+provides=('emacs=$pkgver')
+conflicts=('emacs' 'emacs-nox' 'emacs-bzr' 'emacs-xwidget-bzr' 'emacs-git')
+install=$pkgname.install
+source=('lucid::bzr+http://bzr.savannah.gnu.org/r/emacs/trunk/')
+md5sums=('SKIP')
+_bzrmod=lucid
+
+pkgver() {
+  bzr version-info $srcdir/$_bzrmod --custom --template="{revno}\n"
+}
+
+build() {
+  cd $srcdir/${_bzrmod}
+  export LDFLAGS="`pkg-config --libs MagickWand `"
+  ./autogen.sh && ac_cv_lib_gif_EGifPutExtensionLast=yes ./configure --prefix=/usr \
+    --sysconfdir=/etc \
+    --localstatedir=/var \
+    --libexecdir=/usr/lib \
+    --mandir=/usr/share/man \
+    --without-sound \
+    --with-xft \
+    --with-rsvg \
+    --without-selinux \
+    --without-gconf \
+    --with-x-toolkit=lucid
+
+  make bootstrap
+  make
+}
+
+package() {
+  cd $srcdir/${_bzrmod}
+  make DESTDIR=${pkgdir} install 
+  chown -R root:root $pkgdir/usr
+  for _i in 16x16 24x24 32x32 48x48 128x128
+  do
+    mv $pkgdir/usr/share/icons/hicolor/${_i}/apps/emacs.png \
+      $pkgdir/usr/share/icons/hicolor/${_i}/apps/$pkgname.png
+  done
+  mv $pkgdir/usr/share/icons/hicolor/scalable/apps/emacs.svg \
+    $pkgdir/usr/share/icons/hicolor/scalable/apps/$pkgname.svg
+  mv $pkgdir/usr/share/icons/hicolor/scalable/mimetypes/emacs-document.svg \
+    $pkgdir/usr/share/icons/hicolor/scalable/mimetypes/$pkgname-document.svg
+  chmod 775 $pkgdir/var/games
+# remove conflict with ctags package
+  mv $pkgdir/usr/bin/{ctags,ctags.emacs} 
+  mv $pkgdir/usr/share/man/man1/{ctags.1,ctags.emacs.1}.gz 
+# remove conflict with the texinfo-package
+  rm $pkgdir/usr/share/info/info.info.gz  
+# fix perms on /var/games
+  chmod 775 $pkgdir/var/games
+  chmod 775 $pkgdir/var/games/emacs
+  chmod 664 $pkgdir/var/games/emacs/*
+  chown -R root:games $pkgdir/var/games
+}
