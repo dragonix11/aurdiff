@@ -1,0 +1,31 @@
+# Contributor: E Nikulenkov <enikulenkov -- gmail>
+# Contributor: Jerome Leclanche <jerome.leclanche+arch@gmail.com>
+# Contributor: Andrea Scarpino <andrea@archlinux.org>
+# Contributor: Markus Unterwaditzer <markus@unterwaditzer.net>
+
+pkgname=coursera-dl-git
+_gitname=coursera
+pkgver=474.23351c1
+pkgrel=1
+pkgdesc="Script for downloading Coursera.org videos"
+arch=('any')
+url="https://github.com/jplehmann/coursera/"
+license=('GPL')
+depends=('python' 'python-beautifulsoup4' 'python-distribute' 'python-requests')
+makedepends=('git')
+source=(git://github.com/jplehmann/$_gitname.git)
+sha256sums=('SKIP')
+
+pkgver() {
+  cd "$srcdir/$_gitname"
+  echo "$(git shortlog | grep -c '\s\+').$(git describe --always)"
+}
+
+package() {
+  cd "$srcdir/$_gitname"
+  install -Dm755 ${pkgname%-*} "$pkgdir/usr/bin/${pkgname%-*}"
+  install -dm755 $_gitname "$pkgdir/usr/lib/python3.3/site-packages/$_gitname"
+  install -cm644 $_gitname/*.py "$pkgdir/usr/lib/python3.3/site-packages/$_gitname/"
+}
+
+# vim:set ts=2 sw=2 et:

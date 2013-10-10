@@ -1,0 +1,73 @@
+# Maintainer: André Silva <emulatorman@lavabit.com>
+# Contributor: SpepS <dreamspepser at yahoo dot it>
+
+pkgname=gnuhealth
+pkgver=2.2.1
+pkgrel=1
+pkgdesc="A free Health and Hospital Information System"
+arch=any
+url=http://health.gnu.org/
+license=GPL3
+depends=(
+          postgresql
+          pygtk
+          python2-dateutil
+          python2-imaging
+          python2-ldap 
+          python2-pip
+          python2-psycopg2
+          python2-pytz
+          python2-pywebdav
+          python2-qrcode 
+          python2-vobject
+          trytond
+          trytond-account-invoice
+          trytond-calendar
+          trytond-country
+          trytond-stock-lot
+)
+source=http://ftp.gnu.org/gnu/health/$pkgname-$pkgver.tar.gz
+sha512sums=9a7ccc71b5cba8e71adaea1d811ef4d68d72a1b3d7493721d68b2bb04f5eb808c659bf74e4f5859c9509be4843b4cae3cc4511422fb3cdc64b5a903507ca364a
+
+package() {
+  MODULES=(
+           health 
+           health_calendar 
+           health_genetics
+           health_gyneco
+           health_history 
+           health_icd10
+           health_icd10pcs
+           health_icu
+           health_inpatient
+           health_inpatient_calendar
+           health_lab
+           health_lifestyle
+           health_mdg6
+           health_ntd
+           health_ntd_chagas
+           health_nursing
+           health_pediatrics
+           health_profile
+           health_qrcodes
+           health_reporting
+           health_services
+           health_socioeconomics
+           health_stock
+           health_surgery
+           health_who_essential_medicines
+  )
+
+  # build gnuhealth modules
+    for module in ${MODULES[@]}
+    do
+      cd $srcdir/$pkgname-$pkgver/$module
+      python2 setup.py install --root=$pkgdir
+    done
+
+  # put gnuhealth manual to man folder
+    cd "$srcdir/$pkgname-$pkgver"
+
+    install -Dm644 health/man/$pkgname.1 \
+      $pkgdir/usr/share/man/man1/$pkgname.1
+}
