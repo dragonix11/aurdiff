@@ -1,0 +1,35 @@
+# Mantainer: M0Rf30
+
+pkgname=eric5-i18n
+pkgver=5.3.7
+pkgrel=1
+pkgdesc="Translations for the Eric IDE"
+arch=('any')
+url="http://eric-ide.python-projects.org/index.html"
+license=('GPL')
+depends=('eric5')
+source=(http://prdownloads.sourceforge.net/eric-ide/eric5-i18n-cs-$pkgver.tar.gz \
+        http://prdownloads.sourceforge.net/eric-ide/eric5-i18n-de-$pkgver.tar.gz \
+        http://prdownloads.sourceforge.net/eric-ide/eric5-i18n-es-$pkgver.tar.gz \
+	http://prdownloads.sourceforge.net/eric-ide/eric5-i18n-fr-$pkgver.tar.gz \
+	http://prdownloads.sourceforge.net/eric-ide/eric5-i18n-it-$pkgver.tar.gz \
+	http://prdownloads.sourceforge.net/eric-ide/eric5-i18n-ru-$pkgver.tar.gz \
+	http://prdownloads.sourceforge.net/eric-ide/eric5-i18n-tr-$pkgver.tar.gz \
+	http://prdownloads.sourceforge.net/eric-ide/eric5-i18n-zh_CN.GB2312-$pkgver.tar.gz )
+ 
+
+
+build() {
+  cd ${srcdir}
+  install -d  $pkgdir/usr/lib/python3.2/site-packages/eric5/i18n/
+  install -m644 $srcdir/eric5-$pkgver/eric/i18n/* $pkgdir/usr/lib/python3.2/site-packages/eric5/i18n/
+}
+
+md5sums=('fab17dc2b8e7d341460cee36a9b17b4c'
+         '03936ff61afc12a978675b9b262533d1'
+         '4f0c13a3526d7254ca2c3f218200ad83'
+         'a8760459119ca13068797a1cf7ec99d5'
+         'b3b9e920623da7cbf675b0ccc11aa366'
+         'ee38f73db20238955066c16b8441c049'
+         '891f8776349d55f4bd34acc58deaeabd'
+         '543585908425e13b2314cb702395613d')

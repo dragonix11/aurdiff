@@ -1,0 +1,27 @@
+# Maintainer: Rich Lindsley <rich at dranek dot com>
+pkgname=python2-memoryprofiler
+_py_pkgname=memory_profiler # The pypi package name
+pkgver=0.28
+pkgrel=1
+pkgdesc="A module for monitoring memory usage of a python program"
+arch=('any')
+url="http://pypi.python.org/pypi/memory_profiler"
+license=('BSD')
+depends=('python2' 'python2-psutil')
+options=(!emptydirs)
+source=(http://pypi.python.org/packages/source/m/$_py_pkgname/$_py_pkgname-$pkgver.tar.gz)
+md5sums=('02caa7b39a8c41e1b700be63c76ca890')
+sha1sums=('64273d8f427c821e7c5fb4aba8db64033ef8956c')
+sha256sums=('c325b1f030fa7e991218130eaaa533e25eeb5dc1b844d5e8ad6d336d83794ca6')
+
+package() {
+  cd "$srcdir/$_py_pkgname-$pkgver"
+  python2 setup.py install --root="$pkgdir/" --optimize=1
+
+  # There isn't a license file included, 
+  # and the documentation says it's simplified BSD
+  # So if I can create a valid LICENSE file then I can do:
+  #install -D -m644 LICENSE "${pkgdir}/usr/share/licenses/${pkgname}/LICENSE"
+}
+
+# vim:set ts=2 sw=2 et:
