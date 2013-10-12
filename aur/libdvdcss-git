@@ -1,0 +1,34 @@
+# Maintainer: Gustavo Alvarez <sl1pkn07@gmail.com>
+
+pkgname=libdvdcss-git
+pkgver=1.2.13.24.gfbef64e
+pkgrel=1
+pkgdesc="A portable abstraction library for DVD decryption. (GIT version)"
+arch=('i686' 'x86_64')
+license=('GPL')
+url="http://www.videolan.org/libdvdcss"
+makedepends=('git')
+options=('!libtool')
+provides=('libdvdcss')
+conflicts=('libdvdcss')
+source=('git://git.videolan.org/libdvdcss.git')
+md5sums=('SKIP')
+_gitname="libdvdcss"
+
+pkgver() {
+  cd "${_gitname}"
+  echo "$(git describe --always | tr - .)"
+}
+
+build() {
+  cd "${_gitname}"
+
+  autoreconf -if
+  ./configure --prefix=/usr --disable-doc
+  make
+}
+
+package() {
+  cd "${_gitname}"
+  make DESTDIR="${pkgdir}" install
+}

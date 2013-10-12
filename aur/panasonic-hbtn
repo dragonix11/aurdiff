@@ -1,0 +1,29 @@
+# $Id$
+# Maintainer: Heiher <admin@heiher.info>
+
+pkgname=panasonic-hbtn
+pkgver=20131012
+pkgrel=1
+pkgdesc="Panasonic Tablet Button driver"
+arch=('i686' 'x86_64')
+url="https://github.com/heiher/panasonic-hbtn"
+license=('GPL')
+depends=('linux')
+install=module.install
+source=(http://heiher.info/sftp/files/${pkgname}-20130513.tar.gz)
+sha1sums=('c91e23a46f90451f8bfdebf83a068ad9c368fc34')
+
+build() {
+  cd ${pkgname}-${pkgver}
+
+  make
+  gzip ${pkgname}.ko
+}
+
+package() {
+  cd ${pkgname}-${pkgver}
+
+  EDIR=${pkgdir}/usr/lib/modules/extramodules-3.11-ARCH
+  install -dm755 ${EDIR}
+  install -m644 ${pkgname}.ko.gz ${EDIR}/${pkgname}.ko
+}

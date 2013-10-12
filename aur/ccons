@@ -1,0 +1,49 @@
+# Maintainer: Benjamin A. Shelton <zancarius@gmail.com>
+# Source: https://github.com/zancarius/archlinux-pkgbuilds
+
+pkgname=ccons
+pkgver=253
+pkgrel=1
+pkgdesc="An interactive C console"
+arch=('x86_64' 'i686')
+url="http://code.google.com/p/ccons/"
+license=('MIT')
+source=(build-fix.patch)
+depends=('libedit')
+makedepends=('clang' 'cmake' 'gcc' 'llvm' 'subversion')
+options=(!buildflags)
+sha256sums=(
+    59ae0df95605b554637290812e3948abdf6946cdaba50e14b5f5a64da3979604
+)
+
+_svntrunk=http://ccons.googlecode.com/svn/trunk/
+_svnmod=ccons
+
+build() {
+
+  cd "${srcdir}"
+  
+  if [ -d "${_svnmod}/.svn" ] ; then
+    msg "Updating repo from SVN..."
+    (cd "${_svnmod}" && svn up -r "${pkgver}")
+  else
+    msg "Starting SVN checkout..."
+    svn co "${_svntrunk}" --config-dir ./ -r "${pkgver}" "${_svnmod}"
+  fi
+  
+  rm -rf "${srcdir}/${_svnmod}-build"
+  cp -r "${_svnmod}" "${_svnmod}-build"
+  
+  cd "${_svnmod}-build"
+  
+  patch -Np1 -i "${srcdir}/build-fix.patch"
+  
+  cmake CMakeLists.txt -DCMAKE_INSTALL_PREFIX:PATH=/usr
+  make
+}
+
+package() {
+  cd "${srcdir}/${_svnmod}-build"
+  make DESTDIR="${pkgdir}/" install
+  install -Dm644 LICENSE "${pkgdir}/usr/share/licenses/${pkgname}/LICENSE"
+}
