@@ -1,0 +1,41 @@
+# Maintainer: BenObiWan <benobiwan @t gmail dot com>
+# Contributor: Sam101 <zoetrem @t gmail dot com>
+# Contributor: BenObiWan <benobiwan @t gmail dot com>
+# Contributor: Huulivoide
+
+pkgname=zsxd
+pkgver=1.7.0
+pkgrel=1
+epoch=
+pkgdesc="Free and opensource, amateur Zelda game with humoristic characters."
+arch=('any')
+url="http://www.zelda-solarus.com/"
+license=('custom')
+groups=()
+depends=('solarus>=1.0.0')
+makedepends=('zip' 'cmake')
+checkdepends=()
+optdepends=()
+provides=()
+conflicts=()
+replaces=()
+backup=()
+options=()
+install=
+changelog=
+source=(http://www.zelda-solarus.com/downloads/zsxd/$pkgname-$pkgver.tar.gz)
+noextract=()
+md5sums=('486a80486ad90dd110126973c8dfdc8a')
+
+build() {
+  cd "${srcdir}/${pkgname}-${pkgver}"
+  cmake -D CMAKE_INSTALL_PREFIX="/usr" -D CMAKE_BUILD_TYPE=Release .
+  make
+}
+
+package() {
+  cd "${srcdir}/${pkgname}-${pkgver}"
+  make DESTDIR="${pkgdir}/" PREFIX="/usr" install
+}
+
+

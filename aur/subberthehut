@@ -1,0 +1,18 @@
+pkgname=subberthehut
+pkgver=9
+pkgrel=1
+pkgdesc='A command-line based OpenSubtitles.org downloader'
+arch=('i686' 'x86_64')
+url='https://github.com/mus65/subberthehut'
+license=('BSD')
+depends=('xmlrpc-c' 'glib2' 'zlib')
+source=("https://github.com/mus65/$pkgname/archive/$pkgver.tar.gz")
+md5sums=('f48e2d2f1e596de6f97231f0c9fcbe18')
+
+build() {
+	make -C "$pkgname-$pkgver"
+}
+
+package() {
+	make -C "$pkgname-$pkgver" DESTDIR="$pkgdir" PREFIX=/usr install
+}

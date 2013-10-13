@@ -1,0 +1,18 @@
+# Contributor: Andrea Scarpino <bash.lnx@gmail.com>
+
+pkgname=jdk-docs
+pkgver=7.40
+pkgrel=1
+pkgdesc="Java SE Development Kit Documentation 7"
+arch=('any')
+url="http://www.oracle.com/technetwork/java/index.html"
+license=('custom')
+options=('docs' '!strip')
+source=('http://download.oracle.com/otn-pub/java/jdk/7u40-b43/jdk-7u40-apidocs.zip')
+md5sums=('9aefda4fa31222499c069ab8336f50c5')
+
+build(){
+  cd "$srcdir/docs"
+  mkdir -p "$pkgdir/usr/share/doc/java"
+  cp -rf * "$pkgdir/usr/share/doc/java"
+}
