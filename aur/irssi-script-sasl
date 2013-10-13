@@ -1,0 +1,19 @@
+# Maintainer: jason ryan <jasonwryan@gmail.com>
+# Contributor: Tom Vincent <http://tlvince.com/contact/>
+
+pkgname=irssi-script-sasl
+_name=cap_sasl.pl
+pkgver=1.3
+pkgrel=1
+pkgdesc="Freenode SASL support for irssi"
+arch=('any')
+url="https://freenode.net/sasl/"
+license=('GPL')
+depends=('irssi' 'perl-crypt-openssl-bignum' 'perl-crypt-dh'
+         'perl-crypt-blowfish')
+source="https://freenode.net/sasl/$_name"
+md5sums=('55dacb2400da93f23e7f01e047e2df3d')
+
+package() {
+  install -Dm644 "$srcdir/$_name" "$pkgdir/usr/share/irssi/scripts/$_name"
+}

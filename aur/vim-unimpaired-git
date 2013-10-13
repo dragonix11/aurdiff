@@ -1,0 +1,38 @@
+# Maintainer: Chris Sakalis <chrissakalis@gmail.com>
+
+pkgname=vim-unimpaired-git
+pkgver=20131013
+pkgrel=1
+pkgdesc="Complementary pairs of mappings for various common operations."
+arch=('any')
+url="https://github.com/tpope/vim-unimpaired"
+license=('custom:vim')
+depends=("vim")
+makedepends=("git")
+provides=("vim-unimpaired")
+conflicts=("vim-unimpaired")
+groups=('vim-plugins')
+source=('git+https://github.com/tpope/vim-unimpaired.git' 'license.txt')
+install=vimdoc.install
+
+md5sums=(
+	'SKIP'
+	'5385d0749cd4b74b6bdcf3d08aed46cd'
+	)
+sha256sums=(
+	'SKIP'
+	'1b2b479e7c67f60da82107246a1e89668a30dcb4ae246cce876172e6530037d2'
+	)
+
+pkgver()
+{
+	git show -s --format="%ci" HEAD | cut -f1 -d" " | sed 's\[- :]\\g'
+}
+
+package()
+{
+	install -d ${pkgdir}/usr/share/vim/vimfiles/{doc,plugin}
+	install -Dm644 ${srcdir}/vim-unimpaired/doc/unimpaired.txt ${pkgdir}/usr/share/vim/vimfiles/doc/unimpaired.txt
+	install -Dm644 ${srcdir}/vim-unimpaired/plugin/unimpaired.vim ${pkgdir}/usr/share/vim/vimfiles/plugin/unimpaired.vim
+	install -Dm644 ${srcdir}/license.txt ${pkgdir}/usr/share/licenses/${pkgname}/license.txt
+}
