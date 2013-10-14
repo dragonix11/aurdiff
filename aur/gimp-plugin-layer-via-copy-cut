@@ -1,0 +1,18 @@
+# Maintainer: Muflone <webreg(at)vbsimple.net>
+# Contributor: Tom Vincent <http://tlvince.com/contact>
+
+pkgname=gimp-plugin-layer-via-copy-cut
+pkgver=1.5
+pkgrel=2
+pkgdesc="Copy and move the selected area to a new layer in the same position."
+arch=('any')
+url="http://some-gimp-plugins.com/contents/en/extensions/002/"
+license=('GPL')
+depends=('gimp')
+source=("http://some-gimp-plugins.com/contents/en/extensions/002/${pkgname/gimp-plugin-/}.zip")
+md5sums=('2e5dea238d4f88ef4a74e5553c8b201d')
+
+package() {
+  install -m755 -d "${pkgdir}/usr/lib/gimp/2.0/plug-ins"
+  install -m755 -t "${pkgdir}/usr/lib/gimp/2.0/plug-ins" "${pkgname/gimp-plugin-/}.py"
+}

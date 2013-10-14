@@ -1,0 +1,38 @@
+# Maintainer: AeroNotix <aaron.l.france@gmail.com>
+# Contributor: AeroNotix <aaron.l.france@gmail.com>
+pkgname=rebar-git
+pkgver=20131410
+pkgrel=1
+pkgdesc="A sophisticated build-tool for Erlang projects that follows OTP principles."
+arch=('i686' 'x86_64')
+url="https://github.com/rebar/rebar"
+license=('APACHE')
+depends=('erlang')
+makedepends=('git')
+provides=('rebar')
+conflicts=('rebar', 'rebar-hg')
+
+_gitroot="git://github.com/rebar/rebar.git"
+_gitname="rebar"
+_pkgname="rebar"
+
+build() {
+    cd "$srcdir"
+    msg "Connecting to GIT server...."
+
+    if [ -d $_gitname ]; then
+        cd $_gitname && git pull origin
+    else
+        git clone $_gitroot $_gitname
+    fi
+
+    msg "Building rebar...."
+
+    rm -rf "$srcdir/$_gitname-build"
+    git clone "$srcdir/$_gitname" "$srcdir/$_gitname-build"
+    cd "$srcdir/$_gitname-build"
+    make || return 1
+    install -D "$_pkgname" "$pkgdir/usr/bin/$_pkgname" || return 1
+    install -m644 -D "priv/shell-completion/bash/$_pkgname" \
+                     "$pkgdir/usr/share/bash-completion/completions/$_pkgname" || return 1
+}
