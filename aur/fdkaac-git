@@ -1,0 +1,38 @@
+# AUR Package Author: PelPix <kylebloss@pelpix.info>
+
+pkgname=fdkaac-git
+pkgver=20131013
+pkgrel=2
+pkgdesc="Encoder frontend for libfdk-aac from GIT"
+arch=('i686' 'x86_64')
+url="https://github.com/nu774/fdkaac"
+license=('custom')
+depends=('libfdk-aac-git')
+conflicts=('fdkaac' 'libfdk-aac')
+makedepends=('git')
+source=(git://github.com/nu774/fdkaac.git)
+md5sums=('SKIP')
+
+pkgver() {
+
+  mv "fdkaac" "$pkgname"
+  cd $pkgname
+  git log -1 --format="%cd" --date=short | sed 's|-||g'
+}
+
+build() {
+  cd $pkgname
+  autoreconf -i
+  ./configure
+  
+  make
+}
+
+package() {
+  cd $pkgname
+
+  make DESTDIR="$pkgdir" \
+  bindir=/usr/bin \
+  install
+}
+# vim:set ts=2 sw=2 et:

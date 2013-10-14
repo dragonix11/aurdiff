@@ -1,0 +1,24 @@
+# Maintainer: Felix Yan <felixonmars@gmail.com>
+# Contributor: Tom Vincent <http://tlvince.com/contact>
+
+_npmname=bower
+pkgname=nodejs-$_npmname
+pkgver=1.2.7
+pkgrel=1
+pkgdesc='The browser package manager'
+arch=(any)
+url='https://github.com/twitter/bower'
+license=(MIT)
+depends=('nodejs')
+source=(http://registry.npmjs.org/$_npmname/-/$_npmname-$pkgver.tgz)
+noextract=($_npmname-$pkgver.tgz)
+
+package() {
+  cd "$srcdir"
+  local _npmdir="$pkgdir/usr/lib/node_modules/"
+  mkdir -p "$_npmdir"
+  cd "$_npmdir"
+  npm install --user root -g --prefix "$pkgdir/usr" $_npmname@$pkgver
+}
+
+md5sums=('62bafc2b416bbce254d51f75b638f79b')

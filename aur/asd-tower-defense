@@ -1,0 +1,28 @@
+# $Id: PKGBUILD 82 2009-07-17 19:56:55Z aaron $
+# Maintainer: Arnaud Durand-Favreau <biginoz at FREE point FR>
+
+
+pkgname=asd-tower-defense
+pkgver=v2.0_beta4
+pkgrel=4
+pkgdesc="tower defense game"
+arch=('any')
+url="http://code.google.com/p/asd-tower-defense/"
+license=('GPL')
+depends=(sdl mesa libgl)
+source=(http://asd-tower-defense.googlecode.com/files/ASD_TD_${pkgver}.zip)
+
+
+    md5sums=('6a3431127d498734b226773d713d3126')
+
+package() {
+
+  cd $startdir/src/
+  install -d $startdir/pkg/usr/bin && \
+  install -d $startdir/pkg/usr/share/applications && \
+  install -d $startdir/pkg/usr/share/asd-tower-defense && \
+  cp -r ASD_TD_$pkgver/* $startdir/pkg/usr/share/asd-tower-defense
+  chmod o+w $startdir/pkg/usr/share/asd-tower-defense/donnees/scores
+  chmod o+w $startdir/pkg/usr/share/asd-tower-defense/cfg/config.cfg
+  
+}

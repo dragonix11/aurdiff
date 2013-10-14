@@ -1,0 +1,34 @@
+# Maintainer: ZKenJ <zkenjm@gmail.com>
+# Contributor: Cilyan
+# Contributor: Dan Serban
+
+pkgname=slowmovideo-git
+pkgver=20130913
+pkgrel=1
+pkgdesc="Video slow motion effect via interpolation"
+arch=('i686' 'x86_64')
+url="http://slowmovideo.granjow.net/index.html"
+license=('GPL')
+depends=('ffmpeg' 'freeglut' 'glew' 'libjpeg-turbo' 'libpng' 'opencv' 'qt4' 'sdl')
+makedepends=('cmake' 'git')
+provides=('slowmovideo')
+conflicts=('slowmovideo')
+source=('git+https://github.com/slowmoVideo/slowmoVideo.git')
+md5sums=('SKIP')
+ 
+pkgver() {
+  cd "${srcdir}"/slowmoVideo
+  git log -1 --format='%cd' --date=short | tr -d -- '-'
+}
+ 
+build() {
+  cd "${srcdir}/slowmoVideo"
+  mkdir build && cd build
+  cmake -DCMAKE_INSTALL_PREFIX=/usr ../src
+  make
+}
+ 
+package() {
+  cd "${srcdir}/slowmoVideo/build"
+  make DESTDIR="${pkgdir}" install
+}
