@@ -1,13 +1,13 @@
 pkgname=craftbukkit-plugin-craftbook
-pkgver=3.7.6
+pkgver=3.7.7
 pkgrel=1
 pkgdesc="Plugin that allows you to build interactive mechanisms, integrated circuits and more..."
 arch=(any)
 url="http://dev.bukkit.org/bukkit-plugins/craftbook"
 license=("GPLv3")
 depends=(craftbukkit-plugin-worldedit)
-source=("http://dev.bukkit.org/media/files/734/388/CraftBook_3.7.6.zip")
-md5sums=('23cc304bb10a821c6ac776b2efa6ce2a')
+source=("http://dev.bukkit.org/media/files/744/229/CraftBook_3.7.7.zip")
+md5sums=('43ba4ff85777d25db6a20b93e973677d')
 
 package() {
 	install -Dm 644 -g craftbukkit -o craftbukkit "$srcdir/CraftBook.jar" "$pkgdir/srv/craftbukkit/plugins/CraftBook.jar"

@@ -1,0 +1,45 @@
+# Maintainer: Mike Shade <mshade@mshade.org>
+# Contributor: Jochen Schalanda <jochen+aur (-at-) schalanda.name>
+
+pkgname=quasselclient-light
+pkgver=0.9.1
+pkgrel=1
+pkgdesc="Qt4 IRC client with a separated core - client only, fewer dependencies"
+url="http://quassel-irc.org"
+arch=('i686' 'x86_64')
+license=('GPL')
+depends=('qt4')
+optdepends=('qca-ossl')
+makedepends=('cmake')
+provides=('quassel' 'quasselclient')
+conflicts=('quassel' 'quasselclient' 'quassel-git' 'quasselclient-git')
+source="${url}/pub/quassel-${pkgver}.tar.bz2"
+sha256sums=('39e97bd67160d6575a57d4f71c4b1be5c13461ca238baef462ab43164419864e')
+
+install=quassel.install
+
+build() {
+  [[ ! -d build ]] && mkdir build
+  cd build
+
+  cmake \
+    -DCMAKE_INSTALL_PREFIX=/usr/ \
+    -DWITH_KDE=OFF \
+    -DWITH_WEBKIT=OFF \
+    -DWITH_PHONON=OFF \
+    -DWITH_LIBINDICATE=OFF \
+    -DWITH_OPENSSL=ON \
+    -DCMAKE_BUILD_TYPE="Release" \
+    -DWANT_CORE=OFF \
+    -DWANT_MONO=OFF \
+    ../quassel-${pkgver}/ \
+    -Wno-dev
+
+  make
+}
+
+package() {
+  cd build
+
+  make DESTDIR=${pkgdir} install
+}

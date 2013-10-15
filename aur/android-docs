@@ -1,0 +1,20 @@
+# Maintainer: Jakub Schmidtke <sjakub-at-gmail-dot-com>
+# Contributor: Figo.zhang <figo1802@gmail.com>
+
+pkgname=android-docs
+pkgver=18_r02
+pkgrel=1
+pkgdesc='API docs for Google Android SDK'
+arch=('any')
+url="http://developer.android.com"
+license=('Apache')
+options=(!strip)
+source=("http://dl-ssl.google.com/android/repository/docs-${pkgver}.zip")
+sha1sums=('cb0928cca78b631ab71353ed7bef4e23a26b2d14')
+
+package() {
+  mkdir -p "${pkgdir}/opt/android-sdk/"
+  mv "${srcdir}/docs" "${pkgdir}/opt/android-sdk/"
+
+  chmod -R ugo+rX "${pkgdir}/opt"
+}

@@ -1,0 +1,26 @@
+# Maintainer: Stefan J. Betz <info@stefan-betz.net>
+pkgname='pius'
+pkgver='2.0.10'
+pkgrel=1
+pkgdesc='PGP Individual UID Signer (PIUS)'
+arch=('any')
+url='http://www.phildev.net/pius/'
+license=('GPL2')
+depends=('python2')
+optdepends=('python2-pexpect: interactive mode support')
+source=(http://downloads.sourceforge.net/pgpius/$pkgname-$pkgver.tar.bz2
+	python2.patch)
+md5sums=('cd0a69df6cdf145191ca67906e6b0914'
+         '5605c29578d45205be342b46b0166b8d')
+
+build(){
+	patch -p1 < python2.patch
+}
+
+package(){
+	cd $srcdir/$pkgname-$pkgver
+	mkdir -p $pkgdir/usr/bin
+	install pius $pkgdir/usr/bin/
+	install pius-keyring-mgr $pkgdir/usr/bin/
+	install pius-party-worksheet $pkgdir/usr/bin/
+}
