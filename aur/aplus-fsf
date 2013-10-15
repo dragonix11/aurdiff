@@ -1,0 +1,43 @@
+# Contributor: perlawk
+
+pkgname=aplus-fsf
+pkgver=4.22
+_pkgver=4
+pkgrel=2
+
+pkgdesc="open source APL, an array processing language"
+arch=('i686' 'x86_64')
+url="http://www.aplusdev.org"
+
+license=('GPL')
+depends=() 
+source=(http://www.aplusdev.org/Download/$pkgname-$pkgver-$_pkgver.tar.gz MSFloat.C.diff MSUtil.C.diff)
+
+build() {
+  cd "$srcdir/$pkgname-$pkgver"
+  cd src/MSTypes
+  patch -p1 MSFloat.C < $startdir/MSFloat.C.diff
+  patch -p1 MSUtil.C < $startdir/MSUtil.C.diff
+
+  cd "$srcdir/$pkgname-$pkgver"
+  
+  ./configure --prefix=/usr/aplus
+
+  cd src/MSGUI
+  sed -e 's/-lm/-lm -lX11/' Makefile > .tmp
+  mv .tmp Makefile
+
+  cd ..
+  make -j4 || return 1
+
+  make DESTDIR=$pkgdir install
+  mkdir -p $pkgdir/usr/share/fonts/TTF
+  mv $pkgdir/usr/aplus/bin $pkgdir/usr
+  mv $pkgdir/usr/aplus/include $pkgdir/usr
+  mv $pkgdir/usr/aplus/lib $pkgdir/usr
+  mv $pkgdir/usr/aplus/fonts/TrueType/* $pkgdir/usr/share/fonts/TTF
+  mv $pkgdir/usr/aplus/fonts/X11/* $pkgdir/usr/share/fonts/
+}
+md5sums=('196cca239dec0d9744a89778bf8b09c8'
+         '0679ef92144824b6e6f4caff6252655d'
+         '59e18caa3b9a728582c47356bd6632eb')

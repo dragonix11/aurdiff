@@ -1,0 +1,31 @@
+# Maintainer: speps <speps dot aur dot archlinux dot org>
+
+pkgname=radium
+pkgver=1.9.32
+pkgrel=1
+pkgdesc="A graphical music editor and a next generation tracker."
+arch=('i686' 'x86_64')
+url="http://users.notam02.no/~kjetism/radium/"
+license=('GPL')
+depends=('calf-kxstudio-git' 'liblrdf' 'libxaw' 'qt4')
+source=("http://archive.notam02.no/arkiv/src/$pkgname-$pkgver.tar.gz")
+md5sums=('c8a6450e6618ea89eb040718902cb56b')
+
+prepare() {
+  cd "$srcdir/$pkgname-$pkgver"
+  sed -i '/exit/d' Makefile
+}
+
+build() {
+  cd "$srcdir/$pkgname-$pkgver"
+  make packages
+  BUILDTYPE=RELEASE ./build_linux.sh -j7
+}
+
+package() {
+  cd "$srcdir/$pkgname-$pkgver"
+  make PREFIX=/usr DESTDIR="$pkgdir/" install
+
+  # python2 fix
+  sed -i "s|\#\!.*python|&2|" `grep -rl "\#\!.*python" .`
+}

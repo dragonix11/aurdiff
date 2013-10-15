@@ -4,7 +4,7 @@
 
 pkgname=epsxe
 pkgver=1.9.0
-pkgrel=12
+pkgrel=13
 pkgdesc="Enhanced PSX emulator"
 url="http://epsxe.com"
 arch=('i686' 'x86_64')
@@ -22,18 +22,13 @@ source=(epsxe.desktop epsxe.png)
 md5sums=('087234e20ae9147f83df24b69fc93bca' 'eb0c46b8ae1355c589792f6be1835e47')
 
 _e190url='http://www.epsxe.com/files/epsxe190lin.zip'
-_e160url='http://www.epsxe.com/files/epsxe160lin.zip'
-_e152url='http://www.epsxe.com/files/epsxe152lin.zip'
-
 _e190sum='3eea56cf74f9ee81a28dfd018be051da'
-_e160sum='32704cfc77939b9a1bd047f22b70eca2'
-_e152sum='5834f34cb904b08d95abda057eff3981'
 
 prepare () {
 
     cd "$srcdir"
 
-    for things in $_e190url $_e160url $_e152url
+    for things in $_e190url
     do
 	_things="$(echo $things | sed 's:^.*/::')"
 
@@ -42,7 +37,7 @@ prepare () {
 	    true
 	else
 
-	    wget "$things" && (md5sum "$_things" | grep "$_e190sum" -q) || (md5sum "$_things" | grep "$_e160sum" -q) || (md5sum "$_things" | grep "$_e152sum" -q) && true || (rm "$things" && return 1);
+	    wget "$things" && (md5sum "$_things" | grep "$_e190sum" -q) && true || (rm "$things" && return 1);
 	
 	fi
 
@@ -50,8 +45,6 @@ prepare () {
 
     # extract archives
     unzip -qqo -d 1.9.0 epsxe190lin.zip
-    unzip -qqo -d 1.6.0 epsxe160lin.zip
-    unzip -qqo -d 1.5.2 epsxe152lin.zip
 
     # create the perl frontends
     for version in $(ls -1 | sed '/[0-9]\.[0-9]\.[0-9]/!d')
@@ -95,7 +88,7 @@ package () {
     install -d "$pkgdir/usr/bin"
     install -d "$pkgdir/opt/$pkgname/"{plugins,bios,memcards}
 
-    for versions in '1.5.2' '1.6.0' '1.9.0'
+    for versions in '1.9.0'
     do 
 	install -d "$pkgdir/opt/$pkgname/$versions/"{cfg,cheats,patches,snap,sstates}
 
