@@ -2,7 +2,7 @@
 
 pkgname=kuaipan4uk
 pkgver=0.2
-pkgrel=1
+pkgrel=3
 pkgdesc="Kingsoft kuaipan, is a document sync service same with dropbox"
 arch=('x86_64')
 license=("Custom")
@@ -74,9 +74,22 @@ package()
 
     #Install wrap script and desktop icon
     install -Dm755 ${srcdir}/kuaipan4uk ${pkgdir}/usr/bin/kuaipan4uk
-    install -Dm755 ${pkgdir}/opt/${pkgname}/share/applications/kuaipan4uk.desktop ${pkgdir}/usr/share/applications/kuaipan4uk.desktop
-    install -Dm755 ${pkgdir}/opt/${pkgname}/share/pixmaps/kuaipan4uk.png ${pkgdir}/usr/share/pixmaps/kuaipan4uk.png
+
+    install -d ${pkgdir}/usr/share/applications
+    install -d ${pkgdir}/usr/share/pixmaps
+    ln -s ../../../opt/${pkgname}/share/applications/kuaipan4uk.desktop ${pkgdir}/usr/share/applications/kuaipan4uk.desktop
+    ln -s ../../../opt/${pkgname}/share/pixmaps/kuaipan4uk.png ${pkgdir}/usr/share/pixmaps/kuaipan4uk.png
 
     #Fix desktop icon wrong category issue, move it to office group
-    sed 's/Graphics;/Office;/g' -i ${pkgdir}/usr/share/applications/kuaipan4uk.desktop
+    sed 's/Graphics;/Office;/g' -i ${pkgdir}/opt/${pkgname}/share/applications/kuaipan4uk.desktop
+
+    #Fix duplicate of libxlive binary
+    cd ${pkgdir}/opt/${pkgname}/lib
+    rm libxlive.so.1 libxlive.so.1.0
+    ln -s libxlive.so.1.0.0 libxlive.so.1
+    ln -s libxlive.so.1.0.0 libxlive.so.1.0
+
+    #Fix duplicate of libiconv
+    rm libiconv.so.2
+    ln -s libiconv.so.2.5.1 libiconv.so.2
 }

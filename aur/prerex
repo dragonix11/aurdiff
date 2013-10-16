@@ -1,0 +1,48 @@
+# Contributor: Stefan Husmann <stefan-husmann@t-online.de>
+pkgname=prerex  
+pkgver=6.5.3
+_prerex=6.5.2
+_vprerex=6.4.2
+pkgrel=1
+pkgdesc="a LaTeX document style for prerequisite charts"
+url="http://www.prerex.com"
+arch=('i686' 'x86_64')
+license=('GPL')
+depends=('texlive-pstricks' 'poppler-qt')
+install=prerex.install
+source=($pkgname-$pkgver.zip::ftp://cam.ctan.org/tex-archive/graphics/$pkgname.zip)
+md5sums=('0c38dd166879ccd941595f155fa9f368')
+
+prepare () {
+  cd $srcdir/$pkgname
+  bsdtar xzf $pkgname-${_prerex}.tar.gz
+  bsdtar xzf v$pkgname-${_vprerex}.tar.gz
+  # replace xterm by your favourite terminal emaulator here
+  sed -i s+xterm+st+ $srcdir/$pkgname/v$pkgname-${_vprerex}/window.cpp
+}
+
+build() {
+  cd $srcdir/$pkgname/$pkgname-${_prerex}
+  ./configure --prefix=/usr 
+  make 
+  
+  cd $srcdir/$pkgname/v$pkgname-${_vprerex}
+  qmake-qt4 vprerex.pro
+  make
+}
+
+package () {
+  install -Dm644 $srcdir/$pkgname/$pkgname.sty \
+    $pkgdir/usr/share/texmf/tex/latex/$pkgname/$pkgname.sty 
+  cd $srcdir/$pkgname/$pkgname-${_prerex}
+  make DESTDIR=$pkgdir install
+  install -d $pkgdir/usr/share/texmf/doc/$pkgname
+  cp $srcdir/$pkgname/doc/* $pkgdir/usr/share/texmf/doc/$pkgname
+  install -Dm644 $pkgdir/usr/share/texmf/doc/$pkgname/$pkgname.sty.7 \
+    $pkgdir/usr/share/man/man7/$pkgname.sty.7
+  rm $pkgdir/usr/share/texmf/doc/$pkgname/$pkgname.sty.7
+  install -Dm755 $srcdir/$pkgname/v$pkgname-${_vprerex}/v$pkgname \
+    $pkgdir/usr/bin/v$pkgname
+  install -Dm544 $srcdir/$pkgname/v$pkgname-${_vprerex}/v$pkgname.1 \
+    $pkgdir/usr/share/man/man1/v$pkgname.1
+}

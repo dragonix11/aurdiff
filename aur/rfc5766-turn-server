@@ -2,7 +2,7 @@
 
 pkgname=rfc5766-turn-server
 _portname=turnserver
-pkgver=2.6.4.1
+pkgver=2.6.5.2
 pkgrel=1
 pkgdesc="STUN and TURN Relay Server for VoIP and WebRTC"
 arch=('i686' 'x86_64')
@@ -13,9 +13,9 @@ install='install'
 backup=("etc/turnserver.conf" "etc/turnuserdb.conf")
 changelog='ChangeLog'
 source=(https://${pkgname}.googlecode.com/files/${_portname}-$pkgver.tar.gz $_portname.service)
-md5sums=('ca684f8d019fd45abc13037fb6b11ec3'
+md5sums=('b9c48a76b49180438a970fd1c8465c0e'
          'bf568b614a17ee439e831b8f8aa7236a')
-sha1sums=('9add9fa470b8aeee230176d036cbeafa51eadafd'
+sha1sums=('9e2f127afe2cad13b6c62a50a621410814962c63'
           '0c5b348e793bd52ce0ee38d420b26c9b2a2e2ca5')
 
 build() {

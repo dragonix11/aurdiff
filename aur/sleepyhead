@@ -7,22 +7,12 @@ pkgdesc="Open-source, cross platform, sleep tracking software with a focus on mo
 arch=(i686 x86_64)
 url="http://sourceforge.net/projects/sleepyhead/"
 license="GPL"
-#groups=
-#provides=
 depends=('')
-#makedepends=('guile')
-#conflicts=('yafoo')
-#replaces=('mffoo')
-#backup=('etc/foo/foo.conf')
-#install=('foo.install')
 source=(https://bitbucket.org/biotin/sleepyhead/downloads/SleepyHead-0.9.2-x86-fedora-linux-installer-test.run)
 md5sums=('6f5b20e45648f70b350ee3e596a60519')
 
 build() {
   cd $startdir/src/
-#  ./configure --prefix=/usr
-#  make || return 1
-#  make prefix=$startdir/pkg/usr install
   chmod +x SleepyHead-0.9.2-x86-fedora-linux-installer-test.run
   ./SleepyHead-0.9.2-x86-fedora-linux-installer-test.run
 }

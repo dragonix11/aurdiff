@@ -1,0 +1,41 @@
+# Maintainer: Kozec <kozec at kozec dot com>
+pkgname=realvnc
+pkgver=5.0.6
+pkgrel=1
+_magic_x64=1329
+_magic_x86=1328
+pkgdesc="RealVNC provides remote control software which lets you see and interact with desktop applications across any network."
+arch=(i686 x86_64)
+url="http://www.realvnc.com"
+license=('custom')
+install="realvnc.install"
+conflicts=('vnc' 'tightvnc' 'xf4vnc-xvnc')
+provides=("vnc=$pkgver")
+if [ $CARCH == x86_64 ] ; then
+	_arch=x64
+	source=(install.diff "VNC-${pkgver}-Linux-x64-ANY.tar.gz::http://www.realvnc.com/download/binary/${_magic_x64}")
+	md5sums=('42a586ef4dd5b6e475754fec524a968c'
+	         '1ec072519d0cd71f083eb46d0a47fd1b')
+else
+	_arch=x86
+	source=(install.diff "VNC-${pkgver}-Linux-x86-ANY.tar.gz::http://www.realvnc.com/download/binary/${_magic_x86}")
+	md5sums=('42a586ef4dd5b6e475754fec524a968c'
+        	 'f7b926b0fad0bd0e5264fefc590fa721')
+fi
+noextract=()
+
+build() {
+	cd "$srcdir/VNC-${pkgver}-Linux-${_arch}"
+	cp "vncinstall" "vncinstall.arch"
+	chmod +w "vncinstall.arch"
+	patch -Np0 -i "$srcdir/install.diff" vncinstall.arch || return 1
+}
+
+package() {
+	mkdir -p "$pkgdir/usr/bin"
+	mkdir -p "$pkgdir/usr/share/man/man1"
+	mkdir -p "$pkgdir/usr/share/cups"
+	cd "$srcdir/VNC-${pkgver}-Linux-${_arch}"
+	./vncinstall.arch "$pkgdir"
+}
+

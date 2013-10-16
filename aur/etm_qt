@@ -1,7 +1,7 @@
 # Maintainer:  trashstar <trash@ps3zone.org>
 
 pkgname=etm_qt
-pkgver=2.2.3
+pkgver=2.3.0
 pkgrel=1
 pkgdesc="Manage events and tasks using simple text files."
 arch=('any')
@@ -9,8 +9,8 @@ url="http://people.duke.edu/~dgraham/etmqt/"
 license=('GPL')
 depends=('python-pyqt4' 'python-dateutil' 'python-yaml')
 makedepends=('setuptools')
-source=('http://people.duke.edu/~dgraham/etmqt/etm_qt-2.2.3.tar.gz')
-md5sums=('17fe682847645dcd7aae092a97a596f6')
+source=('http://people.duke.edu/~dgraham/etmqt/etm_qt-2.3.0.tar.gz')
+md5sums=('c8cca9a7feece42859017742e74cab61')
 
 package() { 
   cd "$srcdir/$pkgname-$pkgver"
