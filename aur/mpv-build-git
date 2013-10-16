@@ -1,12 +1,12 @@
 # Maintainer: Gustavo Alvarez <s1lpkn07@gmail.com>
 
 pkgname=mpv-build-git
-pkgver=0.2.0.git.d3c140b
+pkgver=20131016.de3a979
 pkgrel=1
 pkgdesc="Video player based on MPlayer/mplayer2 (uses statically linked ffmpeg). (GIT version)"
 arch=('i686' 'x86_64')
-depends=('desktop-file-utils' 'enca' 'fribidi' 'libbluray' 'libcaca' 'libcdio-paranoia'  'libguess' 'libmng' 'libdvdread' 'libpulse' 'libva'
-         'libquvi' 'libxinerama' 'libxkbcommon' 'libxss' 'libxv' 'lirc-utils' 'mpg123' 'openal' 'portaudio' 'rsound' 'sdl' 'sdl2' 'smbclient' 'sndio-cvs')
+depends=('desktop-file-utils' 'enca' 'fribidi' 'libbluray' 'libcaca' 'libcdio-paranoia' 'libguess' 'libmng' 'libdvdread' 'libpulse' 'libva'
+         'libquvi-git' 'libxinerama' 'libxkbcommon' 'libxss' 'libxv' 'lirc-utils' 'mpg123' 'openal' 'portaudio' 'rsound' 'sdl' 'sdl2' 'smbclient' 'sndio-cvs')
 license=('GPL2')
 url="http://mpv.io/"
 makedepends=('git' 'live-media' 'mesa' 'python-docutils' 'vstream-client' 'yasm' 'texlive-bin')
@@ -27,15 +27,8 @@ md5sums=('SKIP'
 _gitname="mpv-build"
 
 pkgver() {
-#   cd "${srcdir}/mpv"
-#   echo "$(git log -1 --format="%cd" --date=short | tr -d '-').$(git log -1 --format="%h")"
-
   cd "${srcdir}/mpv"
-  # add VERSION file with a latest tag. this is a little hack to generate a VERSION file like a file ship in release package
-  git describe --tags "$(git rev-list --tags --max-count=1)" | tr -d v > VERSION
-  ./version.sh
-  echo "$(cat version.h | grep VERSION | cut -d '"' -f2 | tr - .)"
-  rm version.h
+  echo "$(git log -1 --format="%cd" --date=short | tr -d '-').$(git log -1 --format="%h")"
 }
 
 prepare() {
@@ -45,7 +38,7 @@ prepare() {
 
   # Make mpv/ffmpeg build flags
   sed 's|OPTIONS="|OPTIONS="--disable-programs |g' -i scripts/ffmpeg-config
-  sed 's|OPTIONS="|OPTIONS="--prefix=/usr --confdir=/etc/mpv --extra-cflags=-I/usr/include/samba-4.0 --enable-sdl --enable-sdl2 --disable-rpath --disable-libquvi4 --enable-openal|g' -i scripts/mpv-config
+  sed 's|OPTIONS="|OPTIONS="--prefix=/usr --confdir=/etc/mpv --extra-cflags=-I/usr/include/samba-4.0 --enable-sdl --enable-sdl2 --disable-rpath --disable-libquvi4 --enable-openal --lua=52|g' -i scripts/mpv-config
 }
 
 build() {

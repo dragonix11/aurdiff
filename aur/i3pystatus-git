@@ -1,0 +1,28 @@
+# Maintainer: Jan Oliver Oelerich <janoliver@oelerich.org> 
+
+pkgname=i3pystatus-git
+pkgdesc="i3status replacement written in python for the i3 window manager"
+pkgver=286.27d3d67
+pkgrel=1
+arch=('i686' 'x86_64')
+license=('mit')
+depends=('python')
+makedepends=('git' 'python-distribute')
+url="https://github.com/enkore/i3pystatus.git"
+source=('git+https://github.com/enkore/i3pystatus.git')
+_gitname="i3pystatus"
+md5sums=('SKIP')
+
+pkgver() {
+  cd "$srcdir/$_gitname"
+  echo $(git rev-list --count HEAD).$(git rev-parse --short HEAD)
+}
+
+build() {
+  :
+}
+
+package() {
+  cd "$srcdir/$_gitname"
+  python setup.py install --prefix=/usr --root="$pkgdir"
+} 

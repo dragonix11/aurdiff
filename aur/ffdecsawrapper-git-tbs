@@ -82,7 +82,7 @@ prepare() {
 build() {
 
 	cd $srcdir/ffdecsawrapper      
-	./configure --optimize_exp --dvb_dir=$srcdir/linux-tbs-drivers/linux/
+	./configure --dvb_dir=$srcdir/linux-tbs-drivers/linux/
 }
 
 package() {

@@ -1,0 +1,47 @@
+# Maintainer: Ray Rashif <schiv@archlinux.org>
+# Contributor: Shinlun Hsieh <yngwiexx@yahoo.com.tw>
+
+pkgname=wineasio
+_lib=lib
+_dll=wineasio.dll.so
+pkgver=0.9.1
+pkgrel=1
+pkgdesc="Steinberg ASIO driver implementation for Wine"
+arch=('i686' 'x86_64')
+url="http://sourceforge.net/projects/wineasio/"
+license=('LGPL')
+depends=('wine' 'jack')
+makedepends=('steinberg-asio')
+
+if [ "$CARCH" = 'x86_64' ]; then
+  _lib=lib32
+  depends=('wine' 'lib32-jack')
+  makedepends+=('multilib-devel' 'gcc-libs-multilib')
+  provides=('lib32-wineasio' 'wineasio64')
+  replaces=('lib32-wineasio' 'wineasio64')
+  conflicts=('lib32-wineasio' 'wineasio64')
+fi
+
+install=$pkgname.install
+source=("http://downloads.sourceforge.net/$pkgname/$pkgname-$pkgver.tar.gz")
+md5sums=('58d6856030670690bfc21f3d4de11b64')
+
+prepare() {
+  cd "$srcdir/$pkgname"
+
+  [ ! -e asio.h ] && ln -s /usr/include/steinberg-asio/asio.h asio.h
+}
+
+build() {
+  cd "$srcdir/$pkgname"
+
+  make
+}
+
+package() {
+  cd "$srcdir/$pkgname"
+
+  install -Dm755 $_dll "$pkgdir/usr/$_lib/wine/$_dll"
+}
+
+# vim:set ts=2 sw=2 et:

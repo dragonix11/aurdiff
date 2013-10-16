@@ -3,11 +3,11 @@
 
 pkgname=my-little-investigation
 pkgver=demo2
-pkgrel=3
+pkgrel=4
 pkgdesc="An Ace Attorney like game based on My Little Pony : Friendship is Magic"
 arch=('i386' 'x86_64')
 url="http://www.equestriandreamers.com/"
-license=('custom')
+license=('MIT')
 groups=('')
 depends=('lib32-sdl' 'lib32-sdl_image' 'lib32-sdl_ttf' 'lib32-sdl_mixer')
 makedepends=('deb2targz')

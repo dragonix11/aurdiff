@@ -1,0 +1,27 @@
+# Maintainer: Xu Fasheng <fasheng.xu@gmail.com>
+
+pkgname=deepin-terminal
+pkgver=git20131009165519~396e89ce3b
+pkgrel=1
+pkgdesc='Awesome terminal for Linux Deepin'
+arch=('i686' 'x86_64')
+depends=('deepin-ui' 'vte-plus' 'python2-dbus')
+license=('GPL3')
+provides=('deepin-terminal')
+conflicts=('deepin-terminal-git')
+url="http://www.linuxdeepin.com/"
+sourcesite="http://mirrors.ustc.edu.cn"
+# sourcesite="http://packages.linuxdeepin.com"
+source=("${sourcesite}/deepin/pool/main/d/deepin-terminal/deepin-terminal_1+${pkgver}_all.deb")
+md5sums=('dc285a1d3eccea4fd08cb3113fca91f0')
+
+package() {
+    tar xzvf ${srcdir}/data.tar.gz -C ${pkgdir}/
+
+    cd ${pkgdir}/usr/share/deepin-terminal/src/
+    sed -i 's_#! /usr/bin/env python$_#! /usr/bin/env python2_' *.py
+    sed -i 's_#! /usr/bin/python$_#! /usr/bin/python2_' *.py
+
+    # well, there is no XHei font on archinux, so I just replace it,
+    sed -i 's/XHei Mono.Ubuntu/Monospace/' main.py
+}
