@@ -1,0 +1,36 @@
+# Contributor: jjacky
+# Contributor: dunningd <duncansdunning at yahoo dot co dot uk>
+# Adapted/copied from netbeans-cpp 6.9.1 (Thanks wimvdh)
+_pkgname=netbeans
+pkgname=$_pkgname-cpp
+pkgver=7.4
+_subpkgver=201310111528
+pkgrel=1
+pkgdesc="Netbeans IDE development platform - C/C++ only"
+arch=('i686' 'x86_64')
+url="http://www.netbeans.org"
+license=('CDDL')
+depends=('java-runtime')
+provides=('netbeans')
+conflicts=('netbeans')
+replaces=('netbeans-cpp-beta')
+options=('!strip')
+install=netbeans.install
+backup=('usr/share/netbeans/etc/netbeans.conf')
+source=(http://dlc.sun.com.edgesuite.net/$_pkgname/$pkgver/final/zip/$_pkgname-$pkgver-$_subpkgver-cpp.zip
+	netbeans.desktop)
+md5sums=('7f116442850efc4c1cc4305066078d00'
+         'eb9c35b558997f62a52bddad16dba248')
+
+package() {
+  cd $srcdir
+  mkdir -p $pkgdir/usr/share/netbeans
+
+  rm $srcdir/netbeans/bin/netbeans.exe
+
+  cp -r $srcdir/netbeans/* $pkgdir/usr/share/netbeans/
+
+  install -D -m644 $srcdir/netbeans.desktop $pkgdir/usr/share/applications/netbeans.desktop
+  mkdir -p $pkgdir/usr/bin
+  ln -s /usr/share/netbeans/bin/netbeans $pkgdir/usr/bin/netbeans
+}

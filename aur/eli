@@ -1,0 +1,36 @@
+# Maintainer: Malte Splietker <maltespl@mail.upb.de>
+pkgname=eli
+pkgver=4.8.0
+pkgrel=1
+epoch=
+pkgdesc="Eli is a programming environment that supports all phases of translator construction with extensive libraries implementing common tasks, yet handling arbitrary special cases. Output is the C subset of C++."
+arch=(i686 x86_64)
+url="http://eli-project.sourceforge.net/"
+license=('GPL', 'LGPL')
+groups=()
+depends=()
+makedepends=()
+checkdepends=()
+optdepends=()
+provides=()
+conflicts=()
+replaces=()
+backup=()
+options=()
+install=
+changelog=
+source=(http://sourceforge.net/projects/eli-project/files/Eli/Eli%20$pkgver/eli-$pkgver.tar.bz2/download)
+noextract=()
+md5sums=('79fcf3d8f5ee89771a5204f5b0647e35')
+
+build() {
+  cd $srcdir/$pkgname-$pkgver/
+  #tar xfvj $pkgname-$pkgver.tar.bz2
+  #export ODIN_LOCALIPC=1
+  ./configure --prefix=/usr
+  make nobrowsers 
+  #cp $startdir/Makefile $srcdir/$pkgname-$pkgver/Makefile
+  #make DESTDIR=$pkgdir install
+  chmod 755 -R $pkgdir
+  ./install.sh $pkgdir/usr
+}

@@ -3,7 +3,7 @@
 
 pkgname=libretro-nestopia-git
 pkgver=272.79f5bff
-pkgrel=2
+pkgrel=3
 pkgdesc="libretro implementation of NEStopia. (Nintendo Entertainment System)"
 arch=('i686' 'x86_64' 'arm' 'armv6h')
 url="https://github.com/libretro/nestopia"
@@ -12,9 +12,9 @@ makedepends=('git')
 
 _gitname=nestopia
 source=("git+https://github.com/libretro/${_gitname}.git"
-        "https://github.com/libretro/libretro-super/blob/master/dist/info/nestopia_libretro.info")
+        "https://raw.github.com/libretro/libretro-super/master/dist/info/nestopia_libretro.info")
 md5sums=('SKIP'
-         'ad0aa461b837b5309dec773867659be5')
+         '49ddfd8c33920046742de86e40fbbabd')
 
 pkgver() {
   cd "${_gitname}"
