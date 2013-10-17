@@ -3,7 +3,7 @@
 
 pkgname=screencloud
 pkgver=1.1.2
-pkgrel=2
+pkgrel=3
 _pkgrealrel=1
 pkgdesc="Easy to use screenshot sharing application."
 arch=('i686' 'x86_64')
@@ -16,10 +16,10 @@ install=screencloud.install
 
 if [ $CARCH == 'i686' ]; then
     source=("http://download.opensuse.org/repositories/home:/olav-st/Arch_Extra/i686/${pkgname}-${pkgver}-${_pkgrealrel}-i686.pkg.tar.xz")
-    md5sums=('22aae45fd0ec437f49caeab5779ea744')
+    md5sums=('e2854e36560e203efc6263b778c5fad1')
 elif [ $CARCH == 'x86_64' ]; then
     source=("http://download.opensuse.org/repositories/home:/olav-st/Arch_Extra/x86_64/${pkgname}-${pkgver}-${_pkgrealrel}-x86_64.pkg.tar.xz")
-    md5sums=('b218d33f7861550446cae0841a5f4301')
+    md5sums=('4472a18d22b2981b1603da7b0bb11fa5')
 fi
 
 package() {

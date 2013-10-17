@@ -17,16 +17,16 @@ _use_unittest=0        # Run unit test? # IN TEST, DON'T ACTIVE
 ## -- Package and components information -- ##
 ##############################################
 pkgname=chromium-dev
-pkgver=32.0.1664.3
+pkgver=32.0.1671.3
 _toolchains_rev=12191
 pkgrel=1
 pkgdesc='The open-source project behind Google Chrome (Dev channel)'
 arch=('i686' 'x86_64')
 url="http://www.chromium.org/"
 license=('BSD')
-depends=('alsa-lib' 'desktop-file-utils' 'gtk2' 'gpsd' 'harfbuzz-icu' 'hicolor-icon-theme' 'jsoncpp' 'libevent' 'libvpx'
-         'libxslt' 'libxss' 'minizip' 'nss' 'opus' 'protobuf' 're2' 'snappy' 'speech-dispatcher' 'speex' 'ttf-font' 'udev') # 'libwebp' 'v8'
-makedepends=('elfutils' 'gperf' 'mesa' 'ninja=1.3.4' 'perl-json' 'python2-jinja' 'python2-ply' 'python2-simplejson' 'subversion' 'xdg-utils' 'yasm') # 'libsrtp'
+depends=('alsa-lib' 'desktop-file-utils' 'gtk2' 'harfbuzz-icu' 'hicolor-icon-theme' 'jsoncpp' 'libevent' 'libvpx'
+         'libxslt' 'libxss' 'minizip' 'nss' 'opus' 'protobuf' 're2' 'snappy' 'speech-dispatcher' 'speex' 'ttf-font' 'udev' 'xdg-utils') # 'libwebp'
+makedepends=('elfutils' 'gperf' 'mesa' 'ninja=1.3.4' 'perl-json' 'python2-jinja' 'python2-ply' 'python2-simplejson' 'subversion' 'yasm') # 'libsrtp'
 [ "$CARCH" = "x86_64" ] && makedepends+=('lib32-gcc-libs' 'lib32-zlib') && warning "To build need active [multilib] repository, if not , fail build"
 
 install="chromium-dev.install"
@@ -38,22 +38,18 @@ source=(
         'chromium-dev.sh'
         'default'
         # Patch form Gentoo
-        'http://sources.gentoo.org/cgi-bin/viewvc.cgi/gentoo-x86/www-client/chromium/files/chromium-chromedriver-r0.patch'
-        'http://sources.gentoo.org/cgi-bin/viewvc.cgi/gentoo-x86/www-client/chromium/files/chromium-system-icu-r0.patch'
-        'http://sources.gentoo.org/cgi-bin/viewvc.cgi/gentoo-x86/www-client/chromium/files/chromium-system-jinja-r0.patch'
+        # Yahoo!!
         # Nacl Components
         "naclsdk_nacl_linux_x86-${_toolchains_rev}.tgz::https://gsdview.appspot.com/nativeclient-archive2/toolchain/${_toolchains_rev}/naclsdk_linux_x86.tgz"
         "naclsdk_pnacl_linux_x86-${_toolchains_rev}.tgz::https://gsdview.appspot.com/nativeclient-archive2/toolchain/${_toolchains_rev}/naclsdk_pnacl_linux_x86.tgz"
         "naclsdk_pnacl_translator-${_toolchains_rev}.tgz::https://gsdview.appspot.com/nativeclient-archive2/toolchain/${_toolchains_rev}/naclsdk_pnacl_translator.tgz"
         "naclsdk_pnacl_translator-${_toolchains_rev}.tgz.sha1hash::https://gsdview.appspot.com/nativeclient-archive2/toolchain/${_toolchains_rev}/naclsdk_pnacl_translator.tgz.sha1hash")
-sha1sums=('0c9ea4f447ada1be8487a89adc30bda9cd45e0ac'
+sha1sums=('8166e6ed879ccfcdcea99dfb22c69eaf2ce37f72'
           '64de05845dce1eb58c5c1757139f07caaf371c99'
           '22cb5f2044120ea0be5799fc2181a8ff189be512'
           'd6d2da45c0729dfd1c606a15c8ffb7591dbc7b44'
           # Patch form Gentoo
-          'e6ec6e228e8236478f6f5c4ce9fdd6f699bb55e2'
-          '88478f33ac3bad1933ca7a5cc7e0d5441d170f1a'
-          '9b97b04764dbedf835b50c6f4039b6d269a8a79a'
+          # Yahoo!!
           # Nacl Components
           "$(curl -sL "https://gsdview.appspot.com/nativeclient-archive2/toolchain/${_toolchains_rev}/naclsdk_linux_x86.tgz.sha1hash")"
           "$(curl -sL "https://gsdview.appspot.com/nativeclient-archive2/toolchain/${_toolchains_rev}/naclsdk_pnacl_linux_x86.tgz.sha1hash")"
@@ -101,7 +97,7 @@ if [ "${_use_unittest}" = "1" ]; then
   source+=(
 #           "https://gsdview.appspot.com/chromium-browser-official/chromium-${pkgver}-testdata.tar.xz")
            "https://commondatastorage.googleapis.com/chromium-browser-official/chromium-${pkgver}-testdata.tar.xz")
-  sha1sums+=('2e4616b63db35965460a48c4e54ce8a3d35eec65')
+  sha1sums+=('9c7e1e0f51f7497056312806ea16e2d10c0ccb09')
   makedepends+=('python2-pyftpdlib')
   for i in base cacheinvalidation content crypto gpu net printing sql; do _unittest+=" ${i}_unittests"; done
 fi
@@ -165,6 +161,7 @@ prepare() {
 	'third_party/hunspell' \
 	'third_party/iccjpeg' \
 	'third_party/jstemplate' \
+	'third_party/jinja2' \
 	'third_party/khronos' \
 	'third_party/leveldatabase' \
 	'third_party/libjingle' \
@@ -210,9 +207,7 @@ prepare() {
   echo > "${srcdir}/flapper_version.h"
 
   # Patch for use some system libraries
-  patch -p0 -E -i "${srcdir}/chromium-chromedriver-r0.patch"
-  patch -p0 -E -i "${srcdir}/chromium-system-icu-r0.patch"
-  patch -p0 -E -i "${srcdir}/chromium-system-jinja-r0.patch"
+  # yahoo!!!
 
   # Compiler specific configuration...
   if [ "${_use_clang}" = "1" ]; then
@@ -276,11 +271,9 @@ build() {
            -Dlinux_link_gsettings=1
            -Dlinux_link_libpci=1
            -Dlinux_link_libspeechd=1
-           -Dlinux_link_libgps=1
            -Dlinux_strip_binary=1
            -Dlinux_use_gold_binary=0
            -Dlinux_use_gold_flags=0
-           -Dlinux_use_libgps=1
            -Dlinux_use_tcmalloc=0
            -Dmedia_use_libvpx=0
            -Dno_strict_aliasing=1
@@ -347,7 +340,7 @@ build() {
   build/gyp_chromium --depth=. ${_flags}
 
   mkdir -p out/Release
-  ninja -C out/Release -v chrome chrome_sandbox ${_unittest} chromedriver
+  ninja -C out/Release -v chrome chrome_sandbox chromedriver ${_unittest}
 
   rm -rf "${srcdir}/chromium-build/third_party"
 }

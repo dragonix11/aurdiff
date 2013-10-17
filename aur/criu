@@ -1,0 +1,33 @@
+# Maintainer: Pavel Borzenkov <pavel@voidptr.ru>
+
+pkgname=criu
+pkgver=0.7
+pkgrel=1
+pkgdesc="Checkpoint/Restore in Userspace tool"
+url="http://criu.org"
+license=("GPL2")
+arch=("x86_64")
+source=("http://download.openvz.org/${pkgname}/${pkgname}-${pkgver}.tar.bz2"
+        "glibc-ptrace-define.patch")
+depends=("protobuf-c")
+makedepends=("xmlto")
+options=("!buildflags")
+md5sums=("ba3691e89be6c2c03ea6bd07cececc97"
+         "63995b85b8cf25116dabfef4ef979135")
+sha1sums=("c49cc4891ac37480936a5a074b635ecde42d06e1"
+          "cfc6c297a553e9d2666f60d3ee254bd2f8ece96e")
+
+prepare() {
+  cd "${srcdir}/${pkgname}-${pkgver}"
+  patch -p1 < ${srcdir}/glibc-ptrace-define.patch
+}
+
+build() {
+  cd "${srcdir}/${pkgname}-${pkgver}"
+  make
+}
+
+package() {
+  cd "${srcdir}/${pkgname}-${pkgver}"
+  make PREFIX=/usr DESTDIR="${pkgdir}" install
+}
