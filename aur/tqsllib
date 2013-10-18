@@ -1,0 +1,36 @@
+# Maintainer: Wijnand Modderman-Lenstra <maze@maze.io>
+pkgname=tqsllib
+pkgver=2.2
+pkgrel=4
+epoch=
+pkgdesc="Trusted QSL Library"
+arch=('i686' 'x86_64')
+url="http://www.arrl.org"
+license=('GPL')
+provides=('tqsllib')
+source=('http://downloads.sourceforge.net/project/trustedqsl/tqsllib/V2.2/tqsllib-2.2.tar.gz'
+openssl-1.0.1.patch)
+md5sums=('43a0f5ca4d68a191df0df4417c2ef50f'
+         'e538f1f4fee8800146854bab81f1a5c0')
+
+
+
+build() {
+  cd "$srcdir/$pkgname-$pkgver"
+  patch -p2 < ../openssl-1.0.1.patch
+  ./configure --prefix=/usr
+  make libtqsllib.la
+  make
+}
+
+check() {
+  cd "$srcdir/$pkgname-$pkgver"
+  make -k check
+}
+
+package() {
+  cd "$srcdir/$pkgname-$pkgver"
+  make DESTDIR="$pkgdir/" install
+}
+
+# vim:set ts=2 sw=2 et:

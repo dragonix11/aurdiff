@@ -1,0 +1,36 @@
+# Maintainer: Xavion <Xavion (dot) 0 (at) Gmail (dot) com>
+# Contributor: Timm Preetz <timm@preetz.us>
+# Contributor: Daniel J Griffiths <ghost1227@archlinux.us>
+
+_appname_=netbeans
+pkgname=${_appname_}-javase
+pkgver=7.4
+pkgrel=1
+pkgdesc="Oracle's Java (SE) IDE"
+arch=("any")
+url="http://netbeans.org"
+license=("CDDL")
+depends=("java-environment")
+conflicts=("${_appname_}")
+install=${pkgname}.install
+options=(!strip)
+source=(http://download.${_appname_}.org/${_appname_}/${pkgver}/final/zip/${_appname_}-${pkgver}-201310111528-javase.zip)
+
+package() {
+	cd "${srcdir}"
+
+	# Removals
+	rm ${_appname_}/bin/${_appname_}.exe
+
+	# Directories
+	install -d "${pkgdir}"/usr/share/${_appname_} "${pkgdir}"/usr/bin
+
+	# Files
+	cp -r ${_appname_}/* "${pkgdir}"/usr/share/${_appname_}/
+	ln -s /usr/share/${_appname_}/bin/${_appname_} "${pkgdir}"/usr/bin/${_appname_}
+
+	# Desktop
+	install -D -m644 "${startdir}"/${_appname_}.desktop "${pkgdir}"/usr/share/applications/${_appname_}.desktop
+}
+
+sha1sums=('af0dd5bb22e25a57318fc26d9f25b2b33fb324d8')
