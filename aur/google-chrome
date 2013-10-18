@@ -22,9 +22,9 @@ _channel=stable
 _arch=i386
 [ "$CARCH" = 'x86_64' ] && _arch=amd64
 source=("google-chrome-${_channel}_${pkgver}_${_arch}.deb::https://dl.google.com/linux/direct/google-chrome-${_channel}_current_${_arch}.deb"
-        "$url/intl/en/eula_text.html")
+        'https://www.google.com/intl/en/chrome/browser/privacy/eula_text.html')
 md5sums=('fa5d706a9f7ef0682de6b665c20f302f'
-         '6d57da7476a4b1b7a81821d9c036425c')
+         'ba19ea498f294975d320ff0b26a6cd63')
 [ "$CARCH" = 'x86_64' ] && md5sums[0]='9abdef7ee0422f7dabb16941453551cc'
 
 PKGEXT='.pkg.tar'

@@ -25,9 +25,8 @@ pkgver() {
 
 prepare() {
   cd "$srcdir/$_pkgname"
-  git submodule update --init thirdparty/openjpeg
-  git submodule update --init thirdparty/curl
 }
+  git submodule update --init thirdparty/openjpeg
 
 build() {
   cd "$srcdir/$_pkgname"

@@ -2,13 +2,13 @@
 # Contributors: Charles Ghislain, Guillaume ALAUX, Daniel J Griffiths, Jason Chu, Geoffroy Carrier, Army, kfgz, Thomas Dziedzic, Dan Serban, jjacky, EasySly
 
 pkgname=jre
-_minor=45
+_major=7
 _minor=45
 _build=b18
-_pkgver=${_major}u$_minor
-pkgver=$_major.$_minor
+_pkgver=${_major}u${_minor}
+pkgver=${_major}.${_minor}
 pkgrel=1
-pkgdesc="Java $_major Runtime Environment"
+pkgdesc="Java Runtime Environment"
 arch=('i686' 'x86_64')
 url=http://www.oracle.com/technetwork/java/javase/downloads/index.html
 license=('custom')

@@ -18,7 +18,7 @@ if test "$CARCH" == x86_64; then
           hybrid.desktop
           Hybrid.png)
   md5sums=('dffadaeefa09579248b4241af8fb28f9'
-           'ef192eacf5ae36753de84561a3a5248a'
+           'dd87c6eb6df85049de38c61dfe400347'
            '798dd936a3bc9bcd3b131d5dd6db96e6')
 fi
 
@@ -27,7 +27,7 @@ if test "$CARCH" == i686; then
           hybrid.desktop
           Hybrid.png)
   md5sums=('a66320f3240db10498e9eb694060a20d'
-           'ef192eacf5ae36753de84561a3a5248a'
+           'dd87c6eb6df85049de38c61dfe400347'
            '798dd936a3bc9bcd3b131d5dd6db96e6')
 fi
 

@@ -2,8 +2,8 @@
 
 pkgname=virtualbox-modules-bridge-pl
 pkgver=4.2.18
-pkgrel=1
-pkgdesc='Host and guest linux-bfs kernel modules for VirtualBox'
+pkgrel=5
+pkgdesc='Host and guest linux-bridge-pl kernel modules for VirtualBox'
 arch=('i686' 'x86_64')
 url='http://virtualbox.org'
 license=('GPL')

@@ -1,0 +1,90 @@
+# Maintainer: Gustavo Alvarez <s1lpkn07@gmail.com>
+
+pkgname=mplayer2-build-git
+pkgver=2.0.726.g6c87a98
+pkgrel=2
+pkgdesc="A movie player for linux (uses statically linked libav). (GIT version)"
+arch=('i686' 'x86_64')
+depends=('a52dec' 'desktop-file-utils' 'directfb' 'enca' 'faad2' 'fribidi' 'jack' 'lcms2' 'libbluray' 'libcaca' 'libcdio-paranoia' 'libdca' 'libgl' 'libmng'
+         'libdv' 'libdvdnav' 'libdvdcss' 'libmad' 'libpulse' 'libquvi-0.4' 'libtheora' 'libvdpau' 'libxv' 'libxinerama' 'libxss' 'libxxf86vm' 'lirc-utils' 'mpg123'
+         'nut-multimedia-git' 'portaudio' 'rsound' 'smbclient' 'speex' 'ttf-dejavu' 'xvidcore')
+license=('GPL')
+url="http://www.mplayer2.org/"
+makedepends=('git' 'live-media' 'mesa' 'python' 'python-docutils' 'vstream-client' 'yasm')
+backup=('etc/mplayer/codecs.conf'
+        'etc/mplayer/input.conf')
+provides=('mplayer' 'mplayer2')
+conflicts=('mplayer' 'mplayer2')
+replaces=('mplayer' 'mplayer2')
+options=('!emptydirs')
+source=('http://ftp.mplayer2.org/pub/release/mplayer2-2.0.tar.xz'
+        'dvdreadnav.patch'
+        'git://git.mplayer2.org/mplayer2-build.git'
+        'mplayer::git://git.mplayer2.org/mplayer2.git'
+        'libav::git://repo.or.cz/FFMpeg-mirror/mplayer-patches.git'
+        'git+https://code.google.com/p/libass')
+noextract=('mplayer2-2.0.tar.xz')
+md5sums=('b880ae4be0e5b9693cdecf97c84b74f3'
+         '716a49f217bd029a61d2fad2777c512c'
+         'SKIP'
+         'SKIP'
+         'SKIP'
+         'SKIP')
+install="${pkgname}.install"
+_gitname="mplayer2-build"
+
+pkgver() {
+  cd mplayer
+  echo "$(git describe --always | tr - . | tr -d v)"
+}
+
+prepare() {
+  cd "${_gitname}"
+
+  rm -fr {mplayer,libav,libass}
+  mv ../{mplayer,libav,libass} .
+
+  #install language sources to "i18n"
+  bsdtar -xf "${srcdir}/mplayer2-2.0.tar.xz" mplayer2-2.0/po
+  mv mplayer2-2.0/po mplayer
+  rm -fr mplayer2-2.0
+
+  # Patch to use other method to get libdvdread/libdvdnav libs/headers info
+  patch --silent -p1 -N -i "${srcdir}/dvdreadnav.patch"
+
+  # Make Mplayer2 build flags
+  echo '--confdir=/etc/mplayer
+--enable-translation
+--language=all
+--language-doc=all
+--language-man=all
+--language-msg=all
+--prefix=/usr
+--with-dvdnav-config=/usr/bin/pkg-config
+--extra-cflags=-I/usr/include/samba-4.0
+' > mplayer_options
+
+# Only uncomment if use libdvdread/libdvdnav from git
+#   sed -e 's|DVDNAV_FORMAT_AC3|DVD_AUDIO_FORMAT_AC3|g' \
+#       -e 's|DVDNAV_FORMAT_DTS|DVD_AUDIO_FORMAT_DTS|g' \
+#       -e 's|DVDNAV_FORMAT_LPCM|DVD_AUDIO_FORMAT_LPCM|g' \
+#       -e 's|DVDNAV_FORMAT_MPEGAUDIO|DVD_AUDIO_FORMAT_MPEG|g' \
+#       -i mplayer/stream/stream_dvdnav.c
+}
+
+build() {
+  cd "${_gitname}"
+  make
+}
+
+package() {
+  cd "${_gitname}"
+  make DESTDIR="${pkgdir}" install
+  install -d "${pkgdir}/usr/share/mplayer/"
+  install -Dm644 mplayer/etc/{codecs,input,example}.conf "${pkgdir}/etc/mplayer/"
+  install -Dm644 mplayer/etc/mplayer.desktop "${pkgdir}/usr/share/applications/mplayer.desktop"
+  install -Dm644 mplayer/etc/mplayer.xpm "${pkgdir}/usr/share/pixmaps/mplayer.xpm"
+  ln -s /usr/share/fonts/TTF/DejaVuSans.ttf "${pkgdir}/usr/share/mplayer/subfont.ttf"
+  sed -e 's|gmplayer|mplayer|' -e 's|GTK;||' -i "${pkgdir}/usr/share/applications/mplayer.desktop"
+  echo 'NoDisplay=true' >> "${pkgdir}/usr/share/applications/mplayer.desktop"
+}

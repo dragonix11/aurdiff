@@ -6,7 +6,7 @@
 pkgname=v8
 # use http://omahaproxy.appspot.com/ to find stable v8 version
 pkgver=3.20.17.15
-pkgrel=1
+pkgrel=2
 pkgdesc='Fast and modern Javascript engine'
 arch=('i686' 'x86_64')
 url='http://code.google.com/p/v8'
@@ -41,8 +41,6 @@ prepare() {
   done
 
   # Remove broken tests
-  # Some internationalization tests are failing, v8 does not like upstream ICU
-  rm -rf test/intl/{date-format,number-format}
   # This test fails because of memory overhead (Arch specific compilation flags?)
   sed "s/'test-mark-compact.cc',//g" -i test/cctest/cctest.gyp
 }
@@ -72,7 +70,7 @@ package() {
   install -d $pkgdir/usr/include
   install -Dm644 include/*.h $pkgdir/usr/include
 
-  sed "s/@VERSION@/${pkgver}/g" -i ../v8.pc
+  sed "s/@VERSION@/$pkgver/g" -i ../v8.pc
   install -d $pkgdir/usr/lib/pkgconfig
   install -m644 ../v8.pc $pkgdir/usr/lib/pkgconfig
 

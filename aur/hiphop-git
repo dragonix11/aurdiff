@@ -2,15 +2,15 @@
 # Contributor: Spider.007 <archPackage@spider007.net>
 pkgname=hiphop-git
 pkgver=src.hphp.3012.g094ba8e
-pkgrel=1
-pkgdesc="HipHop for PHP transforms PHP source code into highly optimized C++. It was developed by Facebook and released as open source in early 2010"
+pkgrel=2
+pkgdesc="Transforms PHP source code into highly optimized C++"
 arch=(x86_64)
 url="http://wiki.github.com/facebook/hiphop-php/"
 license=('custom')
-depends=('cmake' 'boost' 're2c' 'libmysqlclient' 'libxml2' 'libmcrypt' 'icu' 'openssl' 'libcap' 'gd' 'zlib' 'intel-tbb' 'php' 'oniguruma' 'pcre' 'expat' 'libevent-hphp' 'libmemcached' 'imap' 'libunwind' 'libdwarf' 'google-glog' 'curl')
-makedepends=('git')
+depends=('boost' 're2c' 'libmysqlclient' 'libxml2' 'libmcrypt' 'icu' 'openssl' 'libcap' 'gd' 'zlib' 'intel-tbb' 'php' 'oniguruma' 'pcre' 'expat' 'libevent-hphp' 'libmemcached' 'imap' 'libunwind' 'libdwarf' 'google-glog' 'curl')
+makedepends=('git' 'cmake')
 source=('git+https://github.com/facebook/hiphop-php.git' 'hphp.sh' 'gpisc.diff')
-md5sums=('SKIP' '953e1f5247824e82cbfc69bcea5585fe' 'c2fc791ad4a46f51c2f8eb4fa2d67586')
+md5sums=('SKIP' 'df8d144ed3c1d00a4fe573fae9848eb6' 'c2fc791ad4a46f51c2f8eb4fa2d67586')
 options=(!strip)
 
 pkgver() {

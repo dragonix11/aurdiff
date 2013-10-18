@@ -7,9 +7,10 @@ url="https://github.com/LiuLang/kwplayer"
 arch=('any')
 license=('GPL3')
 depends=('gst-plugins-ugly' 'gst-plugins-good' 'gstreamer' 'python-cairo'
-         'python-gobject' 'python-mutagenx' 'gnome-icon-theme' 'gtk3'
+         'python-gobject' 'python-mutagenx' 'gtk3'
          'python-dbus' 'dbus-glib' 'gst-libav' 'gst-plugins-base')
-optdepends=('leveldb: for caches data')
+optdepends=('leveldb: for caches data'
+            'gnome-icon-theme: show toolbar icons' )
 makedepends=('git')
 conflicts=()
 replaces=()

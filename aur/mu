@@ -1,0 +1,35 @@
+# Maintainer: megadriver <megadriver at gmx dot com>
+# Contributor: Tom Willemsen <tom at ryuslash dot org>
+# Contributor: Uwe <moc liamg skcuneelu <-- look what I did there>
+# Contributor: Nicolas Pouillard <nicolas dot pouillard at gmail dot com>
+# Contributor: Vain
+
+pkgname=mu
+pkgver=0.9.9.5
+pkgrel=5
+pkgdesc="A collection of utilities for indexing and searching Maildirs"
+arch=('i686' 'x86_64')
+url="http://www.djcbsoftware.nl/code/mu"
+install=$pkgname.install
+license=('GPL3')
+depends=('xapian-core' 'gmime' 'sqlite3')
+optdepends=('cronie: Updating index regularly')
+source=("http://mu0.googlecode.com/files/mu-$pkgver.tar.gz")
+md5sums=('9198564846d29e8a549e7720a5386a8b')
+
+#prepare() {
+#  cd $srcdir/mu-$pkgver
+#  sed -i 's|xapian-config|&-1.3|g' configure
+#}
+
+build() {
+  cd $srcdir/mu-$pkgver
+  ./configure --prefix=/usr --disable-gtk --disable-webkit
+  make
+}
+
+package() {
+  cd $srcdir/mu-$pkgver
+  make DESTDIR=$pkgdir install
+  rm $pkgdir/usr/share/man/man1/mug.1
+}
