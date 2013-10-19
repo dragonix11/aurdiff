@@ -6,7 +6,7 @@
 
 pkgname=mu
 pkgver=0.9.9.5
-pkgrel=5
+pkgrel=6
 pkgdesc="A collection of utilities for indexing and searching Maildirs"
 arch=('i686' 'x86_64')
 url="http://www.djcbsoftware.nl/code/mu"
@@ -17,19 +17,34 @@ optdepends=('cronie: Updating index regularly')
 source=("http://mu0.googlecode.com/files/mu-$pkgver.tar.gz")
 md5sums=('9198564846d29e8a549e7720a5386a8b')
 
-#prepare() {
-#  cd $srcdir/mu-$pkgver
-#  sed -i 's|xapian-config|&-1.3|g' configure
-#}
+prepare() {
+  cd $srcdir/mu-$pkgver
+  #sed -i 's|xapian-config|&-1.3|g' configure
+  cd toys/mug
+  sed -i 's|-DGTK_DISABLE_DEPRECATED ||g' Makefile.am
+  sed -i 's|MUGDIR|"/usr/share/pixmaps"|g' mug.c
+}
 
 build() {
   cd $srcdir/mu-$pkgver
-  ./configure --prefix=/usr --disable-gtk --disable-webkit
+  # msg2pdf and mug will be built only if webkitgtk is installed
+  autoreconf --force --install
+  ./configure --prefix=/usr
   make
 }
 
 package() {
   cd $srcdir/mu-$pkgver
   make DESTDIR=$pkgdir install
-  rm $pkgdir/usr/share/man/man1/mug.1
+  # if msg2pdf and mug were built, install them
+  # if not, remove the unneeded mug manpage
+  if [ -f toys/msg2pdf/msg2pdf ]; then
+    install -m755 toys/msg2pdf/msg2pdf $pkgdir/usr/bin/msg2pdf
+  fi
+  if [ -f toys/mug/mug ]; then
+    install -m755 toys/mug/mug $pkgdir/usr/bin/mug
+    install -Dm644 toys/mug/mug.svg $pkgdir/usr/share/pixmaps/mug.svg
+  else
+    rm $pkgdir/usr/share/man/man1/mug.1
+  fi
 }

@@ -1,0 +1,59 @@
+_pkgname=mono
+pkgname=mono-git
+pkgver=20131019
+pkgrel=1
+pkgdesc="Free implementation of the .NET platform including runtime and compiler"
+
+url="http://www.mono-project.com/"
+arch=('i686' 'x86_64')
+
+license=('GPL' 'LGPL2' 'MPL' 'custom:MITX11')
+depends=('zlib' 'libgdiplus>=2.10' 'sh')
+makedepends=('git' 'pkgconfig' 'mono')
+options=('!libtool' '!makeflags')
+provides=('monodoc' 'mono=3.2.0')
+conflicts=('monodoc')
+source=(git://github.com/mono/mono.git
+        mono.binfmt.d)
+md5sums=('SKIP'
+         'b9ef8a65fea497acf176cca16c1e2402')
+
+pkgver()
+{
+	cd ${srcdir}/${_pkgname}
+	git log -1 --format='%cd' --date=short | tr -d -- '-'
+}
+
+build() 
+{
+   cd ${srcdir}/${_pkgname}
+
+   #build mono
+   ./autogen.sh --prefix=/usr --sysconfdir=/etc \
+               --with-libgdiplus=installed
+   make || return 1
+
+   # build jay
+   cd ${srcdir}/${_pkgname}/mcs/jay
+   make || return 1
+}
+
+package() {
+  cd ${srcdir}/${_pkgname}
+  make DESTDIR=${pkgdir} install || return 1
+  
+  #install jay
+  cd ${srcdir}/${_pkgname}/mcs/jay
+  make DESTDIR=${pkgdir} prefix=/usr install=../../install-sh install
+  cd ${srcdir}/${_pkgname}
+
+  # install binfmt conf file and pathes
+  install -D -m644 "${srcdir}"/mono.binfmt.d "${pkgdir}"/usr/lib/binfmt.d/mono.conf
+
+  #install license
+  mkdir -p ${pkgdir}/usr/share/licenses/${pkgname}
+  install -m644 mcs/MIT.X11 ${pkgdir}/usr/share/licenses/${pkgname}/
+
+  #fix the .pc file to be able to request mono on what it depends, fixes #go-oo build
+  sed -i -e "s:#Requires:Requires:" ${pkgdir}/usr/lib/pkgconfig/mono.pc
+}
