@@ -1,6 +1,6 @@
 # Maintainer: mindcat <444303908@qq.com>
 pkgname=kwplayer-git
-pkgver=194.0b41684
+pkgver=204.564829c
 pkgrel=1
 pkgdesc="An elegent music player"
 url="https://github.com/LiuLang/kwplayer"
@@ -9,8 +9,7 @@ license=('GPL3')
 depends=('gst-plugins-ugly' 'gst-plugins-good' 'gstreamer' 'python-cairo'
          'python-gobject' 'python-mutagenx' 'gtk3'
          'python-dbus' 'dbus-glib' 'gst-libav' 'gst-plugins-base')
-optdepends=('leveldb: for caches data'
-            'gnome-icon-theme: show toolbar icons' )
+optdepends=('leveldb: for caches data' 'gnome-icon-theme: show toolbar icons')
 makedepends=('git')
 conflicts=()
 replaces=()

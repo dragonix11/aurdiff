@@ -1,0 +1,31 @@
+# Maintainer: Andrea De Angelis (Dea1993) - andrea.deangelis93@gmail.com
+
+pkgname=snake_pygame
+pkgver=0.6.2
+pkgrel=1
+pkgdesc="A simple Snake game written in Python"
+arch=('any')
+url="http://deasproject.altervista.org"
+license=('GPL2')
+depends=('python2-pygame' 'python2-numpy')
+source=("snake_${pkgver}.7z"::"http://sourceforge.net/projects/snakepygame/files/snake_0.6.2.7z/download")
+md5sums=('3eb237c7934eb4a9aa0ec301a01e98cc')
+
+package() {
+	cd "${srcdir}/snake_${pkgver}"
+
+	install -m 755 -d "${pkgdir}/usr/share/${pkgname}"
+	install -m 755 -t "${pkgdir}/usr/share/${pkgname}" "snake_pygame.py"
+
+	install -m 755 -d "${pkgdir}/usr/share/${pkgname}/Sound"
+	install -m 644 -t "${pkgdir}/usr/share/${pkgname}/Sound" Sound/*
+
+	install -m 755 -d "${pkgdir}/usr/share/${pkgname}/Immagini"
+	install -m 644 -t "${pkgdir}/usr/share/${pkgname}/Immagini" Immagini/*
+	
+	install -m 755 -d "${pkgdir}/usr/share/applications/"
+	install -m 755 -t "${pkgdir}/usr/share/applications/" "snake_pygame.desktop"
+	
+	install -m 755 -d "${pkgdir}/usr/bin"
+	install -m 755 -t "${pkgdir}/usr/bin/" "snake_pygame"
+} 

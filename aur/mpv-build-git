@@ -1,7 +1,7 @@
 # Maintainer: Gustavo Alvarez <s1lpkn07@gmail.com>
 
 pkgname=mpv-build-git
-pkgver=20131018.e046fa5
+pkgver=20131019.bea36dc
 pkgrel=1
 pkgdesc="Video player based on MPlayer/mplayer2 (uses statically linked ffmpeg). (GIT version)"
 arch=('i686' 'x86_64')
@@ -40,7 +40,7 @@ prepare() {
 
   # Make mpv/ffmpeg build flags
   sed 's|OPTIONS="|OPTIONS="--disable-programs |g' -i scripts/ffmpeg-config
-  sed 's|OPTIONS="|OPTIONS="--prefix=/usr --confdir=/etc/mpv --extra-cflags=-I/usr/include/samba-4.0 --enable-sdl --enable-sdl2 --disable-rpath --disable-libquvi4 --enable-openal --lua=52 --disable-pdf|g' -i scripts/mpv-config
+  sed 's|OPTIONS="|OPTIONS="--prefix=/usr --confdir=/etc/mpv --enable-sdl --enable-sdl2 --disable-rpath --disable-libquvi4 --enable-openal --lua=52 --disable-pdf|g' -i scripts/mpv-config
 }
 
 build() {
