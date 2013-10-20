@@ -5,11 +5,12 @@
 pkgname=libpoco-basic
 _pkgver_main=1.4.6
 pkgver=${_pkgver_main}p2
-pkgrel=1
+pkgrel=4
 pkgdesc="C++ class libraries for network-centric, portable applications, basic edition"
 arch=('i686' 'x86_64')
 url="http://www.pocoproject.org"
 license=('custom:boost')
+depends=('zlib' 'pcre' 'expat')
 makedepends=('gcc' 'make')
 source=(
   ${url}/releases/poco-${_pkgver_main}/poco-${pkgver}.tar.gz
@@ -20,7 +21,7 @@ sha256sums=(
 build()
 {
   cd "${srcdir}/poco-${pkgver}"
-  ./configure --prefix=/usr --no-samples --no-tests
+  ./configure --prefix=/usr --no-samples --no-tests --unbundled --static --shared
   make
 }
 
@@ -31,4 +32,5 @@ package()
   install -Dm644 'LICENSE' "${pkgdir}/usr/share/licenses/${pkgname}/LICENSE"
   # remove debugging libraries
   rm "${pkgdir}/usr/lib/libPoco"*"d.so"*
+  rm "${pkgdir}/usr/lib/libPoco"*"d.a"
 }

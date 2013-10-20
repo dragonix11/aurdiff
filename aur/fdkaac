@@ -1,8 +1,8 @@
 # AUR Package Author: PelPix <kylebloss@pelpix.info>
 
 pkgname=fdkaac
-pkgver=0.3.0
-pkgrel=6
+pkgver=0.3.2
+pkgrel=1
 pkgdesc="Encoder frontend for libfdk-aac"
 arch=('i686' 'x86_64')
 url="https://github.com/nu774/fdkaac"

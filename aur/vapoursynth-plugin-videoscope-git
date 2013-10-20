@@ -13,9 +13,9 @@ provides=("vapoursynth-plugin-${_plug}")
 conflicts=("vapoursynth-plugin-${_plug}")
 makedepends=('git')
 source=("${_plug}::git://github.com/dubhater/vapoursynth-${_plug}.git"
-        'COPYING')
+        'COPYING::http://www.wtfpl.net/txt/copying/')
 md5sums=('SKIP'
-         '389a9e29629d1f05e115f8f05c283df5')
+         '8365d07beeb5f39d87e846dca3ae7b64')
 options=('!libtool')
 _gitname="${_plug}"
 

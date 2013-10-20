@@ -1,7 +1,7 @@
 # Maintainer: ninian <mcfadzean.org.uk ta linux>
 
 pkgname=fyr
-pkgver=1.4.2
+pkgver=1.5.0
 pkgrel=1
 pkgdesc="Manages a menu of application launchers, either executables or desktop files. Also launches applications & links from desktop files."
 arch=('any')
@@ -10,7 +10,7 @@ license=('MIT')
 depends=('bash' 'dmenu' 'libnotify')
 install=$pkgname.install
 source=("http://appstogo.mcfadzean.org.uk/dl/$pkgname/$pkgname-$pkgver.tar.gz")
-md5sums=('dc1092c45d2a167c09cf4b7070825ee4')
+md5sums=('baa166f07ab8ccc8f30dc23c96829d5e')
 
 package() {
   cd "$srcdir/$pkgname-$pkgver"

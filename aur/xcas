@@ -2,7 +2,7 @@
 # Maintainer: Laurent Hofer <laurenth at laurenth dot net>
 pkgname=xcas
 pkgver=1.1.0
-pkgrel=13
+pkgrel=14
 pkgdesc="Xcas Computer Algebra System"
 arch=('i686' 'x86_64')
 url="http://www-fourier.ujf-grenoble.fr/~parisse/giac.html"
@@ -13,7 +13,7 @@ provides=('xcas' 'giac')
 conflicts=('xcas-bin')
 install=xcas.install
 source=("http://www-fourier.ujf-grenoble.fr/~parisse/giac/giac-${pkgver}.tar.bz2") 
-md5sums=('7cda12e99985ae961eb29dd97f4cd543')
+md5sums=('2ffe784d75d71b21824f9dbddc31f0c9')
 build() {
   CXXFLAGS='-fpermissive'
   LDFLAGS='-lX11'

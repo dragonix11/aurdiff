@@ -1,9 +1,9 @@
 # Maintainer: Holger Nahrstaedt
 
 pkgname=scilab-master
-pkgver=1382108482
-pkgrel=1
-pkg_addon=2013-10-19
+pkgver=1382142280
+pkgrel=2
+pkg_addon=2013-10-20
 pkgdesc='A scientific software package for numerical computations.'
 arch=('i686' 'x86_64')
 url='http://www.scilab.org/'
@@ -14,18 +14,18 @@ depends=('eigen' 'bwidget' 'bsh' 'xalan-java' 'hdf5' 'curl' 'arpack'
 
 'java-skinlf' 'java-testng' 'jgoodies-looks' 'fop-hyph' 'docbook-xsl-saxon'
 'java-qdox' 'java-flexdock' 'scirenderer' 'jrosetta' 'javahelp2' 'jlatexmath-fop'
-'jgraphx' 'jeuclid-core' 'pvm' 'jing' 'saxon6'
+'jgraphx' 'jeuclid-core' 'pvm' 'jing' 'saxon6' 'eclipse-ecj'
 
 'java-commons-beanutils' 'antlr2'
 )
 [[ $CARCH == x86_64 ]] && \
   source=("http://downloadarea.scilab.org/download/${pkg_addon}/scilab-master-${pkgver}-src.tar.gz" 'scilab-master.desktop')
 [[ $CARCH == i686 ]] && \
-  source=("http://www.scilab.org/download/${pkgver}/scilab-master-${pkgver}-src.tar.gz" \
+  source=("http://downloadarea.scilab.org/download/${pkg_addon}/scilab-master-${pkgver}-src.tar.gz" \
   'scilab-master.desktop')
-[[ $CARCH == x86_64 ]] && md5sums=(  '931360e39671cdd159379a647841e5c3'
+[[ $CARCH == x86_64 ]] && md5sums=(  '16c1ec552c25d9f28d12f974e49c62ab'
   'f545de3ff247ea8e9c9f56cbae57f29e')
-[[ $CARCH == i686 ]] && md5sums=(  '94b3538d731b2e16395574360bc239e9'
+[[ $CARCH == i686 ]] && md5sums=(  '16c1ec552c25d9f28d12f974e49c62ab'
   'f545de3ff247ea8e9c9f56cbae57f29e')
  
 install=$pkgname.install
@@ -64,7 +64,7 @@ package() {
 	${pkgdir}/usr/share/licenses/scilab
   install -Dm644 ${srcdir}/${pkgname}.desktop \
 	${pkgdir}/usr/share/applications/${pkgname}.desktop
-  sed -i 's#/jni##' ${pkgdir}/usr/share/scilab/etc/librarypath.xml
+  #sed -i 's#/jni##' ${pkgdir}/usr/share/scilab/etc/librarypath.xml
   #cd $srcdir/scilab-master-${pkgver}/thirdparty
   #for _i in *.jar
   #do
