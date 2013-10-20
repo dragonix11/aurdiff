@@ -2,7 +2,7 @@
 # Contributor: mac <poczciwiec at gmail dot com>
 
 pkgname=brackets
-_build=31
+_build=32
 pkgver=sprint$_build
 pkgrel=1
 pkgdesc="A code editor for HTML, CSS and JavaScript. "
@@ -12,26 +12,22 @@ license=("MIT")
 depends=("brackets-lib" "gconf" "nodejs" "nspr" "systemd")
 makedepends=("prelink")
 optdepends=(
-	"chromium: to enable Live Preview"
+	"google-chrome: to enable Live Preview"
 	"gnuplot: to enable node benchmarking"
 	"gtk2: to enable native UI"
 	"ruby: to enable LiveDevelopment Inspector"
 	"desktop-file-utils: for update-desktop-database"
 	"hicolor-icon-theme: for hicolor theme hierarchy"
 )
-provides=("brackets" "adobe-brackets")
 conflicts=("brackets-git")
-replaces=()
-backup=()
-options=()
 install=$pkgname.install
 
 if [[ "$CARCH" == "i686" ]]; then
-	source=("https://www.dropbox.com/s/ksq6v6atf3oxfsf/brackets-sprint-31-LINUX32.deb")
-	sha512sums=("0829692a8d361cf0bedaf703462f135488d6117e1e63ed2ce7e49b49a36dbf3d6565c0e2313efb86a2aef97518269a1b2feebe4a40c51fda98f1e857b4c993b4")
+	source=("https://www.dropbox.com/s/xe6rr7dykxo5z3f/brackets-sprint-32-LINUX32.deb")
+	sha512sums=("34d6e1f2b39a193c605b745c0f0682b0e29cf32c278c4020a47f044c6b7d4c21a62f2d72eacb96357d026abcb4c56bc885f72b9e15f834e1509473d17555559a")
 elif [[ "$CARCH" == "x86_64" ]]; then
-	source=("https://www.dropbox.com/s/yi3b9zzx1y8bmzi/brackets-sprint-31-LINUX64.deb")
-	sha512sums=("d4206b0fa9564681a9f32edd8a04c646b9d6208f6fd69efd917f83f04e960142fb2f3972e4b719784498579bb28a99294b77c4f2c8a8912154ffe1fc80aa7f84")
+	source=("https://www.dropbox.com/s/43wjl5315jpoxoc/brackets-sprint-32-LINUX64.deb")
+	sha512sums=("2a9cb7b020af508caf9d496e4efa8a06d2911e717eccfd99997cdc6b26d84027149be0c883b23d7d014ced9bacbd2781be3c5323031694ef07628706eeb5ef52")
 fi
 
 prepare() {
@@ -72,5 +68,4 @@ package() {
 
 	echo "  -> Installing license..."
 	install -Dm755 usr/share/doc/$pkgname/copyright $pkgdir/usr/share/licenses/$pkgname/copyright
-
 }

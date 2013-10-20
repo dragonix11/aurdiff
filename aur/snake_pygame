@@ -1,15 +1,15 @@
-# Maintainer: Andrea De Angelis (Dea1993) - andrea.deangelis93@gmail.com
+# Maintainer: Dea1993 <andrea.deangelis93@gmail.com>
 
 pkgname=snake_pygame
-pkgver=0.6.2
+pkgver=0.6.3
 pkgrel=1
-pkgdesc="A simple Snake game written in Python"
+pkgdesc="A remake of classic Snake game written in Python"
 arch=('any')
 url="http://deasproject.altervista.org"
 license=('GPL2')
-depends=('python2-pygame' 'python2-numpy')
-source=("snake_${pkgver}.7z"::"http://sourceforge.net/projects/snakepygame/files/snake_0.6.2.7z/download")
-md5sums=('3eb237c7934eb4a9aa0ec301a01e98cc')
+depends=('python2-pygame' 'python2-numpy' 'python2-xdg')
+source=("snake_${pkgver}.7z"::"http://sourceforge.net/projects/snakepygame/files/snake_${pkgver}.7z/download")
+md5sums=('f4e532ec172ef656d91c2ca3724fcaa0')
 
 package() {
 	cd "${srcdir}/snake_${pkgver}"

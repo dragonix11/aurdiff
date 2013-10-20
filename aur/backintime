@@ -6,7 +6,7 @@
 pkgname=backintime
 true && pkgname=(backintime backintime-gtk backintime-gnome backintime-qt4)
 pkgver=1.0.28
-pkgrel=2
+pkgrel=3
 arch=('any')
 url="http://backintime.le-web.org/"
 license=('GPL')
@@ -83,6 +83,7 @@ package_backintime-qt4() {
   'python2-secretstorage' 'xorg-utils' 'python2-pyqt' 'kdebindings-python2')
   optdepends=('openssh: Support for remote backups over SFTP')
   provides=('backintime')
+  replaces=('backintime-kde4')
   conflicts=('backintime-bzr' 'backintime-kde4'
   'backintime-gnome' 'backintime-gtk' 'backintime')
 

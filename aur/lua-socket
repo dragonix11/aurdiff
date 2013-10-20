@@ -1,38 +1,46 @@
 # Maintainer: Alfredo Palhares <masterkorp@masterkorp.net>
 # Contributor: Shizeeg Unadequatov <shizeeque@gmail.com>
 
+_lua=5.2
+
 pkgname=lua-socket
 _pkgname=luasocket
 pkgver=3.0.rc1
 _pkgver=3.0-rc1
-pkgrel=1
-pkgdesc='A comprehensive networking support library for Lua, with IPv6 support'
+pkgrel=3
+pkgdesc="A comprehensive networking support library for Lua, with IPv6 support (Lua 5.2)"
 arch=('i686' 'x86_64')
 url="https://github.com/diegonehab/luasocket"
 license=('MIT')
-depends=('lua')
+makedepends=('lua51')
 conflicts=('luasocket-git')
-source=("https://github.com/diegonehab/${_pkgname}/archive/v${_pkgver}.tar.gz")
-sha256sums=('8b67d9b5b545e1b694753dab7bd6cdbc24c290f2b21ba1e14c77b32817ea1249')
+source=("https://github.com/diegonehab/${_pkgname}/archive/v${_pkgver}.tar.gz"
+        'makefile.patch'
+        'install-headers.patch')
+sha256sums=('8b67d9b5b545e1b694753dab7bd6cdbc24c290f2b21ba1e14c77b32817ea1249'
+            'b5a851c6708af046a4abc2304126df730bbf51c96e70c880af44b99a155adddb'
+            '25d2621921f44f6b209b14cec2e092a0e927395087f95da4e44421a6d67e289e')
 
 prepare() {
   cd "${srcdir}"
   rm -fr "${pkgname}"
   cp -R "${_pkgname}-${_pkgver}" "${pkgname}"
+
+  cd "${pkgname}"
+  patch -p1 -i "${srcdir}/makefile.patch"
+  patch -p1 -i "${srcdir}/install-headers.patch"
 }
 
 build() {
   cd "${pkgname}"
 
-  make prefix=/usr
+  make linux LUAV=${_lua} LUAINC_linux="/usr/include/lua${_lua}"
 }
 
 package() {
   cd "${pkgname}"
 
-  make DESTDIR="${pkgdir}" prefix=/usr install-both-unix
+  make DESTDIR="${pkgdir}" LUAV=${_lua} prefix=/usr install-unix install-headers
   install -Dm644 LICENSE "${pkgdir}/usr/share/licenses/${pkgname}/LICENSE"
-
-  rm -fr "${pkgdir}/usr/share/lua/5.1" "${pkgdir}/usr/lib/lua/5.1"
 }
 

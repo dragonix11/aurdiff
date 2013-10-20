@@ -14,7 +14,7 @@
 
 pkgname=vte-mosh-fix
 pkgver=0.28.2
-pkgrel=2
+pkgrel=3
 pkgdesc="Virtual Terminal Emulator widget for use with GTK2 with the fix for mosh applied"
 arch=('i686' 'x86_64')
 license=('LGPL')
@@ -47,7 +47,7 @@ build() {
 }
 
 package(){
-  cd "$srcdir/$pkgname-$pkgver"
+  cd "$srcdir/vte-$pkgver"
   make DESTDIR="$pkgdir" install
 
   rm "$pkgdir/usr/lib/vte/gnome-pty-helper"

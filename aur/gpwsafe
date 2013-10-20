@@ -1,0 +1,26 @@
+# Maintainer: Anatolii Sakhnik <sakhnik@gmail.com>
+pkgname=gpwsafe
+pkgver=0.1.9
+pkgrel=1
+pkgdesc="A commandline program for managing encrypted password databases"
+arch=('i686' 'x86_64')
+url="https://github.com/sakhnik/gpwsafe"
+license=('GPL')
+depends=('libgcrypt' 'gtk3' 'libcap')
+makedepends=('autoconf' 'asciidoc' 'boost')
+source=(${url}/archive/v${pkgver}.tar.gz)
+md5sums=('8f9e088207f2fdab3fec679ef8ef11b4')
+install=${pkgname}.install
+
+build()
+{
+    cd ${srcdir}/${pkgname}-${pkgver}
+    ./autogen.sh --prefix=/usr
+    make
+}
+
+package()
+{
+    cd ${srcdir}/${pkgname}-${pkgver}
+    make DESTDIR=${pkgdir} install
+}

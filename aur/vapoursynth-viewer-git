@@ -7,7 +7,7 @@ pkgdesc="A simple program for previewing VapourSynth scripts. (GIT version)"
 arch=('i686' 'x86_64')
 url="https://github.com/dubhater/vapoursynth-viewer"
 license=('custom:WTFPL')
-depends=('vapoursynth-git>=r19.143.g1d5ff43')
+depends=('vapoursynth')
 provides=("vapoursynth-viewer")
 conflicts=("vapoursynth-viewer")
 makedepends=('git')
