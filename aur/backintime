@@ -4,19 +4,23 @@
 # Contributor: Dylon Edwards <deltaecho@archlinux.us>
 
 pkgname=backintime
-true && pkgname=(backintime backintime-gtk backintime-gnome backintime-qt4)
+true && pkgname=(backintime backintime-gtk backintime-gnome backintime-kde4)
 pkgver=1.0.28
-pkgrel=3
+pkgrel=4
 arch=('any')
 url="http://backintime.le-web.org/"
 license=('GPL')
-depends=('python2' 'rsync' 'cron' 'python2-gnomekeyring' 'python2-keyring' 'python2-secretstorage')
+depends=('openssh' 'python2' 'rsync' 'cron' 'python2-gnomekeyring' 'python2-keyring' 'python2-secretstorage')
 optdepends=('openssh: Support for remote backups over SFTP')
 source=("http://backintime.le-web.org/download/backintime/backintime-$pkgver.tar.gz")
 sha256sums=('d5c6785f2c9efa2d50242847b0dbaff9cc9c4a3c5f3c48c7b6844c56f591d5ba')
 
 build() {
   cd common
+  ./configure
+  make
+
+  cd "$srcdir/notify"
   ./configure
   make
 
@@ -29,29 +33,33 @@ build() {
 
 package_backintime() {
   pkgdesc="Simple backup system inspired from the Flyback Project and TimeVault. CLI version."
-  depends=('python2' 'rsync' 'cron' 'python2-gnomekeyring' 'python2-keyring'
-  'python2-secretstorage')
-  optdepends=('openssh: Support for remote backups over SFTP')
-  conflicts=('backintime-bzr' 'backintime-kde4'
-  'backintime-gnome' 'backintime-gtk' 'backintime-qt4')
+  depends=('openssh' 'python2' 'rsync' 'cron' 'python2-gnomekeyring'
+  'python2-keyring' 'python2-secretstorage')
+  optdepends=('backintime-gtk: GTK GUI version'
+  'backintime-gnome: Gnome GUI version'
+  'backintime-kde4: KDE4 GUI version'
+  'sshfs: FUSE client based on the SSH File Transfer Protocol'
+  'encfs: Encrypted filesystem in user-space')
+  conflicts=('backintime-bzr')
 
   cd common
   make DESTDIR="$pkgdir" install
+
+  cd "$srcdir/notify"
+  make DESTDIR="$pkgdir" install
+
   sed -e 's|^python |python2 |g' -e 's|^ssh-agent python |ssh-agent python2 |g' \
     -i "$pkgdir"/usr/bin/*
 }
 
 package_backintime-gnome() {
   pkgdesc="Simple backup system inspired from the Flyback Project and TimeVault. Gnome GUI version."
-  depends=('python2' 'rsync' 'cron' 'python2-gnomekeyring' 'python2-keyring'
-  'python2-secretstorage' 'pygtk' 'python2-notify' 'gnome-python' 'meld' 'gksu' 'gnome-session')
-  optdepends=('openssh: Support for remote backups over SFTP')
-  provides=('backintime')
-  conflicts=('backintime-bzr' 'backintime-kde4'
-  'backintime' 'backintime-gtk' 'backintime-qt4')
-
-  cd common
-  make DESTDIR="$pkgdir" install
+  depends=('openssh' 'python2' 'rsync' 'cron' 'python2-gnomekeyring'
+  'python2-keyring' "backintime=$pkgver" 'python2-secretstorage'
+  'pygtk' 'python2-notify' 'gnome-python' 'meld' 'gksu' 'gnome-session')
+  optdepends=('sshfs: FUSE client based on the SSH File Transfer Protocol'
+  'encfs: Encrypted filesystem in user-space')
+  conflicts=('backintime-bzr' 'backintime-gtk')
 
   cd "$srcdir/gnome"
   make DESTDIR="$pkgdir" install
@@ -61,15 +69,12 @@ package_backintime-gnome() {
 
 package_backintime-gtk() {
   pkgdesc="Simple backup system inspired from the Flyback Project and TimeVault. GTK GUI version."
-  depends=('python2' 'rsync' 'cron' 'python2-gnomekeyring' 'python2-keyring'
-  'python2-secretstorage' 'pygtk' 'python2-notify' 'gnome-python' 'meld' 'gksu')
-  optdepends=('openssh: Support for remote backups over SFTP')
-  provides=('backintime')
-  conflicts=('backintime-bzr' 'backintime-kde4'
-  'backintime-gnome' 'backintime' 'backintime-qt4')
-
-  cd common
-  make DESTDIR="$pkgdir" install
+  depends=('openssh' 'python2' 'rsync' 'cron' 'python2-gnomekeyring'
+  'python2-keyring' "backintime=$pkgver" 'python2-secretstorage'
+  'pygtk' 'python2-notify' 'gnome-python' 'meld' 'gksu')
+  optdepends=('sshfs: FUSE client based on the SSH File Transfer Protocol'
+  'encfs: Encrypted filesystem in user-space')
+  conflicts=('backintime-bzr' 'backintime-gnome')
 
   cd "$srcdir/gnome"
   make DESTDIR="$pkgdir" install
@@ -77,18 +82,15 @@ package_backintime-gtk() {
     -i "$pkgdir"/usr/bin/*
 }
 
-package_backintime-qt4() {
-  pkgdesc="Simple backup system inspired from the Flyback Project and TimeVault. QT4 GUI version."
-  depends=('python2' 'rsync' 'cron' 'python2-gnomekeyring' 'python2-keyring'
-  'python2-secretstorage' 'xorg-utils' 'python2-pyqt' 'kdebindings-python2')
-  optdepends=('openssh: Support for remote backups over SFTP')
-  provides=('backintime')
-  replaces=('backintime-kde4')
-  conflicts=('backintime-bzr' 'backintime-kde4'
-  'backintime-gnome' 'backintime-gtk' 'backintime')
-
-  cd common
-  make DESTDIR="$pkgdir" install
+package_backintime-kde4() {
+  pkgdesc="Simple backup system inspired from the Flyback Project and TimeVault. KDE4 GUI version."
+  depends=('openssh' 'python2' 'rsync' 'cron' 'python2-keyring'
+  "backintime=$pkgver" 'xorg-utils' 'python2-pyqt' 'kdebindings-python2')
+  replaces=('backintime-qt4')
+  optdepends=('sshfs: FUSE client based on the SSH File Transfer Protocol'
+  'encfs: Encrypted filesystem in user-space'
+  'kdesdk-kompare: Diff/Patch Frontend')
+  conflicts=('backintime-bzr')
 
   cd "$srcdir/kde4"
   make DESTDIR="$pkgdir" install

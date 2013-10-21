@@ -2,34 +2,30 @@
 
 pkgbase=test-split
 pkgname=test-split
-true && pkgname=('foo' 'bar' 'aur_info')
-pkgver=20131018
-pkgrel=1
+true && pkgname=('foo' 'bar' 'test-split')
+pkgver=20131021
+pkgrel=3
 pkgdesc="This is the test-split description. Do not install this package!"
 arch=('any')
 url="http://openrc4arch.site40.net"
 license=('AUR')
-makedepends=('util-linux' 'pam')
-
-pkgver() {
-  date +%Y%m%d
-}
+makedepends=('openrc-base')
 
 package_bar() {
 	true
 	pkgdesc="This is the bar description"
-	depends=("util-linux")
+	depends=("openrc-base")
 }
 
 package_foo() {
 	true
 	pkgdesc="This is the foo description"
-	depends=("pam")
+	depends=("openrc-base")
 }
 
-package_aur_info() {
+package_test-split() {
 	true
 	pkgdesc="This is the test-split description. Do not install this test package!"
 	depends=()
-
+	provides=("test-split=${pkgver}")
 }

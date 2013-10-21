@@ -1,35 +1,29 @@
 # Author: Darth O-Ring
 # Maintainer: Chubby_Lover <chubbyloverb@gmail.com>
 pkgname='x-py-videos-git'
-_gitname="X-Py-Videos"
-pkgver=f34fedf
+_gitname="xpyvideos"
+pkgver=70.18f0355
 pkgrel=1
-epoch=
 pkgdesc="Python program for downloading videos from xvideos, xhamster, and redtube."
 arch=('any')
-url="https://github.com/Darth-O-Ring/X-Py-Videos"
+url="https://github.com/Darth-O-Ring/xpyvideos"
 license=('GPL')
 depends=('python2')
-makedepends=('git')
-provides=('X-Py-Videos')
-conflicts=('X-Py-Videos')
-source=("git://github.com/Darth-O-Ring/${_gitname}")
+makedepends=('git' 'python2-setuptools')
+provides=('xpyvideos')
+conflicts=('xpyvideos')
+source=("git://github.com/Darth-O-Ring/xpyvideos.git")
 md5sums=('SKIP') #generate with 'makepkg -g'
 
-
-
 pkgver() {
-    cd "$pkgname"
-      # Use the tag of the last commit
-    local ver="$(git describe --long)"
-    printf "%s" "${ver//-/.}"
+  cd "${srcdir}/${_gitname}"
+  printf "%s.%s" "$(git rev-list --count HEAD)" "$(git rev-parse --short HEAD)"
 }
-
 
 
 package() {
 	cd "${srcdir}/${_gitname}"
-	python2 setup.py install --root="${pkgdir}/" --optimize=1
+	python2 setup.py install --root="${pkgdir}" --optimize=1
 }
 
 

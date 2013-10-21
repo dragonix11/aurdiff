@@ -1,0 +1,19 @@
+# Maintainer: fordprefect <g.schlisio@dukun.de>
+_cranname=bit
+_cranver=1.1-10
+pkgname=r-cran-$_cranname
+pkgver=1.1_10
+pkgrel=1
+pkgdesc="A class for vectors of 1-bit booleans"
+url="http://cran.r-project.org/web/packages/${_cranname}/index.html"
+arch=('any')
+license=('GPL2')
+depends=('r')
+source=("http://cran.r-project.org/src/contrib/${_cranname}_${_cranver}.tar.gz")
+md5sums=('7be619243c8d1f97fe66a19996ceb05c')
+ 
+package() {
+    mkdir -p ${pkgdir}/usr/lib/R/library
+    cd ${srcdir}
+    R CMD INSTALL ${_cranname} -l ${pkgdir}/usr/lib/R/library
+}

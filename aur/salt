@@ -2,20 +2,24 @@
 
 pkgname=salt
 pkgver=0.17.1
-pkgrel=1
+pkgrel=2
 pkgdesc="A remote execution and communication system built on zeromq"
 arch=(any)
 url="https://github.com/saltstack/salt"
 license=("APACHE")
 depends=('python2'
          'sshpass'
+	 'libsodium'
+	 'python2-ply'
+	 'python2-cffi'
          'python2-yaml'
          'python2-jinja'
          'python2-pyzmq'
          'python2-crypto'
          'python2-psutil'
          'python2-msgpack'
-         'python2-m2crypto')
+         'python2-m2crypto'
+         'python2-pycparser')
 
 backup=('etc/salt/master'
         'etc/salt/minion')

@@ -9,7 +9,7 @@ arch=(any)
 url="http://git.infradead.org/users/dedekind/bmap-tools.git"
 license=('GPL2')
 depends=('python2')
-makedepends=('git')
+makedepends=('git' 'python2-setuptools')
 source=(git://git.infradead.org/users/dedekind/bmap-tools.git)
 sha256sums=('SKIP')
 

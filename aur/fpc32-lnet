@@ -1,6 +1,6 @@
 pkgname=fpc32-lnet
 pkgver=0.6.5
-pkgrel=1
+pkgrel=2
 pkgdesc="lNet or Lightweight Networking Library is a collection of classes and components to enable event-driven TCP or UDP networking. (multilib)"
 url="http://wiki.freepascal.org/lNet"
 license=("LGPL")
@@ -15,16 +15,14 @@ _fpcver=`fpc -iV`
 prepare() {
 	cd "${srcdir}/lnet/lib"
 	rm lws2tcpip.pp
+	rm openssl.pas
+	sed -i "s,OPENSSLaddallalgorithms,OpenSSL_add_all_algorithms,g" lnetssl.pp
 	find . -type f -exec dos2unix {} \;
 }
 
 build() {
   cd "${srcdir}/lnet/lib"
   for file in `ls *.pp`
-  do
-    ppcross386 -O3 -Xs -XX -Isys -Sm -Tlinux $file
-  done
-  for file in `ls *.pas`
   do
     ppcross386 -O3 -Xs -XX -Isys -Sm -Tlinux $file
   done
