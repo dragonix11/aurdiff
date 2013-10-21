@@ -1,5 +1,5 @@
 pkgname=rust-mustache
-pkgver=20131018
+pkgver=20131020
 pkgrel=1
 pkgdesc='Mustache templating system for Rust programming language'
 arch=('i686' 'x86_64')
@@ -8,7 +8,7 @@ license=('MIT')
 depends=('rust-git')
 makedepends=('git' 'rust-git')
 
-_gitroot='https://github.com/erickt/rust-mustache.git'
+_gitroot='https://github.com/eerden/rust-mustache.git'
 _gitname='rust-mustache'
 
 

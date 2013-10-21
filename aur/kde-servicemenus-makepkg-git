@@ -2,7 +2,7 @@
 
 pkgname=kde-servicemenus-makepkg-git
 pkgver=20131021
-pkgrel=1
+pkgrel=3
 pkgdesc="Kde servicemenu for makepkg"
 arch=('any')
 url="https://github.com/udeved/kde-makepkg-servicemenu"
@@ -33,11 +33,7 @@ package() {
 
   install -Dm755  ServiceMenus/makepkg.desktop $pkgdir/usr/share/kde4/services/ServiceMenus/makepkg.desktop
 
-  install -Dm755  bin/pkg_mk $pkgdir/usr/bin/pkg_mk
-  install -Dm755  bin/pkg_check $pkgdir/usr/bin/pkg_check
-  install -Dm755  bin/pkg_add_checksum $pkgdir/usr/bin/pkg_add_checksum
-
-  install -Dm755  mime/packages/text-PKGBUILD.xml $pkgdir/usr/share/mime/packages/text-PKGBUILD.xml
-  install -Dm755 mime/text/PKGBUILD.xml $pkgdir/usr/share/mime/text/PKGBUILD.xml
+  install -Dm755 mime/application/x-PKGBUILD.xml $pkgdir/usr/share/mime/application/x-PKGBUILD.xml
+  install -Dm755 mime/packages/application-x-PKGBUILD.xml $pkgdir/usr/share/mime/packages/application-x-PKGBUILD.xml
 
 }

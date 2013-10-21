@@ -1,15 +1,15 @@
 # Maintainer: naelstrof <naelstrof@gmail.com>
 pkgname=slop
-pkgver=v1.6.2
+pkgver=v1.6.3
 pkgrel=1
 pkgdesc="slop (Select Operation) is an application that queries for a selection from the user and prints the region to stdout."
 arch=( 'i686' 'x86_64' )
 url="https://github.com/naelstrof/$pkgname"
-license=( 'MIT' )
+license=( 'GPL' )
 depends=( 'libxext' 'libx11' )
 makedepends=( 'make' 'libxext' 'libx11' )
 source=( "https://github.com/naelstrof/$pkgname/archive/master.zip" )
-md5sums=('1b855cd36fc08c5aa1e3c59aff97b135')
+md5sums=('fda36e43ef8f776ce09fa81b808f909d')
 
 build() {
     cd "$srcdir/$pkgname-master"

@@ -7,7 +7,7 @@
 _pkgbasename=pam
 pkgname=lib32-${_pkgbasename}
 pkgver=1.1.8
-pkgrel=1
+pkgrel=2
 pkgdesc="PAM (Pluggable Authentication Modules) library (32-bit)"
 arch=(x86_64)
 license=(GPL2)
@@ -16,6 +16,7 @@ depends=(lib32-glibc lib32-libtirpc lib32-db lib32-cracklib $_pkgbasename)
 makedepends=(lib32-flex gcc-multilib) # w3m docbook-xml>=4.4 docbook-xsl
 options=(!libtool !emptydirs)
 #backup=(etc/security/{access.conf,group.conf,limits.conf,namespace.conf,namespace.init,pam_env.conf,time.conf} etc/default/passwd etc/environment)
+install=pam.install
 source=(https://fedorahosted.org/releases/l/i/linux-pam/Linux-PAM-$pkgver.tar.bz2
         #http://www.kernel.org/pub/linux/libs/pam/library/Linux-PAM-$pkgver.tar.bz2
         ftp://ftp.archlinux.org/other/pam_unix2/pam_unix2-2.9.1.tar.bz2

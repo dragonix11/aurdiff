@@ -1,0 +1,28 @@
+# Contributor: Doug Newgard <scimmia22 at outlook dot com>
+# Maintainer: Robert Orzanna <orschiro at gmail dot com>
+
+pkgname=timeshift-bin
+pkgver=1.1
+pkgrel=1
+pkgdesc="A system restore utility for Linux"
+arch=('i686' 'x86_64')
+url="http://teejeetech.blogspot.nl/p/timeshift.html"
+license=('GPL')
+depends=('gtk3' 'rsync' 'libgee06' 'libsoup' 'json-glib')
+optdepends=('gksu: run timeshift from a menu')
+options=('!emptydirs')
+if [[ "$CARCH" == "i686" ]]; then
+  _arch='i386'
+  sha256sums=('f3de6fc6f3019a6db5044eeb654aa9d12d7030a2ff71957f0f340e43c69c4b85')
+elif [[ "$CARCH" == "x86_64" ]]; then
+  _arch='amd64'
+  sha256sums=('4332bde4c4db5de5e4f8f543cb38c93f455fe254864259d5a9d499d6df48438c')
+fi
+source=("http://dl.dropbox.com/u/67740416/linux/timeshift-latest-$_arch.run")
+
+package() {
+  cd "$srcdir"
+
+  sh ./timeshift-latest-$_arch.run --target "$pkgdir" --noexec
+  rm "$pkgdir/install.sh"
+}
