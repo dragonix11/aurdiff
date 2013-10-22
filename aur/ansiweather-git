@@ -1,43 +1,21 @@
 # Maintainer: Andrew Gallant <jamslam@gmail.com>
-pkgname=ansiweather-git
-pkgver=20131021
-pkgrel=2
+_pkgname=ansiweather
+pkgname=$_pkgname-git
+pkgver=20131022
+pkgrel=1
 pkgdesc="Weather in your terminal, with ANSI colors and Unicode symbols."
 arch=('any')
 url="https://github.com/fcambus/ansiweather"
 license=('BSD')
 depends=('jq')
 makedepends=('git')
-provides=()
-conflicts=()
-replaces=()
-backup=()
-options=()
-install=
-source=()
-noextract=()
-md5sums=()
-
-_gitroot=git://github.com/fcambus/ansiweather
-_gitname=ansiweather
-
-build() {
-  cd "$srcdir"
-  msg "Connecting to GIT server...."
-
-  if [[ -d "$_gitname" ]]; then
-    cd "$_gitname" && git pull origin
-    msg "The local files are updated."
-  else
-    git clone "$_gitroot" "$_gitname"
-  fi
-
-  msg "GIT checkout done or server timeout"
-}
+provides=("$_pkgname")
+conflicts=("$_pkgname")
+source=("$_pkgname::git+https://github.com/fcambus/ansiweather")
+md5sums=('SKIP')
 
 package() {
-  cd "$srcdir/$_gitname"
-
+  cd "$_pkgname"
   install -D -m 755 ansiweather "$pkgdir/usr/bin/ansiweather"
   for f in AUTHORS ChangeLog LICENSE README.md; do
     install -D -m 644 "$f" "$pkgdir/usr/share/doc/ansiweather/$f"

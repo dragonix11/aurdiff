@@ -1,0 +1,35 @@
+# Maintainer:  Martin C. Doege <mdoege at compuserve dot com>
+# Contributor: Raphael Scholer <rscholer@gmx.de>
+# Contributor: Eric Waller <ewwaller@gmail.com>
+
+pkgname=basic256
+pkgver=0.9.9.68
+pkgrel=1
+pkgdesc="Educational BASIC programming environment for children"
+arch=('i686 x86_64')
+url="http://www.basic256.org/"
+license=('GPL2')
+depends=('qt4' 'sdl_mixer' 'espeak')
+makedepends=('bison' 'flex')
+source=(http://downloads.sourceforge.net/kidbasic/${pkgname}_${pkgver}.tgz
+        "basic256.desktop")
+md5sums=('7dfab055cb922f95e1569766481edfda'
+         'dfb1ee3ac38d86549ed5673b8ee46b49')
+
+build () {
+	cd "$srcdir/" || return 1
+	qmake-qt4 BASIC256.pro || return 1
+	make || return 1
+}
+
+package () {
+        cd "$srcdir/"
+	install -m 755 -D BASIC256 "${pkgdir}/usr/bin/basic256"
+	install -m 755 -D BASIC256Portable/App/AppInfo/appicon_128.png "${pkgdir}/usr/share/icons/basic256.png"
+	install -m 755 -D basic256.desktop "${pkgdir}/usr/share/applications/basic256.desktop"
+	mkdir -p "${pkgdir}/usr/share/basic256/examples"
+	cp -pr "$srcdir/"Examples/* "${pkgdir}/usr/share/basic256/examples"
+        mkdir -p "${pkgdir}/usr/share/basic256/help"
+        cp -pr "$srcdir/"wikihelp/help/* "${pkgdir}/usr/share/basic256/help"
+        cp -pr "$srcdir/"Translations/* "${pkgdir}/usr/share/basic256/"
+}

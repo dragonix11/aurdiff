@@ -2,7 +2,7 @@
 
 pkgname=btrfs-progs-unstable-integration
 _gitname=${pkgname%-integration}
-pkgver=20131015
+pkgver=20131022.2
 pkgrel=1
 pkgdesc="Btrfs filesystem utilities - David Sterba's unstable 'integration' branch"
 arch=("i686" "x86_64")

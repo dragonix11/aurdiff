@@ -1,8 +1,8 @@
 # Maintainer: udeved <udeved@openrc4arch.site40.net>
 
 pkgname=kde-servicemenus-makepkg-git
-pkgver=20131021
-pkgrel=3
+pkgver=20131022
+pkgrel=1
 pkgdesc="Kde servicemenu for makepkg"
 arch=('any')
 url="https://github.com/udeved/kde-makepkg-servicemenu"

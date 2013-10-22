@@ -1,0 +1,20 @@
+# Maintainer:  Nicolas Pouillard https://nicolaspouillard.fr
+
+_pypkg=netlib
+_python=python2
+
+pkgname=$_python-$_pypkg
+pkgver=0.9.2
+pkgrel=1
+pkgdesc="A collection of network utilities used by pathod and mitmproxy"
+url="https://github.com/mitmproxy/netlib"
+license=('MIT')
+arch=('any')
+depends=("$_python")
+source=(http://pypi.python.org/packages/source/n/$_pypkg/$_pypkg-$pkgver.tar.gz)
+md5sums=('8bb68ba6b4a74bd5dc075c040ea58405')
+
+package() {
+  cd "$srcdir/$_pypkg-$pkgver"
+  $_python setup.py install --root="$pkgdir"
+}
