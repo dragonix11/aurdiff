@@ -2,7 +2,7 @@
 
 pkgname=lldpd
 pkgver=0.7.6
-pkgrel=1
+pkgrel=2
 pkgdesc="LLDP daemon for GNU/Linux implementing both reception and sending"
 arch=('i686' 'x86_64')
 url="https://vincentbernat.github.com/lldpd/"
@@ -10,10 +10,10 @@ license=('custom:"ISC"')
 depends=(libxml2 net-snmp libevent libbsd)
 options=('!libtool')
 install=lldpd.install
-source=(http://media.luffy.cx/files/$pkgname/$pkgname-$pkgver.tar.gz
-	lldpd.service
-        lldpd.install
-        LICENSE)
+source=("http://media.luffy.cx/files/$pkgname/$pkgname-$pkgver.tar.gz"
+	'lldpd.service'
+        'lldpd.install'
+        'LICENSE')
 md5sums=('dbd90a68b91448dcb94a4a77c5d8ef65'
          'd52722f13225f3a8043f6c080354a52e'
          '0b06475bc2048aa29fb1d8c660446f87'
@@ -28,6 +28,6 @@ build() {
 package() {
   cd "$srcdir/$pkgname-$pkgver"
   make DESTDIR="$pkgdir/" install
-  install -Dm644 ../lldpd.service $pkgdir/usr/lib/systemd/system/lldpd.service
-  install -Dm644 ../LICENSE "${pkgdir}/usr/share/licenses/${pkgname}/LICENSE"
+  install -Dm644 ../lldpd.service "$pkgdir/usr/lib/systemd/system/lldpd.service"
+  install -Dm644 ../LICENSE "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
 }

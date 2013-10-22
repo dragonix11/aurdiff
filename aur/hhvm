@@ -2,7 +2,7 @@
 
 pkgname=hhvm
 pkgver=2.2.0
-pkgrel=1
+pkgrel=2
 epoch=
 pkgdesc="Virtual Machine, Runtime, and JIT for PHP"
 arch=('x86_64')
@@ -12,7 +12,7 @@ groups=()
 depends=('boost-libs' 'google-glog' 'libmysqlclient' 'libmemcached' 'pcre' 'gd'
          'libxml2' 'intel-tbb' 'libmcrypt' 'oniguruma' 'libldap' 'elfutils'
          'jemalloc' 'curl' 'expat')
-makedepends=('git' 'cmake' 'gcc>=4.8' 'chrpath' 'boost' 'imap')
+makedepends=('git' 'cmake' 'gcc>=4.8' 'chrpath' 'boost' 'imap' 'libdwarf')
 checkdepends=()
 optdepends=()
 provides=()

@@ -14,7 +14,7 @@ url="http://www.samba.org"
 license=('GPL3')
 depends=('lib32-tdb' 'lib32-gnutls' 'lib32-talloc' 'lib32-libcap'
          "lib32-libwbclient=$pkgver" 'lib32-libgcrypt' 'lib32-libcups'
-         'lib32-pam' 'lib32-avahi' "${_pkgbase}=${pkgver}")
+         'lib32-pam' 'lib32-avahi' "${_pkgbase}>=${pkgver}")
 source=("ftp://ftp.archlinux.org/extra/os/i686/${_pkgbase}-${pkgver}-${pkgrel32}-i686.pkg.tar.xz")
 md5sums=('2ce209d46f57e162fab5d8e64a6e3d5d')
 

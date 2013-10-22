@@ -1,0 +1,25 @@
+# Maintainer: Anntoin Wilkinson <anntoin@gmail.com>
+# Contributor: Exaos Lee <exaos.lee@gmail.com>
+# Contributor: sitquietly <forestmoonsilence@gmail.com>
+
+pkgname=nix
+pkgver=1.6
+pkgrel=1
+pkgdesc="A purely functional package manager"
+url="http://nixos.org/"
+arch=('i686' 'x86_64')
+license=('LGPL')
+depends=('perl-www-curl' 'perl-dbd-sqlite' 'bzip2' 'gc')
+source=(http://nixos.org/releases/${pkgname}/${pkgname}-${pkgver}/${pkgname}-${pkgver}.tar.xz)
+sha1sums=('615ffeabfe777fd15582b32e91890106200f3f8e')
+
+build() {
+    cd ${srcdir}/${pkgname}-${pkgver}
+    ./configure --prefix=/usr --libexecdir=/usr/lib/${pkgname} --sysconfdir=/etc -enable-gc
+    make
+}
+
+package() {
+    cd ${srcdir}/${pkgname}-${pkgver}
+    make DESTDIR=${pkgdir} install
+}

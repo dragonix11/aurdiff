@@ -1,7 +1,7 @@
 # Maintainer: Pavel Borzenkov <pavel@voidptr.ru>
 
 pkgname=criu
-pkgver=0.7
+pkgver=0.8
 pkgrel=1
 pkgdesc="Checkpoint/Restore in Userspace tool"
 url="http://criu.org"
@@ -12,9 +12,9 @@ source=("http://download.openvz.org/${pkgname}/${pkgname}-${pkgver}.tar.bz2"
 depends=("protobuf-c")
 makedepends=("xmlto")
 options=("!buildflags")
-md5sums=("ba3691e89be6c2c03ea6bd07cececc97"
+md5sums=("8ff814c77a16a656245a21ae03eb8fd6"
          "63995b85b8cf25116dabfef4ef979135")
-sha1sums=("c49cc4891ac37480936a5a074b635ecde42d06e1"
+sha1sums=("34faf0fe1c9c954ec4ae3591688700f5746028e2"
           "cfc6c297a553e9d2666f60d3ee254bd2f8ece96e")
 
 prepare() {
