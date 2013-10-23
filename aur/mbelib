@@ -8,7 +8,7 @@ arch=('i686' 'x86_64')
 url="https://github.com/szechyjs/mbelib"
 license=('custom:copyright')
 depends=('glibc')
-makedepeds=('cmake')
+makedepends=('cmake')
 source=("https://github.com/szechyjs/$pkgname/archive/v${pkgver}.tar.gz")
 md5sums=('6a609b494a4dfff281a4a6605a3b406f')
 

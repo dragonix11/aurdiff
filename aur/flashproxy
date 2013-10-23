@@ -9,8 +9,7 @@ url="https://crypto.stanford.edu/${pkgname}/"
 license=('BSD')
 depends=('python2')
 optdepends=('tor: you need tor to use this package' )
-source=("https://people.torproject.org/~dcf/${pkgname}/${_pkgname}-${pkgver}.zip"
-	"https://people.torproject.org/~dcf/${pkgname}/${_pkgname}-${pkgver}.zip.asc"
+source=("https://people.torproject.org/~dcf/${pkgname}/${_pkgname}-${pkgver}.zip"{,.asc}
 	'flashproxy-1.1-python2.patch')
 sha256sums=('bfee85e74d5833e44d34e5b7f3658a780022f98988d29c6d56ff3d26bb25af73'
 	'SKIP'

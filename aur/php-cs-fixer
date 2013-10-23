@@ -1,0 +1,18 @@
+# Mantainer: Bruno Galeotti <bgaleotti@gmail.com>
+#
+pkgname=php-cs-fixer
+pkgver=0.3.0
+pkgrel=1
+pkgdesc="Analyzes some PHP source code and tries to fix coding standards issues (PSR-1 and PSR-2 compatible)."
+url="http://cs.sensiolabs.org/"
+license="MIT"
+arch=("any")
+depends=("php")
+source=("http://cs.sensiolabs.org/get/php-cs-fixer.phar")
+md5sums=('751a3b441f1040d9d13ca30fd8e81593')
+
+package() {
+  install -Dm755 $srcdir/php-cs-fixer.phar $pkgdir/usr/bin/php-cs-fixer
+}
+
+# vim:set ts=4 sw=2 et:

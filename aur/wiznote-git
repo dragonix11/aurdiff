@@ -1,0 +1,32 @@
+# Maintainer: shmilee <echo shmilee.zu@gmail.com>
+
+pkgname=wiznote-git
+_gitname="WizQTClient"
+pkgver=v2.0.46.2.gbdc42c1
+pkgrel=1
+pkgdesc="Opensource cross-platform cloud based note-taking client."
+arch=('i686' 'x86_64')
+url="https://github.com/WizTeam/WizQTClient"
+license=('GPLv3' 'custom')
+depends=('desktop-file-utils' 'hicolor-icon-theme' 'xdg-utils' 'qt5-base' 'qt5-webkit')
+makedepends=('git' 'cmake>=2.8.9' 'qt5-tools')
+provides=('wiznote')
+source=(git://github.com/WizTeam/${_gitname}.git)
+md5sums=(SKIP)
+install=wiznote.install
+
+pkgver() {
+  cd "$srcdir/$_gitname"
+  git describe --always | sed 's|-|.|g'
+}
+
+build() {
+    cd "${srcdir}/$_gitname"
+    cmake -DWIZNOTE_USE_QT5=YES -DCMAKE_INSTALL_PREFIX=/usr/ .
+    make -j2
+}
+
+package() {
+    cd "${srcdir}/$_gitname/"
+    make DESTDIR="${pkgdir}" install
+}

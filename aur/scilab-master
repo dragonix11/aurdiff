@@ -1,9 +1,9 @@
 # Maintainer: Holger Nahrstaedt
 
 pkgname=scilab-master
-pkgver=1382368546
+pkgver=1382462742
 pkgrel=1
-pkg_addon=2013-10-22
+pkg_addon=2013-10-23
 pkgdesc='A scientific software package for numerical computations (Master Nightly Build).'
 arch=('i686' 'x86_64')
 provides=("scilab-master=$pkgver")
@@ -21,7 +21,7 @@ depends=('eigen' 'bwidget' 'bsh' 'xalan-java' 'hdf5' 'curl' 'arpack'
 'java-commons-beanutils' 'antlr2'
 )
   source=("http://downloadarea.scilab.org/download/${pkg_addon}/scilab-master-${pkgver}-src.tar.gz" 'scilab-master.desktop')
-  md5sums=(  'b739847ca5ce84007d7725204aa4ef02'  'ad6286f324891fe8b86c60e4012a36b7')
+  md5sums=(  '341c2e7d3f5823c404da6eda0789f690'  'ad6286f324891fe8b86c60e4012a36b7')
  
 install=$pkgname.install
 options=('!libtool' '!emptydirs')

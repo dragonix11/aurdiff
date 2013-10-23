@@ -1,0 +1,75 @@
+# Contributor: Alexander Ovsyannikov <ovsinc at ya.ru>
+pkgname=owncloud-git
+pkgver=20130318
+pkgrel=1
+pkgdesc="ownCloud is part of the Social Desktop, a project connecting you with your peers in the community"
+arch=('any')
+url="http://owncloud.org/index.php/Main_Page"
+license=('GPL')
+depends=('php-gd' 'php-intl')
+optdepends=('phpmyadmin: A PHP and hence web-based tool to administrate MySQL over the WWW'
+	    'php-curl: for using curl module for PHP'
+	    'php-apache: for useing apache'
+	    'php-sqlite: if you wants to use sqlite database'
+	    'mysql: if you wants to use mysql database')
+install=owncloud.install
+makedepends=()
+provides=()
+source=(
+	apache.conf_example
+	nginx.conf_example)
+
+_gitroot="https://github.com/owncloud/core"
+_git3rd="https://github.com/owncloud/3rdparty"
+_apps="https://github.com/owncloud/apps"
+_gitname="owncloud"
+options=('!strip')
+
+build() {
+cd "$srcdir"
+msg "Connecting to GIT server...."
+if [ -d $_gitname ] ; then
+    rm -rf $_gitname
+fi
+git clone --depth=1 $_gitroot $_gitname
+git clone --depth=1 $_git3rd $_gitname/3rdparty
+git clone --depth=1 $_apps $_gitname/apps1
+mv -f $_gitname/apps1/* $_gitname/apps
+rm -rf $_gitname/apps1
+
+msg "GIT checkout done or server timeout"
+}
+
+package() {
+
+msg "Building and installing..."
+
+# install README file
+  install -d ${pkgdir}/usr/share/doc/$pkgname
+  mv ${srcdir}/${_gitname}/README.md  ${pkgdir}/usr/share/doc/$pkgname/README
+  mv ${srcdir}/${_gitname}/AUTHORS ${pkgdir}/usr/share/doc/$pkgname/
+
+  # clean tests
+  rm -rf ${srcdir}/${_gitname}/tests
+  rm -f ${srcdir}/${_gitname}/autotest.sh
+  rm -f ${srcdir}/${_gitname}/autotest.cmd
+  # rm .git
+  rm -rf $srcdir/${_gitname}/.git
+  rm -rf $srcdir/${_gitname}/*/.git
+  find $srcdir/${_gitname} -type f -name .gitignore -exec rm -f '{}' \;
+
+
+# install project
+  install -d  ${pkgdir}/usr/share/webapps/ || return 1
+  cp -a ${srcdir}/${_gitname}  ${pkgdir}/usr/share/webapps/ || return 1
+  chown -R http:http ${pkgdir}/usr/share/webapps/owncloud/{apps,config} || return 1
+
+# install .conf files
+  install -d ${pkgdir}/usr/share/doc/owncloud/examples || return 1
+  install -m 644 ${srcdir}/apache.conf_example  ${pkgdir}/usr/share/doc/owncloud/examples || return 1
+  install -m 644 ${srcdir}/nginx.conf_example  ${pkgdir}/usr/share/doc/owncloud/examples || return 1
+
+}
+
+md5sums=('c0112de94a7d9bdb7b5d1705a344db81'
+         'f34462681cab4253fef8d505cf7a9c9f')

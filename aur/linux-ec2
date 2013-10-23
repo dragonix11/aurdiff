@@ -2,8 +2,8 @@
 
 pkgbase=linux-ec2
 _srcname=linux-3.11
-pkgver=3.11.5
-pkgrel=2
+pkgver=3.11.6
+pkgrel=1
 arch=('i686' 'x86_64')
 url="http://git.uplinklabs.net/snoonan/projects/archlinux/ec2/ec2-packages.git/tree/linux-ec2"
 license=('GPL2')
@@ -16,7 +16,7 @@ source=("http://www.kernel.org/pub/linux/kernel/v3.x/${_srcname}.tar.xz"
         # standard config files for mkinitcpio ramdisk
         'linux.preset')
 md5sums=('fea363551ff45fbe4cb88497b863b261'
-         '628876a432c0d4090013b383abac20e4'
+         'c44ebb225fe9956b636b79ab6b61aa42'
          '01d86a980566d65c59d88bf41f9bd176'
          'b7ae86947f261b3b0677d0e94dca06c7'
          'b5fb1f7d25ffb3c8b832c196ebe48d5f')

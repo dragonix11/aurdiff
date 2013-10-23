@@ -2,11 +2,16 @@
 # Contributor: Massimiliano Torromeo <massimiliano.torromeo@gmail.com>
 # Maintainer: Jonas Heinrich <onny@project-insanity.org>
 
-#  lib/support/nginx/gitlab
+# Nginx template files: lib/support/nginx/gitlab
+# git config global missing /var/run/gitlab/.gitconfig
+# gitlab-shell missing in check
+# gitlab-sidekiq not starting
+# gitlab-shell path in /etc/gitlab/gitlab.yaml
+# gitlab-shell better installation path?
 
 pkgname=gitlab
 pkgver=6.2.0
-pkgrel=1
+pkgrel=2
 pkgdesc="Project management and code hosting application"
 arch=('any')
 url="https://www.gitlab.org"
@@ -36,38 +41,41 @@ build() {
 
         #gem install charlock_holmes --version '0.6.9.4'
         #gem install rake
-
         msg "Fetching bundled gems..."
         # will be installed in the gitlab directory vendor/bundle
         bundle install --no-cache --no-prune --deployment --without development test aws
 }
 
 package() {
+    homedir="/home/gitlab"
+    datadir="/usr/share/webapps/gitlab"
+
     cd $srcdir/gitlabhq-$pkgver
     install -d "$pkgdir/usr/share/webapps"
-	cp -r "${srcdir}/gitlabhq-${pkgver}" "${pkgdir}/usr/share/webapps/${pkgname}"
+	cp -r "${srcdir}/gitlabhq-${pkgver}" "${pkgdir}${datadir}"
 
     # Creating directories
     install -d \
-        "$pkgdir/etc/gitlab" \
-        "$pkgdir/usr/share/webapps" \
-        "$pkgdir/usr/share/doc/$pkgname" \
-        "$pkgdir/usr/run/gitlab/pids" \
-        "$pkgdir/usr/run/gitlab/www" \
-        "$pkgdir/var/run/gitlab" \
-        "$pkgdir/usr/share/webapps/$pkgname/www"
+        "${pkgdir}/etc/gitlab" \
+        "${pkgdir}/usr/share/webapps" \
+        "${pkgdir}/usr/share/doc/${pkgname}" \
+        "${pkgdir}${homedir}/pids" \
+        "${pkgdir}${homedir}/www" \
+        "${pkgdir}${datadir}/www"
     
     # Install config files
     sed -e 's|# user: git|user: gitlab|' \
-        -e "s|/home/git/repositories|/usr/share/webapps/gitlab/repositories|" \
-        -e "s|/home/git/gitlab-satellites|/usr/share/webapps/gitlab/satellites|" \
-        -e "s|/home/git|/var/run/gitlab|" \
+        -e "s|/home/git/repositories|$datadir/repositories|" \
+        -e "s|/home/git/gitlab-satellites|$datadir/satellites|" \
+        -e "s|/home/git|$homedir|" \
         config/gitlab.yml.example > "$pkgdir/etc/gitlab/gitlab.yml"
+    rm config/gitlab.yml
     [ -f config/gitlab.yml ] || ln -s /etc/gitlab/gitlab.yml config/gitlab.yml
+    rm config/database.yml
     cp config/database.yml.mysql $pkgdir/etc/gitlab/database.yml
     [ -f config/database.yml ] || ln -s /etc/gitlab/database.yml config/database.yml
-    touch $pkgdir/var/run/gitlab/.secret
-    touch $pkgdir/usr/share/webapps/gitlab/.secret
+    touch $pkgdir$homedir/.secret
+    touch $pkgdir$datadir/.secret
 
     # Install license, help and systemd service files
     mv README.md MAINTENANCE.md CONTRIBUTING.md CHANGELOG config/*.{example,mysql,postgresql} "$pkgdir/usr/share/doc/$pkgname"
