@@ -1,0 +1,24 @@
+# Maintainer: megadriver <megadriver at gmx dot com>
+
+pkgname=emacs-markdown-mode
+pkgver=2.0
+pkgrel=3
+pkgdesc="A major mode for editing Markdown files in Emacs"
+arch=('any')
+url="http://jblevins.org/projects/markdown-mode"
+license=('GPL')
+depends=('emacs')
+conflicts=(emacs-markdown-mode-git)
+install=$pkgname.install
+source="$url/markdown-mode.el"
+md5sums=('4055982d87ae4f0073058a6baa5d886f')
+
+build() {
+  emacs -batch -f batch-byte-compile $srcdir/markdown-mode.el
+}
+
+package() {
+  cd $srcdir
+  mkdir -p $pkgdir/usr/share/emacs/site-lisp/markdown-mode
+  install -Dm644 markdown-mode.el markdown-mode.elc $pkgdir/usr/share/emacs/site-lisp/markdown-mode
+}

@@ -1,0 +1,21 @@
+# Maintainer: Miguel Revilla <yo@miguelrevilla.com>
+# Contributor: s1gma <s1gma@mindslicer.com>
+
+pkgname=binwalk
+pkgver=1.2.2
+pkgrel=1
+pkgdesc="A tool for searching a given binary image for embedded files"
+arch=('any')
+url="http://code.google.com/p/binwalk/"
+license=('MIT')
+depends=('python-magic' 'python2-matplotlib')
+optdepends=('firmware-mod-kit: Firmware extract rules helper')
+provides=('binwalk')
+source=(http://binwalk.googlecode.com/files/${pkgname}-${pkgver}.tar.gz)
+md5sums=('77da02cbc2c6dbe80ec7f1e759e0224d')
+
+package() {
+  cd "${srcdir}/${pkgname}-${pkgver}/src"
+  python2 setup.py install --root="${pkgdir}" --no-prereq-checks
+  install -m 644 -D "${srcdir}/${pkgname}-${pkgver}/docs/LICENSE" "${pkgdir}/usr/share/licenses/${pkgname}/LICENSE"
+}

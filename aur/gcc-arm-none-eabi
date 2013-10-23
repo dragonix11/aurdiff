@@ -45,11 +45,11 @@ provides=('arm-none-eabi-gcc'
 url="https://launchpad.net/gcc-arm-embedded"
 source="https://launchpad.net/gcc-arm-embedded/4.7/4.7-2013-q3-update/+download/$pkgname-$_pkgver_actual-linux.tar.bz2"
 license=('custom')
-options=(!strip)
+options=(!strip staticlibs)
 md5sums=("c35b662e371f369619cf202692a4d10b")
 
 package() {
     mkdir -p $pkgdir/usr
     cd $srcdir/gcc-*
-    cp -a arm-none-eabi bin lib share $pkgdir/usr
+    cp -a * $pkgdir/usr
 }

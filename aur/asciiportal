@@ -1,0 +1,46 @@
+# Maintainer: Alexander Rødseth <rodseth@gmail.com>
+# Contributor: Serge Ziryukin <ftrvxmtrx@gmail.com>
+
+pkgname=asciiportal
+pkgver=1.2c
+pkgrel=5
+pkgdesc='Text based puzzle game inspired by the popular video game'
+arch=('x86_64' 'i686')
+url='http://cymonsgames.com/asciiportal/'
+license=('MIT')
+depends=('sdl' 'sdl_mixer' 'pdcurses')
+makedepends=('imagemagick' 'gendesk')
+source=("http://cymonsgames.com/games/$pkgname/$pkgname$pkgver-src.zip"
+        "${pkgname}_large.png::http://fc01.deviantart.net/fs71/f/2010/318/3/5/portal_ascii_icon___button_by_lightmystic-d32udqx.png"
+        "$pkgname.sh"
+        "$pkgname.patch")
+sha256sums=('63aa7af3029f584f6bd2d990b900063dc9b0778cafd92dd78f85f07211b7df48'
+            '390f21881377b331f1a65a3e54ccf91fba72a88146058cc146f914a1185de9d1'
+            '480ff725ad2e3053c77c8e3f016bb5d0cf38b969f0f49a26824bc6b13cf21ee0'
+            'd578fa9047b5df7c6f44a84e3918efc48b88e5b59202aa896d5192b6704076ff')
+
+prepare() {
+  gendesk -n -f --pkgname "$pkgname" --pkgdesc "$pkgdesc" --name 'ASCIIPortal' \
+    --exec "/usr/bin/$pkgname.elf" --custom "Path=/usr/share/$pkgname"
+  convert "${pkgname}_large.png" -resize 48x48\! "$pkgname.png"
+  patch -Np0 -i "$pkgname.patch"
+}
+
+build() {
+  make -f ASCIIpOrtal-linux-Makefile.txt \
+    CXXFLAGS="$CXXFLAGS `xcurses-config --cflags`"
+}
+
+package() {
+  install -d "$pkgdir/usr/share/$pkgname"
+  install -Dm755 ASCIIpOrtal "$pkgdir/usr/bin/$pkgname.elf"
+  install -Dm644 readme.txt "$pkgdir/usr/share/doc/$pkgname/README"
+  install -Dm755 "$pkgname.sh" "$pkgdir/usr/bin/$pkgname"
+  cp -r challengeme evil maps masterlevels media raisonbran648 \
+    "$pkgdir/usr/share/$pkgname"
+  install -Dm644 "$pkgname.png" "$pkgdir/usr/share/pixmaps/$pkgname.png"
+  install -Dm644 "$pkgname.desktop" \
+    "$pkgdir/usr/share/applications/$pkgname.desktop"
+}
+
+# vim:set ts=2 sw=2 et:

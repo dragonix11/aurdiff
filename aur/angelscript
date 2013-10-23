@@ -1,0 +1,53 @@
+# Maintainer: Hilton Medeiros <medeiros.hilton@gmail.com>
+
+pkgname=angelscript
+pkgver=2.27.1
+pkgrel=1
+pkgdesc="An extremely flexible cross-platform scripting library."
+arch=('i686' 'x86_64')
+url="http://www.angelcode.com/angelscript/"
+license=('custom:ZLIB')
+depends=('gcc-libs')
+source=("http://www.angelcode.com/$pkgname/sdk/files/${pkgname}_${pkgver}.zip"
+        LICENSE)
+md5sums=('d146feb5cabca96f91a94a0b18711b2e'
+         '3f8dc9086dc4aa945eef8738384d5cf1')
+
+build() {
+  cd "$srcdir/sdk/$pkgname/projects/gnuc"
+
+  sed -i -e "/^LOCAL/s:=.*:=${pkgdir}/usr:" makefile
+
+  make
+  make SHARED=1 VERSION=$pkgver
+}
+
+package() {
+  cd "$srcdir/sdk/$pkgname/projects/gnuc"
+
+  install -d "$pkgdir"/usr/{lib,include} \
+             "$pkgdir"/usr/share/{licenses,doc}/$pkgname \
+             "$pkgdir"/usr/share/$pkgname \
+             "$pkgdir"/usr/share/doc/$pkgname/{articles,manual}
+
+  make install
+  #make install SHARED=1 VERSION=$pkgver
+  #using this because the makefile creates symbolic links with full paths
+  cd "$pkgdir/usr/lib/"
+  cp "$srcdir/sdk/angelscript/lib/lib$pkgname-$pkgver.so" .
+  ln -fs lib$pkgname-$pkgver.so lib$pkgname.so
+  ln -fs lib$pkgname-$pkgver.so lib$pkgname.so.$pkgver
+
+  chmod 644 "$pkgdir"/usr/include/*
+
+  msg "Installing add-ons..."
+  cd "$srcdir/sdk"
+  cp -rf add_on "$pkgdir/usr/share/$pkgname/"
+
+  msg "Installing documentation and license..."
+  cd "$srcdir/sdk/docs"
+  install -m644 articles/* "$pkgdir/usr/share/doc/$pkgname/articles"
+  install -m644 manual/* "$pkgdir/usr/share/doc/$pkgname/manual"
+  install -m644 index.html "$pkgdir/usr/share/doc/$pkgname"
+  install -Dm644 "$srcdir/LICENSE" "$pkgdir/usr/share/licenses/$pkgname"
+}

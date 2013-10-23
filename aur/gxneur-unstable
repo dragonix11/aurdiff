@@ -1,7 +1,7 @@
 # Contributor: Stas Solovey <whats_up@tut.by>
 #
 pkgname=gxneur-unstable
-pkgver=0.16.0+hg1201
+pkgver=0.16.0+hg1205
 pkgrel=1
 pkgdesc="GTK frontend for XNeur"
 url="http://www.xneur.ru"
@@ -10,9 +10,9 @@ license=('GPL')
 depends=('libglade' "xneur-unstable>=${pkgver}" 'hicolor-icon-theme' 'gconf')
 conflicts=('gxneur')
 install=${pkgname}.install
-source=("https://launchpad.net/~andrew-crew-kuznetsov/+archive/crew/+files/gxneur_0.16.0%2Bhg1201.orig.tar.gz")
+source=("https://launchpad.net/~andrew-crew-kuznetsov/+archive/crew/+files/gxneur_0.16.0%2Bhg1205.orig.tar.gz")
 
-md5sums=('5a2fdfb38d0bd2a3d21c828da5a9b156')
+md5sums=('8431d3119c14f6644dc48d22bc69e485')
 
 build() {
    cd $srcdir/gxneur-0.16.0

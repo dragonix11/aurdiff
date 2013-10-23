@@ -1,7 +1,7 @@
-# Maintainer : Zack Buhman
+# Maintainer : Keshav Padram Amburay <(the.ridikulus.rat) (aatt) (gemmaeiil) (ddoott) (ccoomm)>
+# Contributor: Zack Buhman
 # Contributor: Tobias Powalowski <tpowa@archlinux.org>
 # Contributor: Ronald van Haren <ronald.archlinux.org>
-# Contributor: Keshav Padram Amburay <(the.ridikulus.rat) (aatt) (gemmaeiil) (ddoott) (ccoomm)>
 
 ## "1" to enable, "0" to disable
 _GRUB_EMU_BUILD="0"
@@ -13,7 +13,7 @@ _pkgname="grub"
 pkgname="${_pkgname}-git"
 
 pkgdesc="GNU GRand Unified Bootloader (2) - GIT Version"
-pkgver=2.00.895.g06a8358
+pkgver=2.00.900.gbca274b
 pkgrel=1
 url="https://www.gnu.org/software/grub/"
 arch=('x86_64' 'i686')
@@ -70,12 +70,18 @@ prepare() {
 	
 	cd "${srcdir}/grub/"
 	
-	msg "Apply Archlinux specific fixes to enable grub-mkconfig detect Arch kernels and initramfs"
+	msg "Patch to enable grub-mkconfig detect Arch kernels and initramfs"
 	patch -Np1 -i "${srcdir}/archlinux_grub_mkconfig_fixes.patch"
 	echo
 	
 	msg "Fix DejaVuSans.ttf location so that grub-mkfont can create *.pf2 files for starfield theme"
 	sed 's|/usr/share/fonts/dejavu|/usr/share/fonts/dejavu /usr/share/fonts/TTF|g' -i "${srcdir}/grub/configure.ac"
+	
+	msg "Fix mkinitcpio 'rw' FS#36275"
+	sed 's| ro | rw |g' -i "${srcdir}/grub/util/grub.d/10_linux.in"
+	
+	msg "Fix OS naming FS#33393"
+	sed 's|GNU/Linux|Linux|' -i "${srcdir}/grub/util/grub.d/10_linux.in"
 	
 	# msg "Requires python2"
 	# sed 's|python |python2 |g' -i "${srcdir}/grub/autogen.sh"
@@ -303,12 +309,6 @@ _package_grub-common_and_bios() {
 	rm -f "${pkgdir}/usr/lib/grub/i386-pc"/*.module || true
 	rm -f "${pkgdir}/usr/lib/grub/i386-pc"/*.image || true
 	rm -f "${pkgdir}/usr/lib/grub/i386-pc"/{kernel.exec,gdb_grub,gmodule.pl} || true
-	
-	msg "Fix OS naming FS#33393"
-	sed 's|GNU/Linux|Linux|g' -i "${pkgdir}/etc/grub.d/10_linux"
-	
-	msg "Fix rw FS#36275"
-	sed 's| ro | rw |g' -i "${pkgdir}/etc/grub.d/10_linux"
 	
 	msg "Install extra /etc/grub.d/ files"
 	install -D -m0755 "${srcdir}/60_memtest86+" "${pkgdir}/etc/grub.d/60_memtest86+"

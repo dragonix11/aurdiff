@@ -1,0 +1,45 @@
+# Maintainer: balwierz <my user name at the most popular google email service>
+pkgbase=cura
+pkgname=cura
+pkgver=13.10
+pkgrel=1
+pkgdesc="A full software solution for 3D printing aimed at RepRaps and the Ultimaker."
+depends=('python2' 'wxpython' 'python2-opengl' 'python2-pyserial' 'python2-numpy' 'python-power-git')
+# optdepends=('pypy: much faster slicing using pypy (strongly recommended)')
+# makedepends=('')
+provides=('cura')
+url="http://daid.github.com/Cura/"
+license=('AGPLv3')
+arch=('any')
+source=("Cura-${pkgver}-debian.deb::http://software.ultimaker.com/current/Cura-${pkgver}-debian.deb")
+sha256sums=('4e7aec69d577cf7b2c2a869960a24b6c728bf68ac128efc2d4b229dfd32d1586')
+install=.install
+
+build()
+{
+	cd "${srcdir}"
+	
+	# unpack
+	tar -xzf data.tar.gz
+}
+
+package()
+{
+	# remove python-power since we have it in the deps:
+	rm -rf "${srcdir}"/usr/share/cura/power/
+	
+	# change python to python2 everywhere:
+	sed -i 's|\/usr\/bin\/python|\/usr\/bin\/python2|' "${srcdir}"/usr/share/applications/cura.desktop "${srcdir}"/usr/share/cura/cura.py "${srcdir}"/usr/bin/cura
+	
+	# add a new line (pedantic):
+	echo >> "${srcdir}/usr/bin/cura"
+	
+	# add the path since we need to call slicer exactly from /usr/share/cura
+	sed -i '6 i os.chdir("/usr/share/cura")' "${srcdir}"/usr/share/cura/cura.py
+	sed -i 's|os.path.dirname(__file__)|"/usr/share/cura"|' "${srcdir}"/usr/share/cura/cura.py
+	
+	cp -r "${srcdir}"/usr "${pkgdir}"/usr
+	
+}
+
+
