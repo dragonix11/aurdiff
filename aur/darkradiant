@@ -1,0 +1,62 @@
+# vim:set ts=2 sw=2 et:
+# Contributor: ezzetabi <ezzetabi@gawab.com>
+# Mainteners: Benjamin Colard <benjamin@colard.info>
+pkgname=darkradiant
+pkgver=1.8
+pkgrel=1
+pkgdesc='Open-source fork of GtkRadiant: a level editor for Doom3 and The Dark Mod'
+arch=(i686 x86_64)
+url='http://darkradiant.sourceforge.net/'
+license=('GPL')
+groups=()
+depends=('boost' 'freealut' 'glew' 'gtkglextmm' 'libgtksourceviewmm2' 'openal' 'python' 'ftgl')
+makedepends=('git')
+optdepends=()
+provides=()
+conflicts=()
+replaces=()
+backup=()
+options=()
+install=
+source=()
+noextract=()
+
+build() {
+  cd "$startdir"
+
+  if [ ! -e DarkRadiant ] ;then
+    msg "Retrieving sources via git for $pkgname..."
+    git clone 'https://github.com/orbweaver/DarkRadiant.git'
+    msg2 "Done"
+  else
+    msg "Updating sources via git for $pkgname..."
+    cd DarkRadiant
+    git pull
+    msg2 "Done"
+  fi
+
+  msg "Copying source..."
+  cd "$startdir"
+  cp -r DarkRadiant -t "$srcdir"
+  cd "$srcdir"/DarkRadiant
+
+  msg "Setting source to version $pkgver..."
+  git checkout 6e554d0bb4c8f4916fe8370a1a2042e3d1a19312 &>/dev/null
+  rm -rf .git
+
+  msg "Building..."
+  touch ./ABOUT-NLS
+  autoreconf --force --install
+  sed -i~ configure -e 's/^BOOST_PYTHON_LIBS=\$.*/BOOST_PYTHON_LIBS='\''-lboost_python -lpython2.7'\''/'
+  boost_cv_lib_python='donottest' ./configure --prefix=/usr --enable-darkmod-plugins  --enable-python
+  make
+}
+
+package() {
+  cd "$srcdir"/DarkRadiant
+
+  make DESTDIR="$pkgdir/" install
+
+  return 0
+}
+

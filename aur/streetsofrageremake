@@ -1,0 +1,72 @@
+# Maintainer: P. Neidhardt <ambrevar at gmail dot com>
+
+pkgname=streetsofrageremake
+pkgver=5.0a
+pkgrel=2
+pkgdesc="A remake of the classic Streets of Rage 1, 2 and 3 by Sega"
+arch=('i686' 'x86_64')
+url="http://sorr.forumotion.net/t148-sor-v5-for-linux-debian-download-links"
+license=('custom')
+if [ "$CARCH" = "i686" ]; then
+    depends=('alsa-lib' 'libpng12' 'sdl_mixer' 'smpeg' 'zlib')
+else
+    depends=('lib32-alsa-lib' 'lib32-libpng12' 'lib32-sdl_mixer' 'lib32-smpeg' 'lib32-zlib')
+fi
+install="sorr.install"
+source=("http://archive.ubuntugames.org/amd64/sorr_5.0a.orig.tar.gz"
+    'Readme.linux'
+    'ChangeLog'
+    'sorr-wrapper')
+options=(!strip)
+sha1sums=('dc288afbccf340f25d69747def59ce572ca5089e'
+          '41145c5de421720cd3a47afcaf41f8d089249303'
+          '094db450c8352b3a5687e63984eb59ccb89f2533'
+          '6dcfcacd215eec5dfd663fc89a0a26912fb94743')
+
+build() {
+    cd "${srcdir}/"
+
+    ## We replace the broken launcher with a wrapper that will start the game
+    ## from $HOME/.sorr so that savegames and mods can be loaded from there.
+    cp -f sorr-wrapper sorr
+}
+
+package() {
+    cd "${srcdir}/"
+    install -d "${pkgdir}/opt/sorr"
+
+    ## Data
+    install -m755 "bgdc" "bgdi" "sorr" "${pkgdir}/opt/sorr"
+    install -m644 "manual.html" "Readme.txt" "SorMaker.dat" "SorR.dat" "${pkgdir}/opt/sorr"
+    cp -r manual mod palettes data "${pkgdir}/opt/sorr/"
+
+    ## Libraries needed by the bennugd engine.
+    ## WARNING: this is the most sensible part. The choice of these library may
+    ## highly depend upon the target operating system.
+    install -m644 "bennugd/libbgdrtm.so" "bennugd/libcrypto.so.1.0.0" "bennugd/libdraw.so" "${pkgdir}/opt/sorr/data/"
+
+    ## For some strange reasons, all files are marked as executable. Let's clean
+    ## this up.
+    (cd "${pkgdir}/opt/sorr/" && find data manual mod palettes -type f -exec chmod a-x {} \;)
+
+    ## Launcher
+    install -d "${pkgdir}/usr/bin"
+    ln -s "/opt/sorr/sorr" "${pkgdir}/usr/bin/sorr"
+
+    ## .desktop
+    install -d "${pkgdir}/usr/share/applications/"
+    install -m644 "sorr.desktop" "${pkgdir}/usr/share/applications/"
+
+    ## Icon
+    install -m644 "sorr.png" "${pkgdir}/opt/sorr/"
+    install -d "${pkgdir}/usr/share/icons/hicolor/48x48/apps"
+    ln -s "/opt/sorr/sorr.png" "${pkgdir}/usr/share/icons/hicolor/48x48/apps/"
+
+    ## Extra files
+    install -m644 "Readme.linux" "${pkgdir}/opt/sorr"
+    install -m644 "ChangeLog" "${pkgdir}/opt/sorr"
+}
+sha1sums=('dc288afbccf340f25d69747def59ce572ca5089e'
+          '41145c5de421720cd3a47afcaf41f8d089249303'
+          '094db450c8352b3a5687e63984eb59ccb89f2533'
+          'd24b9cead2b48a1c6e648b4d38686691c131e92d')

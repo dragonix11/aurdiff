@@ -1,0 +1,19 @@
+pkgname=fanficdownloader
+pkgver=0.8.3
+pkgrel=1
+pkgdesc="A tool to download Fanfictions from fanfiction.net and convert them to various eBook-Formats using Calibre"
+arch=('i686' 'x86_64')
+url="http://www.fanfictiondownloader.net/download.php"
+license=('proprietary')
+depends=(qt4 unzip)      
+optdepends=(calibre)
+source=(http://www.fanfictiondownloader.net/ffdl-linux.zip)
+md5sums=('9ad9b8c3f19ebfb487d71ebc3e76767e')
+           
+package() {
+  mkdir -p "$pkgdir/usr/share/licenses/$pkgname/"
+  mkdir -p "$pkgdir/usr/bin/"
+  mv "$srcdir/license.txt" "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
+  mv "$srcdir/fanficdownloader" "$pkgdir/usr/bin/fanficdownloader"
+  chmod +x "$pkgdir/usr/bin/fanficdownloader"
+}

@@ -3,7 +3,7 @@
 
 pkgname=kcm-polkit-kde-git
 epoch=1
-pkgver=161.9560963
+pkgver=160.9ad726f
 pkgrel=1
 pkgdesc="Configuration for Policy Kit"
 arch=('i686' 'x86_64')

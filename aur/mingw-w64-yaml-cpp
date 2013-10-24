@@ -1,0 +1,38 @@
+# Maintainer: Daniel Kirchner <daniel at ekpyron dot org>
+pkgname=mingw-w64-yaml-cpp
+_basename=yaml-cpp
+pkgver=0.5.1
+pkgrel=2
+pkgdesc="YAML parser and emitter in C++, written around the YAML 1.2 spec (mingw-w64)"
+license=('MIT')
+arch=('any')
+url="http://code.google.com/p/yaml-cpp/"
+depends=('mingw-w64-boost' 'mingw-w64-crt')
+makedepends=('mingw-w64-cmake' 'mingw-w64-gcc')
+source=(http://yaml-cpp.googlecode.com/files/${_basename}-${pkgver}.tar.gz)
+options=(!strip !buildflags)
+sha512sums=('3c6928684d603815c016d663af36be94507f2cccf167d6d8d7cd7dea3ea5f73ec88d62952a2b5d11796e40132857afcbbacd9eafd688f2dc11d0c339caf2e013')
+
+_architectures="i686-w64-mingw32 x86_64-w64-mingw32"
+
+build() {
+  unset LDFLAGS
+
+  for _arch in ${_architectures}; do
+    rm -rf "${srcdir}/build-${_arch}"
+    mkdir "${srcdir}/build-${_arch}"
+    cd "${srcdir}/build-${_arch}"
+    
+    ${_arch}-cmake ../$_basename-$pkgver -DYAML_CPP_BUILD_TOOLS=NO
+    make
+  done
+}
+
+package() {
+  for _arch in ${_architectures}; do
+    cd "${srcdir}/build-${_arch}"
+    make install DESTDIR="${pkgdir}"
+    rm -rf "${pkgdir}/usr/${_arch}/bin"
+	${_arch}-strip -g "${pkgdir}/usr/${_arch}/lib/"*.a
+  done
+}

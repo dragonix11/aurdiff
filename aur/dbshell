@@ -19,7 +19,7 @@ backup=()
 options=()
 install=
 changelog=
-source=(https://github.com/ErkiDerLoony/dbshell/archive/0.1.1.tar.gz)
+source=(https://github.com/ErkiDerLoony/dbshell/archive/v$pkgver.tar.gz)
 noextract=()
 
 build() {

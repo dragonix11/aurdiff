@@ -1,0 +1,43 @@
+# Maintainer: alucryd <alucryd at gmail dot com>
+# Contributor: Ner0 <darkelfdarkelf666 at yahoo dot co dot uk>
+
+pkgname=granite-bzr
+pkgver=644
+pkgrel=1
+pkgdesc="An extension of GTK+ libraries"
+arch=('i686' 'x86_64')
+url="https://launchpad.net/granite"
+license=('LGPL3')
+depends=('gtk3' 'libgee06')
+makedepends=('bzr' 'cmake' 'gobject-introspection' 'vala')
+provides=("${pkgname%-*}")
+conflicts=("${pkgname%-*}")
+install="${pkgname%-*}.install"
+source=("bzr+lp:${pkgname%-*}")
+sha256sums=('SKIP')
+
+pkgver() {
+  cd ${pkgname%-*}
+
+  bzr revno
+}
+
+build() {
+  cd ${pkgname%-*}
+
+  if [[ -d build ]]; then
+    rm -rf build
+  fi
+  mkdir build && cd build
+
+  cmake .. -DCMAKE_INSTALL_PREFIX='/usr' -DCMAKE_BUILD_TYPE='Release'
+  make
+}
+
+package() {
+  cd ${pkgname%-*}/build
+
+  make DESTDIR="${pkgdir}" install
+}
+
+# vim: ts=2 sw=2 et:

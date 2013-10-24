@@ -1,7 +1,7 @@
 # Maintainer: Sid Karunaratne <sid@karunaratne.net>
 _gemname=guard
 pkgname=ruby-$_gemname
-pkgver=2.2.0
+pkgver=2.2.2
 pkgrel=1
 pkgdesc="command line tool to easily handle events on file system modifications"
 arch=('any')
@@ -11,8 +11,8 @@ depends=('ruby' 'ruby-formatador>=0.2.4' 'ruby-listen>=2.1' 'ruby-lumberjack>=1.
 makedepends=('rubygems')
 source=(http://rubygems.org/downloads/$_gemname-$pkgver.gem)
 noextract=($_gemname-$pkgver.gem)
-md5sums=('c427247583ce71dfc4430cb0ed2127ea')
-sha1sums=('2290eac36a4002511d7f0b3ea99db8b7d0d06f26')
+md5sums=('dc9697d289d64487466b0e49686a5053')
+sha1sums=('822ceaafc27c3aa190d84feb4d5879a07dbfbbf4')
 
 package() {
   cd "$srcdir"

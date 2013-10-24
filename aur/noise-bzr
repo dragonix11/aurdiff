@@ -1,0 +1,49 @@
+# Maintainer: alucryd <alucryd at gmail dot com>
+# Contributor: Ner0 <darkelfdarkelf666 at yahoo dot co dot uk>
+
+pkgname=noise-bzr
+pkgver=1538
+pkgrel=1
+pkgdesc="Simple, fast, and good looking music player"
+arch=('i686' 'x86_64')
+url="https://launchpad.net/${pkgname%-*}"
+license=('GPL3')
+depends=('desktop-file-utils' 'granite' 'gstreamer0.10-base' 'json-glib' 'libgpod' 'libnotify' 'libpeas' 'libsoup' 'sqlheavy' 'taglib')
+makedepends=('bzr' 'cmake' 'vala')
+provides=("${pkgname%-*}")
+conflicts=("${pkgname%-*}")
+install="${pkgname}.install"
+source=("bzr+lp:${pkgname%-*}")
+sha256sums=('SKIP')
+
+pkgver() {
+  cd ${pkgname%-*}
+
+  bzr revno
+}
+
+prepare() {
+  cd ${pkgname%-*}
+
+  sed 's|\.\./||' -i src/CMakeLists.txt
+}
+
+build() {
+  cd ${pkgname%-*}
+
+  if [[ -d build ]]; then
+    rm -rf build
+  fi
+  mkdir build && cd build
+
+  cmake .. -DCMAKE_INSTALL_PREFIX='/usr' -DCMAKE_BUILD_TYPE='Release' -DGSETTINGS_COMPILE='OFF'
+  make
+}
+
+package() {
+  cd ${pkgname%-*}/build
+
+  make DESTDIR="${pkgdir}" install
+}
+
+# vim: ts=2 sw=2 et:
