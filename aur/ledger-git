@@ -1,0 +1,50 @@
+# Maintainer: Johann Klahn <kljohann@gmail.com>
+# Contributor: Nathan Jones <nathanj@insightbb.com>
+
+pkgname=ledger-git
+pkgdesc="A double-entry accounting system with a command-line reporting interface"
+pkgver=20131023
+pkgrel=1
+
+_branch=master
+#_build=debug   # Uncomment this line if you want a debug build.
+
+depends=('gmp' 'pcre' 'expat' 'mpfr' 'boost' 'libedit')
+makedepends=('git' 'sed' 'python2' 'cmake')
+url="http://ledger-cli.org"
+license=('BSD')
+arch=('i686' 'x86_64')
+provides=('ledger')
+conflicts=('ledger')
+[[ "${_build}" == "debug" ]] && options=('!strip')
+install="ledger.install"
+source=("ledger::git://github.com/ledger/ledger.git#branch=${_branch}"
+        "${install}")
+sha256sums=('SKIP'
+            '81df8eebbcc49362f8121940654cf92f6d8677525a357c3972d18d85d6fd2cd6')
+
+pkgver() {
+  cd ledger
+  # git describe --always | sed 's|-|.|g'
+  git log --format="%cd" --date=short -1 | sed 's/-//g'
+}
+
+prepare() {
+  cd ledger
+  find -iname '*.py' -execdir sed -i 's|^#!.*python$|#!/usr/bin/python2|' '{}' \;
+  sed -i 's|^#!.*python$|#!/usr/bin/python2|' ./acprep
+}
+
+build() {
+  cd ledger; rm -rf build
+  ./acprep submodule
+  ./acprep "${_build:-opt}" --output=./build --prefix=/usr make
+}
+
+package () {
+  cd ledger/build
+  make DESTDIR="${pkgdir}" install
+
+  rm -rf "${pkgdir}"/usr/share/locale
+  rm -rf "${pkgdir}"/usr/share/info/dir
+}

@@ -1,6 +1,6 @@
 _npmname=pm2
 pkgname=nodejs-$_npmname
-pkgver=0.6.2
+pkgver=0.6.3
 pkgrel=1
 pkgdesc="The modern and stable CLI process manager for Node apps with native clusterization, monitoring, startup scripts and much more."
 arch=(any)
@@ -10,7 +10,7 @@ depends=('nodejs')
 optdepends=()
 source=(http://registry.npmjs.org/$_npmname/-/$_npmname-$pkgver.tgz)
 noextract=($_npmname-$pkgver.tgz)
-sha1sums=(9b8ffca907aca54ff8decff6a3b40e46e2f861bc)
+sha1sums=(31ae46267496ea2daa4d5f09a95c31148ee61056)
 
 build() {
   cd $srcdir

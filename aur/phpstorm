@@ -4,15 +4,15 @@
 
 pkgname=phpstorm
 _pkgname=PhpStorm # Directory name in the tar file
-pkgbuild=131.374
+_pkgbuild=131.374
 pkgver=7.0
-pkgrel=2
+pkgrel=3
 pkgdesc="Lightweight and Smart PHP IDE. 30-day free trial."
 arch=('i686' 'x86_64')
 options=(!strip)
 url="http://www.jetbrains.com/phpstorm/"
 license=('custom')
-depends=('java-environment>=6' 'bash' 'lib32-glibc' 'intellij-idea-libs')
+depends=('java-environment>=6' 'bash' 'lib32-glibc')
 source=(http://download.jetbrains.com/webide/PhpStorm-$pkgver.tar.gz
         phpstorm.desktop
         phpstorm.sh)
@@ -23,7 +23,7 @@ md5sums=('58772330b38eca7609d6a0cdd6336429'
 package() {
   install -d -m 755 ${pkgdir}/usr/share
   install -d -m 755 ${pkgdir}/usr/lib
-  cp -a ${srcdir}/${_pkgname}-${pkgbuild} $pkgdir/usr/share/${pkgname}
+  cp -a ${srcdir}/${_pkgname}-${_pkgbuild} $pkgdir/usr/share/${pkgname}
 
   [ $CARCH == "x86_64" ] && SUFFIX=64
   install -m 644 ${pkgdir}/usr/share/${pkgname}/bin/libyjpagent-linux${SUFFIX}.so ${pkgdir}/usr/lib
@@ -31,12 +31,14 @@ package() {
   [ $CARCH == "x86_64" ] && SUFFIX="_64"
   install -m 644 ${pkgdir}/usr/share/${pkgname}/plugins/terminal/lib/linux/x86${SUFFIX}/libpty.so ${pkgdir}/usr/lib
 
-  rm -rf ${pkgdir}/usr/share/${pkgname}/bin/{fsnotifier,libyjpagent-linux}*
+  [ $CARCH == "i686" ] && SUFFIX=64 || SUFFIX=""
+  rm ${pkgdir}/usr/share/${pkgname}/bin/{fsnotifier${SUFFIX},phpstorm${SUFFIX}.vmoptions}
+
+  rm -rf ${pkgdir}/usr/share/${pkgname}/bin/libyjpagent-linux*
   rm -rf ${pkgdir}/usr/share/${pkgname}/plugins/terminal/lib/{linux,macosx,win}
 
-  install -D -m 755 ${pkgdir}/usr/share/${pkgname}/bin/phpstorm.sh ${pkgdir}/usr/bin/phpstorm
   install -D -m 755 ${srcdir}/phpstorm.sh ${pkgdir}/usr/bin/phpstorm.sh
   install -D -m 644 ${srcdir}/phpstorm.desktop ${pkgdir}/usr/share/applications/phpstorm.desktop
   install -D -m 644 ${pkgdir}/usr/share/${pkgname}/bin/webide.png ${pkgdir}/usr/share/pixmaps/phpstorm.png
-  install -D -m 644 ${srcdir}/${_pkgname}-${pkgbuild}/license/${_pkgname}_license.txt ${pkgdir}/usr/share/licenses/${pkgname}/license.txt
+  install -D -m 644 ${srcdir}/${_pkgname}-${_pkgbuild}/license/${_pkgname}_license.txt ${pkgdir}/usr/share/licenses/${pkgname}/license.txt
 }

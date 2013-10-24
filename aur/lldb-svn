@@ -6,7 +6,7 @@
 pkgname=lldb-svn
 _gcc_ver=4.6.2
 pkgver=193092
-pkgrel=1
+pkgrel=2
 pkgdesc="The LLDB Debugger"
 arch=('i686' 'x86_64')
 url="http://llvm.org/"
@@ -81,12 +81,12 @@ package() {
   install -Dm755 lib/liblldb.so "$pkgdir/usr/lib/liblldb.so"
 
   # Install the lldb python libraries.
-  python_dir=$pkgdir/usr/lib/python2.7/site-packages
-  mkdir -p $python_dir
-  cp -a lib/python2.7/site-packages/lldb $python_dir
+  python_dir="$pkgdir/usr/lib/python2.7/site-packages"
+  mkdir -p "$python_dir"
+  cp -a lib/python2.7/site-packages/lldb "$python_dir"
 
   # Relink the _lldb.so for python
-  ln -sf /usr/lib/liblldb.so $python_dir/lldb/_lldb.so
+  ln -sf /usr/lib/liblldb.so "$python_dir/lldb/_lldb.so"
 }
 
 # vim:set sts=2 sw=2 et:

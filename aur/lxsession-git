@@ -1,0 +1,34 @@
+# Maintainer: Jerome Leclanche <jerome.leclanche+arch@gmail.com>
+
+_pkgname=lxsession
+pkgname=$_pkgname-git
+pkgver=710.370b409
+pkgrel=1
+pkgdesc="LXDE and LXQt session manager."
+arch=('i686' 'x86_64')
+url="http://www.lxde.org"
+license=('GPL2')
+depends=('qt4' 'gtk2' 'libgee')
+makedepends=('git' 'cmake')
+provides=($_pkgname)
+conflicts=($_pkgname)
+source=("git://github.com/lxde/$_pkgname.git")
+sha256sums=('SKIP')
+_gitname=$_pkgname
+
+pkgver() {
+	cd "$srcdir/$_gitname"
+	echo "$(git rev-list --count HEAD).$(git describe --always)"
+}
+
+build() {
+	cd "$srcdir/$_gitname"
+	./autogen.sh
+	./configure --prefix=/usr --sysconfdir=/etc --disable-buildin-clipboard --disable-buildin-polkit
+	make
+}
+
+package() {
+	cd "$srcdir/$_gitname"
+	make DESTDIR="$pkgdir" install
+}

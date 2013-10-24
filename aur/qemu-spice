@@ -3,7 +3,7 @@
 pkgname=qemu-spice
 _pkgname=qemu
 pkgver=1.6.1
-pkgrel=3
+pkgrel=4
 rc=
 pkgdesc="Latest stable QEMU with KVM spice usbredir virtfs smartcard seccomp iscsi tpm glusterfs fdt and RDMA live migration"
 arch=(i686 x86_64)
@@ -91,6 +91,8 @@ fi
 	 # remove libcacard files
   	rm -rf ${pkgdir}/usr/lib/libcacard*
 	rm -rf ${pkgdir}/usr/include/cacard
+	rm -rf ${pkgdir}/usr/share/qemu/acpi-dsdt.aml
+        rm -rf ${pkgdir}/usr/share/qemu/q35-acpi-dsdt.aml
   	rm -rf ${pkgdir}/usr/lib/pkgconfig/libcacard.pc
   	rm -rf ${pkgdir}/usr/bin/vscclient
 }
