@@ -6,7 +6,7 @@ pkgname=phpstorm
 _pkgname=PhpStorm # Directory name in the tar file
 _pkgbuild=131.374
 pkgver=7.0
-pkgrel=3
+pkgrel=4
 pkgdesc="Lightweight and Smart PHP IDE. 30-day free trial."
 arch=('i686' 'x86_64')
 options=(!strip)
@@ -17,7 +17,7 @@ source=(http://download.jetbrains.com/webide/PhpStorm-$pkgver.tar.gz
         phpstorm.desktop
         phpstorm.sh)
 md5sums=('58772330b38eca7609d6a0cdd6336429'
-         'fd8a6e3388991818c1f0a64cb5ec4631'
+         '5533f8b3e917dc31e63d6757651dba2b'
          '2d31cd6e4f3dbbe84ffe5ecdf3771634')
 
 package() {

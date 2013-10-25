@@ -1,0 +1,92 @@
+# Maintainer: Daniel Kirchner <daniel AT ekpyron DOT org>
+# Contributor: Davorin Učakar <davorin.ucakar@gmail.com>
+# Contributor: Sven-Hendrik Haase <sh@lutzhaase.com>
+# Contributor: Stefan Husmann <stefan-husmann@t-online.de>
+# Contributor: Mihai Militaru <mihai.militaru@gmx.com>
+# Contributor: scippio <scippio@berounet.cz>
+
+pkgname=mingw-w64-freeimage
+pkgver=3.15.4
+pkgrel=3
+pkgdesc="Library project for developers who would like to support popular graphics image formats (mingw-w64)."
+arch=(any)
+license=('GPL' 'custom:FIPL')
+url="http://freeimage.sourceforge.net/"
+depends=('mingw-w64-gcc')
+options=(!strip !buildflags staticlibs)
+source=("http://downloads.sourceforge.net/sourceforge/freeimage/FreeImage${pkgver//./}.zip" 'mingw64.patch')
+md5sums=('9f9a3b2c3c1b4fd24fe479e8aaee86b1'
+         '1482fbf6046cf25feaba5df7c61dd509')
+
+build() {
+  cd ${srcdir}
+
+  cd FreeImage
+  patch -Np0 < ${srcdir}/mingw64.patch
+  cd ..
+
+  rm -rf FreeImage-build32 FreeImage-build64
+  cp -r FreeImage FreeImage-build32
+  cp -r FreeImage FreeImage-build64
+
+  cd FreeImage-build32
+  
+  make \
+    CC="i686-w64-mingw32-gcc --prefix=/usr/i686-w64-mingw32" \
+    CXX="i686-w64-mingw32-g++" \
+    LD="i686-w64-mingw32-g++" \
+    RC="i686-w64-mingw32-windres" \
+    AR="i686-w64-mingw32-ar" \
+    DLLTOOL="i686-w64-mingw32-dlltool" \
+    FREEIMAGE_LIBRARY_TYPE="STATIC" \
+    -f Makefile.mingw
+  
+  make \
+    CC="i686-w64-mingw32-gcc --prefix=/usr/i686-w64-mingw32" \
+    CXX="i686-w64-mingw32-g++" \
+    LD="i686-w64-mingw32-g++" \
+    RC="i686-w64-mingw32-windres" \
+    AR="i686-w64-mingw32-ar" \
+    DLLTOOL="i686-w64-mingw32-dlltool" \
+    FREEIMAGE_LIBRARY_TYPE="SHARED" \
+    -f Makefile.mingw
+  
+  cd ../FreeImage-build64
+
+  make \
+    CC="x86_64-w64-mingw32-gcc --prefix=/usr/x86_64-w64-mingw32" \
+    CXX="x86_64-w64-mingw32-g++" \
+    LD="x86_64-w64-mingw32-g++" \
+    RC="x86_64-w64-mingw32-windres" \
+    AR="x86_64-w64-mingw32-ar" \
+    DLLTOOL="x86_64-w64-mingw32-dlltool" \
+    FREEIMAGE_LIBRARY_TYPE="STATIC" \
+    -f Makefile.mingw
+  
+  make \
+    CC="x86_64-w64-mingw32-gcc --prefix=/usr/x86_64-w64-mingw32" \
+    CXX="x86_64-w64-mingw32-g++" \
+    LD="x86_64-w64-mingw32-g++" \
+    RC="x86_64-w64-mingw32-windres" \
+    AR="x86_64-w64-mingw32-ar" \
+    DLLTOOL="x86_64-w64-mingw32-dlltool" \
+    FREEIMAGE_LIBRARY_TYPE="SHARED" \
+    -f Makefile.mingw
+
+}
+
+package() {
+  cd ${srcdir}/FreeImage-build32
+
+  install -Dm644 Dist/FreeImage.dll ${pkgdir}/usr/i686-w64-mingw32/bin/FreeImage.dll
+  install -Dm644 Dist/FreeImage.lib ${pkgdir}/usr/i686-w64-mingw32/lib/FreeImage.lib
+  install -Dm644 Dist/libFreeImage.a ${pkgdir}/usr/i686-w64-mingw32/lib/libFreeImage.a
+  install -Dm644 Dist/FreeImage.h   ${pkgdir}/usr/i686-w64-mingw32/include/FreeImage.h
+
+  cd ${srcdir}/FreeImage-build64
+
+  install -Dm644 Dist/FreeImage.dll ${pkgdir}/usr/x86_64-w64-mingw32/bin/FreeImage.dll
+  install -Dm644 Dist/FreeImage.lib ${pkgdir}/usr/x86_64-w64-mingw32/lib/FreeImage.lib
+  install -Dm644 Dist/libFreeImage.a ${pkgdir}/usr/x86_64-w64-mingw32/lib/libFreeImage.a
+  install -Dm644 Dist/FreeImage.h   ${pkgdir}/usr/x86_64-w64-mingw32/include/FreeImage.h
+}

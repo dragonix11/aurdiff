@@ -3,8 +3,8 @@
 
 pkgname=jhbuild-git
 _pkgname='jhbuild'
-pkgver=3.5.91.645.gf0952c8
-pkgrel=3
+pkgver=3.5.91.862.ge3461f8
+pkgrel=1
 pkgdesc='\
 JHBuild allows you to automatically download and compile Gnome\
  "modules" (i.e. source code packages).'
@@ -37,6 +37,7 @@ depends=(
     intltool
     yelp-tools
     gnome-common
+    xtrans-git
 )
 optdepends=(
 )

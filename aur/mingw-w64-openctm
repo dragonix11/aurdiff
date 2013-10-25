@@ -1,0 +1,47 @@
+# Contributor: Daniel Kirchner <mokaga@lavabit.com>
+pkgname=mingw-w64-openctm
+pkgver=1.0.3
+pkgrel=4
+pkgdesc="An open file format for storing compressed triangle meshes. (mingw-w64)"
+url="http://openctm.sourceforge.net/"
+arch=('any')
+license=('custom')
+depends=('mingw-w64-crt')
+makedepends=('mingw-w64-gcc' 'make')
+source=('http://downloads.sourceforge.net/openctm/OpenCTM-1.0.3-src.tar.bz2'
+        'openctm.def')
+options=('!strip' '!buildflags' 'staticlibs')
+md5sums=('55948e7c2ad8c5807cd1b9b48718075b'
+         'df9d425067390f36bc90d0fe78acc6d3')
+
+_architectures="i686-w64-mingw32 x86_64-w64-mingw32"
+
+build() {
+  unset LDFLAGS
+
+  for _arch in ${_architectures}; do
+    rm -rf "${srcdir}/build-${_arch}"
+    cp -r "${srcdir}/OpenCTM-${pkgver}" "${srcdir}/build-${_arch}"
+    cd "${srcdir}/build-${_arch}"
+    sed -i -e "s/dllwrap/${_arch}-dllwrap/" lib/Makefile.mingw
+    sed -i -e "s/dlltool/${_arch}-dlltool/" lib/Makefile.mingw
+
+    make LIBDIR=${pkgdir}/usr/${_arch}/lib \
+    	 INCDIR=${pkgdir}/usr/${_arch}/include \
+	 BINDIR=${pkgdir}/usr/${_arch}/bin \
+	 CC=${_arch}-gcc \
+	 RC=${_arch}-windres \
+	 -f Makefile.mingw openctm
+  done
+}
+
+package () {
+  for _arch in ${_architectures}; do
+    install -D -m644 "${srcdir}/build-${_arch}/lib/libopenctm.a" "${pkgdir}/usr/${_arch}/lib/libopenctm.a"
+    install -D -m644 "${srcdir}/build-${_arch}/lib/openctm.h" "${pkgdir}/usr/${_arch}/include/openctm.h"
+    install -D -m644 "${srcdir}/build-${_arch}/lib/openctmpp.h" "${pkgdir}/usr/${_arch}/include/openctmpp.h"
+    install -D -m644 "${srcdir}/build-${_arch}/lib/openctm.dll" "${pkgdir}/usr/${_arch}/bin/openctm.dll"
+    ${_arch}-strip -x -g "${pkgdir}/usr/${_arch}/bin/"*.dll
+    ${_arch}-strip -g "${pkgdir}/usr/${_arch}/lib/"*.a
+  done
+}

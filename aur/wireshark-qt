@@ -3,7 +3,7 @@
 pkgname=wireshark-qt
 pkgbase=wireshark
 pkgver=1.10.2
-pkgrel=1
+pkgrel=2
 pkgdesc='a free network protocol analyzer for Unix/Linux and Windows - QT4 frontend'
 arch=('i686' 'x86_64')
 url='http://www.wireshark.org/'
@@ -32,7 +32,7 @@ prepare() {
 	patch -p1 < ${srcdir}/52144b.patch
 
 	# Fix rcc path for qt4
-	sed -i 's/rcc /rcc-qt4 /' ui/qt/Makefile
+	sed -i 's/rcc /rcc-qt4 /' ui/qt/Makefile.am
 }
 
 build() {

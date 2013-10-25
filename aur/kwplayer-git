@@ -16,7 +16,7 @@ optdepends=('leveldb: for caches data'
             'python-xlib: X11 library for python'
             )
 makedepends=('git')
-conflicts=()
+confilics=(kwplayer)
 replaces=()
 source=(git+https://github.com/LiuLang/kwplayer.git)
 md5sums=('SKIP')
