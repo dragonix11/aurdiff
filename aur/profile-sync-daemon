@@ -1,7 +1,7 @@
 # Maintainer: graysky <graysky AT archlinux DOT us>
 
 pkgname='profile-sync-daemon'
-pkgver=5.42
+pkgver=5.43
 pkgrel=1
 pkgdesc='Offload browser profiles to RAM (tmpfs) for speed and wear reduction.'
 arch=('any')
@@ -13,7 +13,7 @@ conflicts=('firefox-sync' 'firefox-tmpfs-daemon' 'chromium-tmpfs' 'tmpfs-store' 
 source=("http://repo-ck.com/source/$pkgname/$pkgname-$pkgver.tar.xz")
 backup=('etc/psd.conf')
 install=psd.install
-sha256sums=('ce728ac3899234ab50b0aa2de0c1411b5cf3ed4450d5f6610a2aac95e43bfe07')
+sha256sums=('ff6aecfee19211d94fe7ddcf8896d07c67151ba83da319ed13b659ade5875c67')
 
 build() {
   cd "$pkgname-$pkgver"

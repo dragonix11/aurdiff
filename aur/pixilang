@@ -1,0 +1,44 @@
+# Contributor: Egor <kontakt.zuf(at)gmail.com>
+pkgname=pixilang
+pkgver=3.4.7
+pkgrel=1
+pkgdesc="Pixilang - pixel oriented programming language for small graphics/sound applications"
+url="http://warmplace.ru/soft/pixilang/"
+depends=('libx11' 'sdl')
+makedepends=('libx11' 'sdl')
+conflicts=()
+arch=('i686' 'x86_64')
+replaces=('pixilang')
+backup=()
+source=("http://pixilang.googlecode.com/files/pixilang${pkgver}.zip" )
+license=('MIT' 'GPL')
+install='pixilang.install'
+md5sums=('6dbe378f884e1cea70d4b6420d25e399')
+
+build() {
+    cd "$srcdir/pixilang"
+    #patch -p1 -i $startdir/pixilang-build.patch
+
+    cd "$srcdir/pixilang/sources/pixilang3/make"
+    export TARGET_OS=linux_x11_opengl    
+    if test "$CARCH" == x86_64
+    then
+        MAKE_ARCH="x86_64"
+    else
+        MAKE_ARCH="x86"
+    fi
+    export TARGET_ARCH="$MAKE_ARCH"
+
+    make clean
+    make COLOR_TYPE=COLOR32BITS || return 1
+
+
+}
+
+package() {
+    cd "$srcdir/pixilang/sources/pixilang3/make"
+    install -D ./pixilang $pkgdir/usr/bin/pixilang
+    install -d -m755 $pkgdir/usr/share/pixilang/
+    cp -dR $srcdir/pixilang/examples $pkgdir/usr/share/pixilang/
+    rm -rf $pkgdir/usr/share/pixilang/examples/native_library
+}

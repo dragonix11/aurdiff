@@ -17,6 +17,7 @@ makedepends=('expac')
 source=("http://lambda.haskell.org/platform/download/${pkgver}/${pkgname}-${pkgver}.tar.gz")
 sha256sums=('b09ccbf502198655b0c4bbfd9691e6853b998a61bfd805db227cdcd93ab0f3ad')
 #sha1sums=('8669bb5add1826c0523fb130c095fb8bf23a30ce')
+#install=haskell-platform.install
 
 build() {
    cd "${srcdir}/${pkgname}-${pkgver}"
@@ -42,17 +43,17 @@ build() {
 
 package() {
    cd "${srcdir}/${pkgname}-${pkgver}"
-   make DESTDIR="${pkgdir}/" install
+   make prefix="$pkgdir/usr/" install
 
    # Thanks to JSpaces again:
    # Create licenses folder ...
-   install -d "$pkgdir/usr/share/licenses"
+   install -d "${pkgdir}/usr/share/licenses"
    # Move the license files to correct location.
-   mv "$pkgdir"/usr/share/doc/* \
-   "$pkgdir"/usr/share/licenses/
+   mv ${pkgdir}/usr/share/doc/* \
+   ${pkgdir}/usr/share/licenses/
    # Move the documents to correct location.
-   mv "$pkgdir"/usr/share/{alex-3.0.5,happy-1.18.10,HUnit-1.2.5.2} \
-   "$pkgdir"/usr/share/doc/
+   mv ${pkgdir}/usr/share/{alex-3.0.5,happy-1.18.10,HUnit-1.2.5.2} \
+   ${pkgdir}/usr/share/doc/
 }
 
 

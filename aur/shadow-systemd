@@ -1,6 +1,4 @@
-# $Id: PKGBUILD 197259 2013-10-24 19:47:27Z dreisner $
-# Maintainer: Dave Reisner <dreisner@archlinux.org>
-# Maintainer: Aaron Griffin <aaron@archlinux.org>
+# Maintainer: Dominik Peteler <archlinux@with-h.at>
 
 pkgname=shadow-systemd
 pkgver=4.1.5.1

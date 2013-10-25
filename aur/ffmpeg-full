@@ -10,14 +10,23 @@
 
 pkgname=ffmpeg-full
 pkgver=2.0.2
-pkgrel=2
+pkgrel=3
 epoch=1
 pkgdesc="Complete and free Internet live audio and video broadcasting solution for Linux/Unix (with all options)"
 arch=('i686' 'x86_64')
 url="http://ffmpeg.org/"
 license=('GPL' 'custom:UNREDISTRIBUTABLE')
-depends=('faac' 'lame' 'libtheora' 'libva' 'sdl' 'x264' 'libass' 'libbluray' 'libcaca' 'libiec61883' 'openal' 'twolame' 'libavc1394' 'xvidcore' 'schroedinger' 'v4l-utils' 'speex' 'opus' 'libvpx' 'jack' 'opencore-amr' 'rtmpdump' 'openjpeg' 'libmodplug' 'gnutls' 'gsm' 'libpulse' 'vo-aacenc' 'vo-amrwbenc' 'celt' 'libdc1394' 'libfdk-aac' 'libcdio-paranoia' 'libaacplus' 'libgme' 'wavpack' 'zeromq' 'libxv' 'libsoxr')
-makedepends=('libvdpau' 'yasm' 'pkg-config')
+depends=(
+      'alsa-lib' 'bzip2' 'fontconfig' 'gnutls' 'gsm' 'lame' 'libass'
+      'libbluray' 'libmodplug' 'libpulse' 'libtheora' 'libva' 'libvorbis' 'libvpx'
+      'opencore-amr' 'openjpeg' 'opus' 'rtmpdump' 'schroedinger' 'sdl' 'speex'
+      'v4l-utils' 'x264' 'xvidcore' 'zlib'
+      'celt' 'faac' 'jack' 'libaacplus' 'libavc1394' 'libcaca'
+      'libcdio-paranoia' 'libdc1394' 'libfdk-aac' 'libgme' 'libiec61883'
+      'libsoxr' 'libxv' 'openal' 'twolame' 'vo-aacenc' 'vo-amrwbenc' 'wavpack'
+      'zeromq'
+      )
+makedepends=('libvdpau' 'yasm'  'pkg-config')
 conflicts=('ffmpeg' 'ffmpeg-git' 'ffmpeg-full-git')
 provides=('ffmpeg')
 source=(http://ffmpeg.org/releases/ffmpeg-$pkgver.tar.bz2 'UNREDISTRIBUTABLE.txt')
@@ -30,13 +39,11 @@ build() {
   # as for --enable-swresample: why do we need this? arch linux pkg has it
   msg "Starting configure..."
   ./configure \
-    $_asm \
-    --enable-swresample \
-    --enable-shared \
+    --prefix=/usr \
     --disable-debug \
     --disable-static \
-    --prefix=/usr \
     --enable-avresample \
+    --enable-dxva2 \
     --enable-fontconfig \
     --enable-gnutls \
     --enable-gpl \
@@ -55,8 +62,8 @@ build() {
     --enable-libiec61883 \
     --enable-libmodplug \
     --enable-libmp3lame \
-    --enable-libopencore-amrnb \
-    --enable-libopencore-amrwb \
+    --enable-libopencore_amrnb \
+    --enable-libopencore_amrwb \
     --enable-libopenjpeg \
     --enable-libopus \
     --enable-libpulse \
@@ -79,9 +86,13 @@ build() {
     --enable-openal \
     --enable-openssl \
     --enable-pic \
+    --enable-postproc \
     --enable-vda \
+    --enable-shared \
+    --enable-swresample \
+    --enable-vdpau \
     --enable-version3 \
-    --enable-x11grab \
+    --enable-x11grab
 
   msg "Starting make"
   make

@@ -10,6 +10,7 @@ url="http://xorg.freedesktop.org/"
 arch=(i686 x86_64)
 source=('git://anongit.freedesktop.org/git/xorg/lib/libxtrans')
 license=('custom')
+makedepends=('git')
 provides=('xtrans' 'xtrans-git')
 replaces=('xtrans')
 conflicts=('xtrans')

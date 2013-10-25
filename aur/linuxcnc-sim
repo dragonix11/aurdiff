@@ -3,24 +3,17 @@
 
 pkgname=linuxcnc-sim
 pkgver=2.6.0~pre
-pkgrel=1
-pkgdesc="It can interpret G-code and simulate a CNC machine (a.k.a EMC2)."
+pkgrel=2
+pkgdesc="It can interpret G-code and simulate a CNC machine (formerly EMC2)."
 arch=('i686' 'x86_64')
 license=('GPL2')
 url="http://linuxcnc.org/"
 depends=('bc' 'bwidget' 'tcl' 'tk' 'xorg-server' 'python2-libgnome')
 install=$pkgname.install
-source=('linuxcnc'::'git://git.linuxcnc.org/git/linuxcnc.git' 'Makefile' 'Submakefile' 'jepler-modsilent.patch')
-md5sums=('SKIP'
-         '223467f9c6845fdc58ccac8b080964a0'
-         '32fbcfb62dfed15c675188f4303858a2'
-         'a9cdee6103bc8ec12562f513dfebc716')
+source=('linuxcnc'::'git://git.linuxcnc.org/git/linuxcnc.git')
+md5sums=('SKIP')
 
 build () {
-#  cd $srcdir/$pkgname-$pkgver/src/hal/drivers
-#  #"Patch" it :)
-#  sed -i 's/pci_find_device/pci_get_device/g' *.c
-#  cd $srcdir/$pkgname-$pkgver/src
   cd $srcdir/linuxcnc/src
 #  #This Makefile line fixes a seg fault due to changed CFLAGS
 # cp -PR $srcdir/Makefile $srcdir/$pkgname-$pkgver/src/Makefile

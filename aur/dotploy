@@ -3,7 +3,7 @@
 
 pkgname=dotploy
 pkgdesc="A bash only script to deploy $HOME dot files acrossing different hosts"
-pkgver=0.3
+pkgver=0.3.1
 pkgrel=1
 url="https://github.com/techlivezheng/dotploy"
 arch=('any')
@@ -12,19 +12,20 @@ source=(https://github.com/techlivezheng/dotploy/archive/"${pkgname}"-v"${pkgver
 depends=('bash')
 makedepends=('git' 'perl')
 
-prepare() {
-  cd "${srcdir}"/"${pkgname}"-"${pkgname}"-v"${pkgver}"
-
-  make test
-}
-
 build() {
   cd "${srcdir}"/"${pkgname}"-"${pkgname}"-v"${pkgver}"
 
   make standalone
 
   sed -i 's/dotploy\.sh/dotploy/g' dotploy
+}
 
+check() {
+  cd "${srcdir}"/"${pkgname}"-"${pkgname}"-v"${pkgver}"
+
+  sed -i 's/dotploy\.sh/dotploy/g' tests/test-dotploy.sh
+
+  make test
 }
 
 package() {
@@ -33,4 +34,4 @@ package() {
   install -D -m 0755 dotploy "${pkgdir}"/usr/bin/dotploy
 }
 
-md5sums=('5371ed9676e189a7786361ea7d899bd3')
+md5sums=('4efa79c2c79dd41ce9890efe9f8924c7')

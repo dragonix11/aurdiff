@@ -116,7 +116,7 @@ package() {
     configuration/com.genuitec.pulse.client.delivery.install.meta/shortcuts.properties
 
   sed -i "s|${srcdir}/usr/share/${pkgname}|/usr/share/${pkgname}|" \
-	p2/org.eclipse.equinox.p2.engine/profileRegistry/com.genuitec.delivery.package.profile.me-spring-11.profile/*.profile
+	p2/org.eclipse.equinox.p2.engine/profileRegistry/com.genuitec.delivery.package.profile.me-${pkgname/myeclipse-}-11.profile/*.profile
 
   # Python2 fix
   sed -i 's|#!/usr/bin/python|#!/usr/bin/python2|' \
