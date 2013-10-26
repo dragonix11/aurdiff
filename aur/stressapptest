@@ -1,0 +1,26 @@
+# Maintainer: kfgz <kfgz at interia dot pl>
+# Contributor: Philipp 'TamCore' B. <philipp at tamcore dot eu>
+
+pkgname=stressapptest
+pkgver=1.0.6
+pkgrel=1
+pkgdesc="Stressful Application Test (or stressapptest, its unix name)"
+url="http://code.google.com/p/stressapptest/"
+license=('APACHE')
+arch=('i686' 'x86_64')
+depends=('gcc-libs' 'libaio')
+source=(http://stressapptest.googlecode.com/files/stressapptest-${pkgver}_autoconf.tar.gz)
+md5sums=('aa42336ee456d696bb073b891fcd0771')
+
+build() {
+  cd stressapptest-${pkgver}_autoconf
+  ./configure --prefix=/usr
+  make
+}
+
+package() {
+  cd stressapptest-${pkgver}_autoconf
+  make DESTDIR="${pkgdir}" install
+  install -dm755 "${pkgdir}"/usr/share/man/man1
+  mv "${pkgdir}"/usr/share/doc/stressapptest/stressapptest.1 "${pkgdir}"/usr/share/man/man1/stressapptest.1
+}

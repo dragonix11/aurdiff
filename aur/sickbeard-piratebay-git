@@ -1,10 +1,7 @@
-# Maintainer: sudokode <sudokode@gmail.com>
-# Previous Maintainer: Crass00 <crass00 at hotmail dot com>
-# Previous Maintainer: Superstar655 <choman000 at hotmail dot com>
-# Contributor: Augusto Born de Oliveira <augustoborn at gmail dot com>
+# Maintainer: Justin Dray <justin@dray.be>
 
 pkgname=sickbeard-piratebay-git
-pkgver=4510.80b7098
+pkgver=4527.035e818
 pkgrel=2
 pkgdesc="A PVR application that downloads and manages your TV shows. Piratebay branch."
 arch=('any')
@@ -12,7 +9,8 @@ url="https://github.com/mr-orange/Sick-Beard/tree/ThePirateBay"
 license=('GPL3')
 depends=('python2' 'python2-cheetah')
 makedepends=('git')
-optdepends=('sabnzbd: NZB downloader'
+optdepends=('unrar4: Unrar support within sickbeard (not compatible with unrar v5 yet)'
+            'sabnzbd: NZB downloader'
             'python2-notify: desktop notifications')
 install=sickbeard.install
 conflicts=('sickbeard')

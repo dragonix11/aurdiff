@@ -29,7 +29,7 @@ build() {
         cd "$_gitname"
     fi
 
-    qmake
+    qmake-qt4
     make
 }
 

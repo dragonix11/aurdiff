@@ -15,15 +15,20 @@ depends=('ghc' 'glut' 'glu' 'mesa')
 optdepends=()
 makedepends=('expac')
 source=("http://lambda.haskell.org/platform/download/${pkgver}/${pkgname}-${pkgver}.tar.gz")
+#        "install.sh.patch")
 sha256sums=('b09ccbf502198655b0c4bbfd9691e6853b998a61bfd805db227cdcd93ab0f3ad')
-#sha1sums=('8669bb5add1826c0523fb130c095fb8bf23a30ce')
+#            'cbac6e0c377fc1a80e15eded379c042d606c30df6e71ade236cf78225ceed809')
 #install=haskell-platform.install
 
 build() {
    cd "${srcdir}/${pkgname}-${pkgver}"
 
-   # Thanks to JSpaces for this part:
+   # Patch install.sh to respect $DESTDIR in make install
+   # with special thanks to chrisdornan
+   # http://trac.haskell.org/haskell-platform/ticket/196
+   #patch -p1 -i $srcdir/install.sh.patch || die "Patching install.sh failed!"
 
+   # Thanks to JSpaces for this part:
    # If you get a Quick Test error delete or rename your ~/.ghc folder.
    # (e.g. Makefile:9: recipe for target 'build.stamp' failed)
 
@@ -43,7 +48,7 @@ build() {
 
 package() {
    cd "${srcdir}/${pkgname}-${pkgver}"
-   make prefix="$pkgdir/usr/" install
+   make DESTDIR="${pkgdir}/usr" install
 
    # Thanks to JSpaces again:
    # Create licenses folder ...

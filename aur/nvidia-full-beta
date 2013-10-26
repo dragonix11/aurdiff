@@ -182,6 +182,10 @@ package_nvidia-full-beta() {
     conflicts=('nvidia-96xx' 'nvidia-173xx' 'nvidia')
     provides=('nvidia')
     install=${pkgname}.install
+    
+    # Version of 'linux'
+    _major=$(pacman -Q linux | awk -F '[ .]' '{print $2"."$3}')
+    _extramodules=extramodules-${_major}-ARCH
 
     # Install/compress module
     install -D -m644 "${srcdir}/${_pkg}/kernel/nvidia.ko" \

@@ -26,7 +26,7 @@ elif [ "$CARCH" = "x86_64" ]; then
     md5sums=('c0d411c4f0ad7a577881d16ff8999097')
 fi
 
-##source=("http://us.download.nvidia.com/XFree86/Linux-${_arch}/${pkgver}/${_pkg}.run"
+#source=("http://us.download.nvidia.com/XFree86/Linux-${_arch}/${pkgver}/${_pkg}.run"
 source=("ftp://download.nvidia.com/XFree86/Linux-${_arch}/${pkgver}/${_pkg}.run"
         'nvidia-linux-3.11.patch')
 md5sums+=('fa89e842c853e0636ce56fc87b1c75d8') # nvidia-linux-3.11.patch
@@ -58,6 +58,10 @@ build() {
 }
 
 package() {
+    # Version of 'linux'
+    _major=$(pacman -Q linux | awk -F '[ .]' '{print $2"."$3}')
+    _extramodules=extramodules-${_major}-ARCH
+
     # Install/compress module
     install -D -m644 "${srcdir}/${_pkg}/kernel/nvidia.ko" \
         "${pkgdir}/usr/lib/modules/${_extramodules}/nvidia.ko"
