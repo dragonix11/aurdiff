@@ -1,0 +1,38 @@
+pkgname=c-icap
+fname=c_icap
+pkgver=0.2.6
+pkgrel=1
+pkgdesc="Implementation of an ICAP server"
+arch=(i686 x86_64)
+url="http://c-icap.sourceforge.net/"
+depends=('squid' 'clamav')
+license=('GPL' 'LGPL')
+backup=(etc/c-icap/c-icap.conf etc/c-icap/c-icap.magic etc/conf.d/c-icap)
+install=c-icap.install
+source=(http://downloads.sourceforge.net/project/c-icap/c-icap/0.2.x/${fname}-${pkgver}.tar.gz
+        c-icap c-icap.conf c-icap.conf.d c-icap.service c-icap-tmpfile.conf)
+md5sums=('1309cbbace86c0ffbcecb461055e6bcc'
+         'dc90a11e8df9728b24e123fddc4d9be8'
+         '59912a33349e9d58855c80f9e2d61d10'
+         '31eb9d7ca521b0d77703faf0b217074e'
+         '731fa2e585dcff80e1b2845cc3344f3e'
+         '81a69d1da3c4aca8f59d6010fb9e76bc')
+
+build() {
+  cd ${srcdir}/${fname}-${pkgver}
+  ./configure --prefix=/usr --enable-large-files --sysconfdir=/etc/c-icap
+  make LDFLAGS="-lpthread"
+}
+
+package() {
+  cd ${srcdir}/${fname}-${pkgver}
+  make DESTDIR=${pkgdir} install
+
+  install -Dm644 "${srcdir}"/c-icap-tmpfile.conf "${pkgdir}"/usr/lib/tmpfiles.d/c-icap.conf
+  install -D -m755 ${srcdir}/../c-icap ${pkgdir}/etc/rc.d/c-icap
+  install -D -m644 ${srcdir}/../c-icap.conf.d ${pkgdir}/etc/conf.d/c-icap
+  install -D -m644 ${srcdir}/../c-icap.conf ${pkgdir}/etc/c-icap/c-icap.conf
+  install -Dm644 "$srcdir/c-icap.service" \
+    "$pkgdir/usr/lib/systemd/system/c-icap.service"
+
+}

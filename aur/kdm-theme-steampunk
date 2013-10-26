@@ -1,0 +1,19 @@
+# Maintainier Miguel Aguilar <zodiac_es@yahoo.es> 
+
+pkgname=kdm-theme-steampunk
+pkgver=3.0
+pkgrel=4
+pkgdesc="SteampunK for KDM. This item is a part of Steam-Powered Linux KDE theme set."
+arch=('i686' 'x86_64')
+url="http://kde-look.org/content/show.php?content=142139"
+license=('CCPL-by-sa')
+groups=(steam-powered-linux)
+depends=('kdebase-workspace')
+source=(http://sites.google.com/site/binaryinspiration/download/SPL_KDM.tar.gz)
+md5sums=('638c2442e2912de35982552ce0f3147c')
+
+package() {
+   cd $startdir/src/SteampunK
+   install -d  $pkgdir/usr/share/apps/kdm/themes/SteampunK
+   cp -rf  * $pkgdir/usr/share/apps/kdm/themes/SteampunK
+}

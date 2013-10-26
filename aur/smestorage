@@ -1,0 +1,57 @@
+
+# Maintainer: Your Name <youremail@domain.com>
+# Contributor: Elmo Todurov <todurov@gmail.com>
+pkgname=smestorage
+pkgver=4.0.8
+pkgrel=1
+epoch=
+pkgdesc="The SMEStorage Linux Cloud Tools encompass a Cloud Drive and graphical Cloud Explorer and sync tools to sync cloud files from your preferred provider to/from the Linux desktop "
+arch=('i686' 'x86_64')
+url="http://storagemadeeasy.com/LinuxDrive/"
+license=('custom')
+groups=()
+depends=('perl-fuse' 'perl-html-parser' 'perl-libwww' 'perl-xml-simple' 'qt4')
+makedepends=('deb2targz')
+checkdepends=()
+optdepends=()
+provides=()
+conflicts=()
+replaces=()
+backup=()
+options=()
+install=
+changelog=
+source=("https://storagemadeeasy.com/files/b6e3ddcb6e0857806269af27bedb24c2.deb")
+noextract=()
+md5sums=('e4893166e5ff786b9aac47861d819e5e')
+
+build() {
+cd "$srcdir"
+deb2targz *.deb
+tar axf data.tar.gz
+mv ./usr ${pkgdir} || return 1
+
+mv ${pkgdir}/usr/share/sme_install ./sme_install
+
+cd sme_install
+cd smeclient
+qmake-qt4
+make
+install -m755 smeclient ${pkgdir}/usr/bin/smeclient
+cd ..
+
+cd smeexplorer
+qmake-qt4
+sed -e "5a\ #include <unistd.h>" -i smestorageexplorer.cpp
+make
+install -m755 smeexplorer ${pkgdir}/usr/bin/smeexplorer
+cd ..
+
+cd smesynccenter
+qmake-qt4
+sed -e "6a\ #include <unistd.h>" -i syncwidget.cpp
+sed -e "7a\ #include <unistd.h>" -i syncpropertieswidget.cpp
+make
+install -m755 smesynccenter ${pkgdir}/usr/bin/smesynccenter
+cd ..
+}

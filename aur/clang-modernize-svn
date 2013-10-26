@@ -17,7 +17,7 @@
 pkgname=clang-modernize-svn
 pkgver=193252
 _gcc_ver=4.7.2
-pkgrel=2
+pkgrel=3
 pkgdesc="Clang automated migration / convert tool for C++11"
 arch=('i686' 'x86_64')
 url="http://llvm.org/"
@@ -82,7 +82,7 @@ build() {
     -DPYTHON_EXECUTABLE=/usr/bin/python2 \
     ..
 
-  make -j3 clang-modernize
+  make clang-modernize
 }
 
 package() {

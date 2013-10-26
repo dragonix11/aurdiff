@@ -3,14 +3,15 @@ pkgname=python-nikola
 _pyname=nikola
 _pyname2=Nikola
 pkgver=6.2.0
-pkgrel=2
+pkgrel=3
 pkgdesc='A modular, fast, simple, static website generator.'
 arch=('any')
 url='http://getnikola.com/'
 license=('custom')
 depends=('python' 'python-doit' 'python-pygments' 'python-pillow'
          'python-docutils' 'python-mako' 'python-unidecode' 'python-lxml'
-         'python-yapsy' 'python-pyrss2gen' 'python-pytz' 'python2-logbook')
+         'python-yapsy' 'python-pyrss2gen' 'python-pytz' 'python-logbook'
+         'python-blinker' 'python-blinker')
 options=(!emptydirs)
 source=("http://pypi.python.org/packages/source/$(echo ${_pyname2} | cut -c1)/${_pyname2}/${_pyname}-${pkgver}.tar.gz")
 md5sums=('bbf43c1927977edd29969e839463ec05')

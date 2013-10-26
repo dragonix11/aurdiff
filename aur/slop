@@ -7,7 +7,7 @@ arch=( 'i686' 'x86_64' )
 url="https://github.com/naelstrof/$pkgname"
 license=( 'GPL3' )
 depends=( 'libxext' 'libx11' )
-makedepends=( 'make' 'libxext' 'libx11' )
+makedepends=( 'make' )
 source=( "https://github.com/naelstrof/$pkgname/archive/master.zip" )
 md5sums=('0e817dd1a72847cf7364653ab26b6698')
 

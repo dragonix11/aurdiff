@@ -1,0 +1,40 @@
+# Maintainer: Baptiste Jonglez <baptiste--aur at jonglez dot org>
+pkgname=coq-nox
+pkgver=8.4pl2
+pkgrel=3
+pkgdesc='Formal proof management system. Headless version, without CoqIDE.'
+arch=('i686' 'x86_64')
+url='http://coq.inria.fr/'
+license=('GPL')
+options=('!emptydirs')
+depends=('ocaml')
+provides=('coq')
+conflicts=('coq')
+optdepends=('coq-doc')
+source=("http://coq.inria.fr/distrib/V$pkgver/files/coq-$pkgver.tar.gz"
+  "fix-make-version.patch")
+md5sums=('7fd98da8db35a89b9718333a31af6153'
+         '0ebfa3999613849f103f3cba16ac1265')
+
+build() {
+  cd "coq-$pkgver"
+
+  patch -p1 -i "$srcdir/fix-make-version.patch"
+
+  ./configure \
+    -prefix '/usr' \
+    -mandir '/usr/share/man' \
+    -configdir '/etc/xdg/coq/' \
+    -opt \
+    -with-doc no \
+    -coqide no \
+    -usecamlp4
+
+  make world
+}
+
+package() {
+  cd "coq-$pkgver"
+
+  make COQINSTALLPREFIX="$pkgdir" install
+}

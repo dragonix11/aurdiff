@@ -19,7 +19,7 @@ _pausewebui=1
 pkgname=rutorrent-svn
 true && pkgname=('rutorrent-svn' 'rutorrent-plugins-svn')
 pkgver=2452
-pkgrel=1
+pkgrel=2
 arch=('any')
 url="http://code.google.com/p/rutorrent"
 license=('GPL')
@@ -46,10 +46,10 @@ prepare() {
 
     sed -i rutorrent/conf/config.php \
         -e "s:\$topDirectory .*:\$topDirectory = '/home';:" \
-        -e "s:\$XMLRPCMountPoint .*:\$XMLRPCMountPoint = \"/rutorrent/RPC1\";:"
-    sed -i rutorrent/php/{settings.php,Snoopy.class.inc,util.php} \
-        -e "s:\"/tmp:\"/${_webdir}/rutorrent/tmp:" \
-        -e "s:\\\"/tmp:\\\"/${_webdir}/rutorrent/tmp:"
+        -e "s:\$XMLRPCMountPoint .*:\$XMLRPCMountPoint = \"/rutorrent/RPC1\";:" \
+        -e "s:\$tempDirectory .*:\$tempDirectory = '/${_webdir}/rutorrent/tmp':"
+    sed -i rutorrent/php/settings.php \
+        -e "s:'/tmp:'/${_webdir}/rutorrent/tmp:"
 }
 
 build() {
