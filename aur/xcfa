@@ -1,0 +1,24 @@
+# Contributor: Skunnyk <skunnyk@archlinux.fr>
+
+pkgname=xcfa
+pkgver=4.3.6
+pkgrel=1
+pkgdesc="X Convert File Audio"
+arch=('i686' 'x86_64')
+url="http://www.xcfa.tuxfamily.org/"
+license=('GPL3')
+depends=('taglib' 'alsa-lib' 'curl' 'vte' 'desktop-file-utils')
+optdepends=('dvd+rw-tools' 'cd-discid')
+install=xcfa.install
+source=(http://download.tuxfamily.org/xcfaudio/xcfa_download/src/$pkgname-$pkgver.tar.gz) 
+
+build() {
+  cd $srcdir/$pkgname-$pkgver/
+  ./configure --prefix=/usr 
+  make || return 1
+}
+package(){
+  cd $srcdir/$pkgname-$pkgver/
+  make DESTDIR="$pkgdir" install
+}
+md5sums=('68bb45827d7e253497acef036f66bcac')

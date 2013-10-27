@@ -1,0 +1,25 @@
+# Maintainer: Carlos Franke <carlos_franke at lemtank dot de>
+
+pkgname=spamcup
+pkgver=1.09
+pkgrel=4
+pkgdesc="A tool for automatic spam reporting via Spamcop.net"
+arch=(any)
+url="http://sourceforge.net/projects/spamcup"
+license=('GPL2')
+depends=('perl-libwww' 'perl-html-form' 'perl-getopt-argvfile')
+makedepends=('perl-extutils-makemaker')
+install=
+source=(http://downloads.sourceforge.net/project/$pkgname/$pkgname/$pkgver/$pkgname-$pkgver.tar.gz)
+md5sums=('47a655793ac0bcfe0ae8fd6cb407167a') 
+
+build() {
+  cd "$srcdir/$pkgname-$pkgver"
+  perl Makefile.PL
+  make
+}
+
+package() {
+  cd "$srcdir/$pkgname-$pkgver"
+  make DESTDIR="$pkgdir/" install
+}

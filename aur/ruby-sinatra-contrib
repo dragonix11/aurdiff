@@ -1,0 +1,22 @@
+# Maintainer: Evan Teitelman <teitelmanevan at gmail.com>
+
+pkgname=ruby-sinatra-contrib
+_gemname=${pkgname#ruby-}
+pkgver=1.4.1
+pkgrel=1
+pkgdesc="Collection of common Sinatra extensions."
+arch=('any')
+url="https://github.com/sinatra/sinatra-contrib"
+license=('MIT')
+depends=('ruby' 'rubygems' 'ruby-rack' 'ruby-rack-protection' 'ruby-tilt')
+source=("http://rubygems.org/downloads/${_gemname}-${pkgver}.gem")
+noextract=("${_gemname}-${pkgver}.gem")
+md5sums=('1665a40c07f78a6b4bcee99e51ef7138')
+
+package() {
+  cd "$srcdir"
+
+  export HOME=/tmp
+  local _gemdir=$(ruby -rubygems -e'puts Gem.default_dir')
+  gem install --no-user-install --ignore-dependencies -i "${pkgdir}${_gemdir}" ${_gemname}-${pkgver}.gem
+}
