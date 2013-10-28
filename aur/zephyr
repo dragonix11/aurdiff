@@ -1,0 +1,25 @@
+# Maintainer:  gls < ghoslovescorebg at gmail dot com >
+
+pkgname=zephyr
+pkgver=3.1.2
+pkgrel=1
+pkgdesc="An enterprise-scale, distributed real-time messaging and notification system"
+arch=('i686' 'x86_64')
+url="http://zephyr.1ts.org/"
+license=('custom')
+depends=('e2fsprogs' 'libx11' 'c-ares')
+options=('!libtool')
+source=(http://zephyr.1ts.org/files/$pkgname-$pkgver.tar.gz)
+md5sums=('d299350784b423f72cdd4c87b97071ce')
+
+build() {
+	cd "$srcdir/$pkgname-$pkgver"
+	./configure --prefix=$bindir --sysconfdir=/etc
+	make
+}
+
+package() {
+	cd "$srcdir/$pkgname-$pkgver"
+	make DESTDIR="$pkgdir" install
+	install -D -m755 "$srcdir/$pkgname-$pkgver/h/zephyr/mit-copyright.h"  "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
+}

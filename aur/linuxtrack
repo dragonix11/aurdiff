@@ -1,0 +1,41 @@
+# Maintainer: blackleg <hectorespertpardo@gmail.com>
+# Based in linuxtrack-svn
+# Creator: Cristóvão Duarte Sousa <crisjss@gmail.com>
+
+pkgname=linuxtrack
+pkgver=0.99.6
+pkgrel=4
+pkgdesc="Software for head motion tracking on linux."
+arch=('i686' 'x86_64')
+url="http://code.google.com/p/linux-track/"
+license=('MIT License')
+depends=('libusb' 'v4l-utils' 'zlib' 'mxml' 'qt4' 'qtwebkit'  'cwiid')
+provides=("linuxtrack" "trackir-udev")
+
+source=(http://linuxtrack.eu/repositories/universal/linuxtrack-${pkgver}.tar.bz2)
+md5sums=('4a84a46532442ad2aa8611ab1e5c8e80')
+
+install=trackir-udev.install
+
+if [ "$CARCH" = "i686" ]; then
+    makedepends=('gcc-objc')
+elif [ "$CARCH" = "x86_64" ]; then
+    makedepends=('gcc-objc-multilib')
+fi
+
+build() {
+	cd "$srcdir/${pkgname}-${pkgver}"
+  	export CPPFLAGS=""
+	./configure CPP=/usr/bin/cpp --prefix=/usr
+	make
+}
+
+package() {
+	cd "$srcdir/${pkgname}-${pkgver}"
+	make DESTDIR="$pkgdir/" install
+
+	#Track-Ir udev
+	mkdir -p $pkgdir/usr/lib/udev/rules.d
+	cd "$pkgdir/usr/share/linuxtrack"
+	cp  51-TIR.rules $pkgdir/usr/lib/udev/rules.d/51-TIR.rules
+}
