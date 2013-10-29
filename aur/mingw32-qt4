@@ -1,0 +1,116 @@
+# Maintainer: Miguel Rasero <skuda21@gmail.com>
+# Contributor: Sven-Hendrik Haase <sh@lutzhaase.com>
+# Contributor: Denis Martinez <deuns.martinez AT gmail.com>
+# Contributor: Alexander 'hatred' Drozdov <adrozdoff AT gmail.com>
+# Contributor: mosra <mosra@centrum.cz>
+# Contributor: Alexandre Bique <bique.alexandre@gmail.com>
+
+pkgname=mingw32-qt4
+pkgver=4.8.5
+pkgrel=4
+pkgdesc="The Qt4 gui toolkit (mingw32)"
+arch=('any')
+url="http://qt.digia.com/"
+license=('LGPL')
+depends=('mingw32-runtime' 'mingw32-zlib' 'mingw32-libjpeg-turbo' 'mingw32-libiconv'
+         'mingw32-libtiff' 'mingw32-sqlite' 'mingw32-libpng')
+makedepends=('mingw32-gcc' 'mingw32-libmariadbclient' 'mingw32-postgresql-libs')
+replaces=('mingw32-qt<=4.8.4')
+conflicts=('mingw32-qt')
+options=(!strip !buildflags !libtool staticlibs)
+_pkgfqn="qt-everywhere-opensource-src-${pkgver}"
+source=("http://download.qt-project.org/official_releases/qt/4.8/${pkgver}/${_pkgfqn}.tar.gz"
+        i486-mingw32-qmake
+        qplatformdefs.h
+        qmake.conf
+        mingw32-qt-4.8.0-no-webkit-tests.patch)
+md5sums=('1864987bdbb2f58f8ae8b350dfdbe133'
+         '591a977bb49f94083e5b2789128a7174'
+         'e3edee8c1b183043198f826fb3171670'
+         '838e35bac7987ea50e04e4422a7e433b'
+         '91d01b6d31887f78c7933c04544c5758')
+
+build() {
+  cd "${srcdir}/${_pkgfqn}"
+
+  # Disable WebKit tests that are failing (as of Qt 4.8.0 rc1) with
+  # out of source builds.
+  patch -Np1 < ${srcdir}/mingw32-qt-4.8.0-no-webkit-tests.patch
+
+  mkdir -p mkspecs/win32-g++-cross
+  cp ${srcdir}/qplatformdefs.h mkspecs/win32-g++-cross
+  cp ${srcdir}/qmake.conf mkspecs/win32-g++-cross
+
+  sed -e 's|lmysqlclient_r|lmysql|g' -i ${srcdir}/${_pkgfqn}/config.tests/unix/mysql_r/mysql_r.pro
+  sed -e 's|lmysqlclient|lmysql|g' -i ${srcdir}/${_pkgfqn}/config.tests/unix/mysql/mysql.pro
+
+  export PKG_CONFIG_LIBDIR="/usr/i486-mingw32/lib/pkgconfig"
+  export CPLUS_INCLUDE_PATH="/usr/i486-mingw32/include/mysql"
+  unset PKG_CONFIG_PATH
+
+  ./configure -confirm-license \
+      -opensource \
+      -release \
+      -prefix /usr/i486-mingw32 \
+      -bindir /usr/i486-mingw32/lib/qt4/bin \
+      -headerdir /usr/i486-mingw32/include/qt4 \
+      -docdir /usr/i486-mingw32/share/doc/qt4 \
+      -plugindir /usr/i486-mingw32/lib/qt4/plugins \
+      -importdir /usr/i486-mingw32/lib/qt4/imports \
+      -datadir /usr/i486-mingw32/share/qt4 \
+      -translationdir /usr/i486-mingw32/share/qt4/translations \
+      -plugin-sql-{psql,mysql} \
+      -shared \
+      -qt3support \
+      -verbose \
+      -exceptions \
+      -fast \
+      -confirm-license \
+      -force-pkg-config \
+      -little-endian \
+      -xplatform win32-g++-cross \
+      -xmlpatterns \
+      -multimedia \
+      -audio-backend \
+      -webkit \
+      -script \
+      -scripttools \
+      -declarative \
+      -no-phonon \
+      -qt-libmng \
+      -system-zlib \
+      -system-libtiff \
+      -system-libpng \
+      -system-libjpeg \
+      -system-sqlite \
+      -iconv \
+      -nomake demos \
+      -nomake examples \
+      -nomake docs 
+
+  make
+}
+
+package() {
+  pkgdesc='A cross-platform application and UI framework (mingw32)'
+
+  cd "${srcdir}"/"${_pkgfqn}"
+
+  make INSTALL_ROOT="${pkgdir}" install
+
+  cd "$pkgdir"/usr/i486-mingw32
+
+  # Install mkspec
+  mkdir -p "${pkgdir}"/usr/share/qt4/mkspecs
+  ln -s /usr/i486-mingw32/share/qt4/mkspecs/win32-g++-cross "${pkgdir}"/usr/share/qt4/mkspecs/
+
+  # Make default mkspec in cross-environment
+  mkdir -p "${pkgdir}"/usr/i486-mingw32/share/qt4/mkspecs
+  cd "${pkgdir}"/usr/i486-mingw32/share/qt4/mkspecs
+  ln -s /usr/share/qt4/mkspecs/win32-g++-cross default
+
+  # qmake wrapper
+  mkdir -p "${pkgdir}"/usr/bin/
+  install -D -m755 "${srcdir}"/i486-mingw32-qmake "${pkgdir}"/usr/i486-mingw32/lib/qt4/bin/i486-mingw32-qmake
+  ln -s /usr/i486-mingw32/lib/qt4/bin/i486-mingw32-qmake "${pkgdir}"/usr/bin/i486-mingw32-qmake-qt4
+}

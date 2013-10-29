@@ -1,0 +1,42 @@
+# Maintainer: skydrome <skydrome@i2pmail.org>
+# Contributor: skydrome <skydrome@i2pmail.org>
+
+pkgname=torsocks-git
+pkgver=2.0.0.rc2.6
+pkgrel=1
+pkgdesc='Torsocks allows you to use most socks-friendly applications in a safe way with Tor.'
+url='https://github.com/dgoulet/torsocks'
+license=('GPL2')
+arch=('i686' 'x86_64')
+conflicts=('torsocks' 'tsocks')
+provides=('torsocks')
+options=(!strip)
+
+source=("git+https://github.com/dgoulet/torsocks.git")
+md5sums=('SKIP')
+
+pkgver () {
+    cd "$srcdir/torsocks"
+    git describe |sed 's/-[^-]*$//;s/^v//;s/-/./g'
+}
+
+prepare() {
+    cd "$srcdir/torsocks"
+    ./autogen.sh
+}
+
+build() {
+    cd "$srcdir/torsocks"
+    ./configure \
+        --prefix=/usr \
+        --sysconfdir=/etc \
+        --datadir=/usr/share/torsocks \
+        --docdir=/usr/share/torsocks
+    make
+}
+
+package() {
+    cd "$srcdir/torsocks"
+    make DESTDIR="$pkgdir" install
+    install -Dm644 "gpl-2.0.txt"  "$pkgdir/usr/share/licenses/torsocks/LICENSE"
+}
