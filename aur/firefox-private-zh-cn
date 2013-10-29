@@ -1,5 +1,5 @@
 #! /bin/bash
-# Maintainer: Kyro <chris-bos-lee@hotmail.com>
+# Contributor: Kyro <chris-bos-lee@hotmail.com>
 
 pkgname=firefox-private-zh-cn
 pkgver=25.0

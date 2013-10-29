@@ -1,0 +1,33 @@
+# Maintainer: Georges Dubus <georges.dubus@compiletoi.net>
+pkgname=aurifere-git
+pkgver=20131029
+pkgrel=2
+pkgdesc="AUR wrapper for lazy people"
+arch=('any')
+url="https://github.com/madjar/aurifere"
+license=('custom: ISC')
+depends=('python' 'pyalpm' 'python-xdg')
+makedepends=('git' 'python-setuptools')
+provides=('aurifere')
+conflicts=('aurifere')
+
+_gitroot=git://github.com/madjar/aurifere.git
+_gitname=aurifere
+
+build() {
+  cd "$srcdir"
+  msg "Connecting to GIT server...."
+
+  if [[ -d "$_gitname" ]]; then
+    cd "$_gitname" && git pull origin
+    msg "The local files are updated."
+  else
+    git clone "$_gitroot" "$_gitname"
+  fi
+}
+
+package() {
+  cd "$srcdir/$_gitname"
+  python setup.py install --root="$pkgdir/" --optimize=1
+  install -Dm644 LICENSE "${pkgdir}/usr/share/licenses/${pkgname}/LICENSE"
+}

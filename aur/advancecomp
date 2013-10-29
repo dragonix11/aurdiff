@@ -1,0 +1,22 @@
+pkgname=advancecomp
+pkgver=1.17
+pkgrel=1
+arch=('i686' 'x86_64')
+pkgdesc="Recompression utilities for .zip .png .mng and .gz files using the 7-zip agorithm"
+url="http://advancemame.sourceforge.net/comp-readme.html"
+license=('GPL')
+depends=('zlib')
+makedepends=()
+source=("http://downloads.sourceforge.net/project/advancemame/${pkgname}/${pkgver}/${pkgname}-${pkgver}.tar.gz")
+sha1sums=('9197bc424d111575501221710301b44764150e85')
+
+build() {
+	cd "${srcdir}/${pkgname}-${pkgver}"
+	./configure --prefix=/usr --mandir=/usr/share/man
+	make
+}
+
+package() {
+	cd "${srcdir}/${pkgname}-${pkgver}"
+	make DESTDIR="${pkgdir}" install
+}

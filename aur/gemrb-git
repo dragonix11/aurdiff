@@ -1,0 +1,52 @@
+# Maintainer: Jun Go <gojun077@gmail.com>
+
+pkgname=gemrb-git
+pkgver=20131030
+pkgrel=1
+pkgdesc="A portable open-source implementation of Bioware's Infinity Engine."
+arch=('i686' 'x86_64')
+url="https://github.com/gemrb/gemrb"
+license=('GPL')
+depends=('hicolor-icon-theme' 'python' 'python2' 'sdl_ttf' 'openal' 'libpng' 'sdl_mixer')
+makedepends=('cmake' 'git')
+provides=('gemrb')
+conflicts=('gemrb')
+options=(!libtool)
+install=gemrb-git.install
+
+_gitname="gemrb"
+_gitroot="git://github.com/gemrb/gemrb.git"
+
+build() {
+  cd "$srcdir"
+  msg "Connecting to GIT server...."
+
+  if [[ -d "$_gitname" ]]; then
+    cd "$_gitname" && git pull origin
+    msg "The local files are updated."
+  else
+    git clone "$_gitroot" "$_gitname"
+  fi
+
+  msg "GIT checkout done or server timeout"
+  msg "Starting build..."
+
+  rm -rf "$srcdir/$_gitname-build"
+  git clone "$srcdir/$_gitname" "$srcdir/$_gitname-build"
+  cd "$srcdir/$_gitname-build"
+
+
+	cmake -DCMAKE_INSTALL_PREFIX=/usr -DINSOURCEBUILD=1 .
+	make
+}
+
+package() {
+  cd "$srcdir/$_gitname-build"
+  make DESTDIR="$pkgdir/" install
+  ln -s /usr/lib/gemrb/plugins ~/.gemrb
+  ln -s /usr/share/gemrb/override ~/.gemrb
+  ln -s /usr/share/gemrb/unhardcoded ~/.gemrb
+  ln -s /usr/share/gemrb/GUIScripts ~/.gemrb
+}
+
+# vim:set ts=2 sw=2 et:
