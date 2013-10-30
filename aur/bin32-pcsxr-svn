@@ -1,0 +1,44 @@
+# Maintainer: shvr <tusklahoma at gmail dot com>
+# Contributor: alucryd <alucryd at gmail dot com>
+# Contributor: Infy <eugene dot yudin at gmail dot com>
+
+_pkgname=pcsxr
+pkgname=bin32-pcsxr-svn
+pkgver=87687
+pkgrel=1
+pkgdesc="A Sony PlayStation emulator based on the PCSX-df Project (32-bit)"
+arch=('x86_64')
+url="http://pcsxr.codeplex.com/"
+license=('GPL')
+depends=('lib32-gtk3' 'lib32-libcdio' 'lib32-libxv')
+makedepends=('gcc-multilib' 'intltool' 'sdl2' 'lib32-sdl2' 'lib32-mesa' 'subversion' 'nasm')
+optdepends=('lib32-libpulse: Pulseaudio support')
+provides=("${pkgname%-*}", "${_pkgname%-*}")
+conflicts=("${_pkgname%-*}", 'pcsx-df')
+options=('!libtool')
+source=("${_pkgname%-*}::svn+https://pcsxr.svn.codeplex.com/svn/pcsxr")
+sha256sums=('SKIP')
+
+pkgver() {
+  cd ${_pkgname%-*}
+
+  svnversion
+}
+
+build() {
+  cd ${_pkgname%-*}
+  
+  export CC="gcc -m32"
+  export CXX="gcc -m32"
+  export PKG_CONFIG_PATH="/usr/lib32/pkgconfig"
+
+  ./autogen.sh --prefix='/usr' --libdir=/usr/lib32 \
+      --enable-{libcdio,opengl} --enable-dynarec=x86
+  make
+}
+
+package() {
+  cd ${_pkgname%-*}
+
+  make DESTDIR="${pkgdir}" install
+}

@@ -1,7 +1,7 @@
 # Maintainer: Jun Go <gojun077@gmail.com>
 
 pkgname=gemrb-git
-pkgver=20131030
+pkgver=v0.8.0-289-g88bbd16
 pkgrel=1
 pkgdesc="A portable open-source implementation of Bioware's Infinity Engine."
 arch=('i686' 'x86_64')
