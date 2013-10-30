@@ -4,12 +4,17 @@
 
 pkgname=wineasio
 pkgver=0.9.2
-pkgrel=2
+pkgrel=3
 pkgdesc="Steinberg ASIO driver implementation for Wine"
 arch=('i686' 'x86_64')
 url="http://sourceforge.net/projects/wineasio/"
 license=('LGPL')
-depends=('wine' 'jack' 'ed')
+
+if [[ ${CARCH} == i686 ]]; then
+  depends=('ed' 'jack' 'wine')
+else
+  depends=('ed' 'jack' 'lib32-jack' 'wine' 'gcc-multilib')
+fi    
 makedepends=('steinberg-asio')
 
 install=${pkgname}.install

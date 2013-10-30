@@ -3,11 +3,11 @@
 pkgname=sdrangelove-git
 pkgver=20131024
 pkgrel=1
-pkgdesc="Driver for Realtek RTL2832U, allowing general purpose software defined radio (SDR)."
+pkgdesc="A high speed SDR waterfall display."
 arch=('i686' 'x86_64')
-url="http://sdr.osmocom.org/trac/wiki/rtl-sdr"
+url="http://sdr.osmocom.org/trac/wiki/sdrangelove"
 license=('GPL')
-depends=('qt5-multimedia' 'rtl-sdr')
+depends=('qt5-multimedia' 'rtl-sdr' 'pulseaudio')
 # build with gr-osmosdr for more hardware
 makedepends=('git' 'cmake')
 conflicts=('sdrangelove')

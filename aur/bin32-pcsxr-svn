@@ -4,14 +4,14 @@
 
 _pkgname=pcsxr
 pkgname=bin32-pcsxr-svn
-pkgver=87687
+pkgver=87696
 pkgrel=1
 pkgdesc="A Sony PlayStation emulator based on the PCSX-df Project (32-bit)"
 arch=('x86_64')
 url="http://pcsxr.codeplex.com/"
 license=('GPL')
-depends=('lib32-gtk3' 'lib32-libcdio' 'lib32-libxv')
-makedepends=('gcc-multilib' 'intltool' 'sdl2' 'lib32-sdl2' 'lib32-mesa' 'subversion' 'nasm')
+depends=('lib32-gtk3' 'lib32-sdl2' 'lib32-libcdio' 'lib32-libxv')
+makedepends=('gcc-multilib' 'intltool' 'sdl2' 'lib32-mesa' 'subversion')
 optdepends=('lib32-libpulse: Pulseaudio support')
 provides=("${pkgname%-*}", "${_pkgname%-*}")
 conflicts=("${_pkgname%-*}", 'pcsx-df')
@@ -28,8 +28,8 @@ pkgver() {
 build() {
   cd ${_pkgname%-*}
   
-  export CC="gcc -m32"
-  export CXX="gcc -m32"
+  CFLAGS="-m32 ${CFLAGS}"
+  CXXFLAGS="-m32 ${CXXFLAGS}"
   export PKG_CONFIG_PATH="/usr/lib32/pkgconfig"
 
   ./autogen.sh --prefix='/usr' --libdir=/usr/lib32 \

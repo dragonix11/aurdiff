@@ -4,9 +4,9 @@
 pkgname=libmodbus
 pkgver=3.0.5
 pkgrel=1
-pkgdesc="A Modbus library for Linux (and OSX) wrote in C and which supports RTU and TCP communications."
+pkgdesc="A Modbus library for Linux, Mac OS X, FreeBSD, QNX and Win32"
 arch=('i686' 'x86_64')
-url="https://launchpad.net/libmodbus"
+url="http://libmodbus.org"
 license=('LGPL')
 groups=()
 depends=()

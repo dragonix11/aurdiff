@@ -3,7 +3,7 @@
 pkgname=mingw32-libmodbus
 pkgver=3.0.5
 pkgrel=1
-pkgdesc="A Modbus library for Linux (and OSX) wrote in C and which supports RTU and TCP communications. (mingw32)"
+pkgdesc="A Modbus library for Linux, Mac OS X, FreeBSD, QNX and Win32 (mingw32)"
 arch=('any')
 url="http://libmodbus.org/"
 license=('LGPL')
