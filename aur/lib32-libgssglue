@@ -1,0 +1,34 @@
+# Maintainer: jtts
+# Contributor: Tobias Powalowski <tpowa@archlinux.org>
+# Contributor: josephgbr <rafael.f.f1@gmail.com>
+
+_pkgbase=libgssglue
+pkgname=lib32-${_pkgbase}
+pkgver=0.4
+pkgrel=4
+pkgdesc="Exports a gssapi interface which calls other random gssapi libraries (32-bit)"
+arch=('x86_64')
+url="http://www.citi.umich.edu/projects/nfsv4/linux"
+license=('BSD')
+depends=('lib32-glibc' "${_pkgbase}")
+makedepends=('gcc-multilib')
+source=($url/$_pkgbase/$_pkgbase-$pkgver.tar.gz)
+md5sums=('088797f3180702fa54e786496b32e750')
+
+build() {
+  export CC="gcc -m32"
+  export CXX="g++ -m32"
+  cd $_pkgbase-$pkgver
+  ./configure --prefix=/usr --libdir=/usr/lib32
+  make
+}
+
+package() {
+  cd $_pkgbase-$pkgver
+  make DESTDIR="$pkgdir/" install
+  rm -rf "${pkgdir}"/usr/include
+  
+  # install license
+  install -dm755 "$pkgdir"/usr/share/licenses
+  ln -s $_pkgbase "$pkgdir"/usr/share/licenses/$pkgname
+}
