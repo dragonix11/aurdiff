@@ -1,0 +1,34 @@
+# Maintainer:   Lucky <archlinux@builds.lucky.li>
+# Contributor:  Jonny Gerold <fsk141@gmail.com>
+
+pkgname=vzctl
+pkgver=4.6
+pkgrel=1
+pkgdesc="OpenVZ containers control utility"
+url="http://wiki.openvz.org/Download/vzctl/${pkgver}"
+license=("GPL")
+arch=("i686" "x86_64")
+depends=("iproute" "rsync" "openssh" "ploop" "libcgroup>=0.37")
+source=("http://download.openvz.org/utils/${pkgname}/${pkgver}/src/${pkgname}-${pkgver}.tar.bz2"
+        "openvz")
+md5sums=("eca164b75fd520ad93eb48acded9cb77"
+         "4957ae2e416e35a974cc216c6a1dc1aa")
+sha1sums=("d6d69883af3f3641459f1867f945f3e640dfb77c"
+          "43a7a9ed83cc6918d81ea6e6990fde69629ef308")
+
+build() {
+  cd "${srcdir}/${pkgname}-${pkgver}"
+
+  ./configure --prefix=/usr --libdir=/usr/lib --enable-bashcomp --enable-logrotate --disable-static
+  make
+}
+
+package() {
+  cd "${srcdir}/${pkgname}-${pkgver}"
+
+  install -Dm755 "${srcdir}/openvz" "${pkgdir}/etc/rc.d/openvz"
+  make DESTDIR="${pkgdir}" \
+    sbindir="/usr/bin" \
+    bindir="/usr/bin" \
+    install
+}

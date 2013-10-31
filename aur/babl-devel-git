@@ -1,0 +1,34 @@
+# Maintainer: Yosef Or Boczko <yoseforb@gmail.com>
+
+_pkgname=babl-devel
+pkgname=$_pkgname-git
+pkgver=BABL_0_1_10.142.gc6851a4
+pkgrel=1
+pkgdesc="Dynamic, any to any, pixel format conversion library"
+arch=('i686' 'x86_64')
+url="http://gegl.org/babl/"
+license=('LGPL3')
+depends=('glibc')
+makedepends=('glibc' 'gobject-introspection>=1.33.5')
+options=('!libtool' '!makeflags')
+replaces=('babl')
+provides=('babl' 'babl=0.1.11' 'babl-devel=0.1.11')
+conflicts=('babl')
+source=('git://git.gnome.org/babl')
+sha256sums=('SKIP')
+
+pkgver() {
+  cd "$srcdir/babl"
+  git describe --always | sed 's|-|.|g'
+}
+
+build() {
+  cd "$srcdir/babl"
+  ./autogen.sh --prefix=/usr
+  make
+}
+
+package() {
+  cd "$srcdir/babl"
+  make DESTDIR="${pkgdir}" install
+}
