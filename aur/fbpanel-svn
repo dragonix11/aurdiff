@@ -1,0 +1,34 @@
+# Maintainer: Calimero <calimeroteknik@free.fr>
+
+pkgname=fbpanel-svn
+pkgver=515    
+pkgrel=2
+pkgdesc='NetWM compliant desktop panel'
+arch=('i686' 'x86_64')
+url='http://fbpanel.sourceforge.net/'
+depends=('gtk2')
+makedepends=('subversion')
+conflicts=('fbpanel')
+provides=('fbpanel')
+license=('GPL')
+source=("$pkgname"::'svn+https://fbpanel.svn.sourceforge.net/svnroot/fbpanel/trunk')
+md5sums=('SKIP')
+
+pkgver() {
+  cd "${srcdir}/${pkgname}"
+  local ver="$(svnversion)"
+  printf "%s" "${ver//[[:alpha:]]}"
+}
+
+build() {
+  cd "${srcdir}/${pkgname}"
+
+  export LDFLAGS="${LDFLAGS} -lX11 -lm"
+  ./configure --prefix=/usr
+  make
+}
+
+package() {
+  cd "${srcdir}/${pkgname}"
+  make DESTDIR="${pkgdir}" install
+}
