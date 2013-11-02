@@ -1,0 +1,24 @@
+# Maintainer: M0Rf30
+# Contributor: Jesse L. Zamora <xtremekforever@gmail.com>
+
+pkgname=arm-2011-arm-none-eabi
+pkgver=2011.09
+pkgrel=1
+pkgdesc="Sourcery G++ Lite 2011.09-69 for ARM EABI"
+arch=('i686' 'x86_64')
+url="http://www.codesourcery.com/sgpp/lite/arm/portal/release1802"
+#Custom license according to share/doc/arm-arm-none-eabi/LICENSE.txt
+license=('custom')
+options=(!strip)
+source=(https://sourcery.mentor.com/sgpp/lite/arm/portal/package9740/public/arm-none-eabi/arm-2011.09-69-arm-none-eabi-i686-pc-linux-gnu.tar.bz2)
+
+package() {
+#Copy base binaries, libraries and such
+	mkdir -p $pkgdir/usr
+	cd $srcdir/arm-$pkgver
+	cp -PR * $pkgdir/usr
+
+msg "ARM toolchain prefix installed as arm-none-eabi"
+
+}
+md5sums=('2f2d73429ce70dfb848d7b44b3d24d3f')

@@ -1,0 +1,32 @@
+# Maintainer: Guido <qqqqqqqqq9 at web dot de>
+# Contributor: Emmanuel Gil Peyrot <linkmauve at linkmauve dot fr>
+
+pkgname=sozi
+pkgver=13.05
+pkgrel=2
+_extraver='21064303'
+pkgdesc='An Inkscape extension that creates SVG-based presentations, using JavaScript'
+url="http://sozi.baierouge.fr/"
+license=('GPL3' 'MIT')
+depends=('inkscape' 'pygtk' 'python2-lxml')
+_lang="de es fr it nl nn pt_BR sv"
+source=("http://sozi.baierouge.fr/static/releases/${pkgname}-release-${pkgver}-${_extraver}.zip")
+arch=('any')
+md5sums=('2ec31f8fcc14bd96006bbcad1009e364')
+sha1sums=('30329a763a691686b81f9313dd1e9f2c7a9ec56d')
+
+package() {
+	cd "${srcdir}/sozi-release-${pkgver}-${_extraver}"
+
+	mkdir -p ${pkgdir}/usr/share/inkscape/extensions/sozi/lang
+ 	install -D -m644 *.py *.inx ${pkgdir}/usr/share/inkscape/extensions
+
+	cd sozi
+	install -D -m644 *.py *.glade *.css *.js *.png ${pkgdir}/usr/share/inkscape/extensions/sozi
+	
+	mkdir -p ${pkgdir}/usr/share/licenses/sozi
+	install -D -m644 MIT-license.txt ${pkgdir}/usr/share/licenses/sozi/LICENSE
+
+	cd lang
+	cp -r $_lang "${pkgdir}/usr/share/inkscape/extensions/sozi/lang/"
+}

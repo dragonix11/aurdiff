@@ -1,0 +1,41 @@
+# Maintainer: David Roheim <david dot roheim at gmail dot com>
+pkgname=ucx
+pkgver=13.0.0.14
+pkgrel=1
+pkgdesc="UltraCompare Professional is a powerful compare/merge application."
+arch=('i686' 'x86_64')
+url="http://www.ultraedit.com/products/ultracompare-mac-linux.html"
+license=('custom')
+install=${pkgname}.install
+depends=(glibc gdk-pixbuf2 glib2 icu libpng libjpeg-turbo libx11 libxml2 zlib pango)
+options=(!strip)
+
+source=("http://www.ultraedit.com/files/ucx/Other/ucx-${pkgver}_amd64.tar.gz")
+sha256sums=('e682f147b99fbbab7da83375754faa509e86b06917027c097ffeb0a297580d7b')
+
+if [ "${CARCH}" = 'i686' ]; then
+	source[0]=("http://www.ultraedit.com/files/ucx/Other/ucx-${pkgver}_i386.tar.gz")
+	sha256sums[0]=("85e18fbecc35556acaa56979ebc022462a70f75cf6f7553da07c8508e1f353ba")
+fi
+
+build() {
+  true
+}
+
+package() {
+  cd "${srcdir}/${pkgname}"
+  install -m755 -d ${pkgdir}/opt
+  install -m755 -d ${pkgdir}/usr/bin
+  install -m755 -d ${pkgdir}/usr/share/menu
+  install -m755 -d ${pkgdir}/usr/share/pixmaps
+  install -m755 -d ${pkgdir}/usr/share/applications
+  install -m755 -d ${pkgdir}/usr/share/licenses/${pkgname}
+  
+  cp -R ${srcdir}/${pkgname}             ${pkgdir}/opt
+  ln -s /opt/ucx/bin/ucx                 ${pkgdir}/usr/bin/ucx
+  ln -s /opt/ucx/share/ucx/ucx.xpm       ${pkgdir}/usr/share/pixmaps/ucx.xpm
+  ln -s /opt/ucx/share/ucx/ucx.menu      ${pkgdir}/usr/share/menu/ucx.menu
+  ln -s /opt/ucx/share/ucx/ucx.desktop   ${pkgdir}/usr/share/applications/ucx.desktop
+  ln -s /opt/ucx/share/doc/ucx/copyright ${pkgdir}/usr/share/licenses/${pkgname}/LICENSE
+}
+
