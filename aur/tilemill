@@ -1,0 +1,41 @@
+# Maintainer: Nick Østergaard <oe.nick at gmail dot com>
+pkgname=tilemill
+pkgver=0.10.1
+pkgrel=3
+pkgdesc="A modern map design studio"
+arch=(any)
+url="https://github.com/mapbox/tilemill"
+license=(BSD)
+depends=(nodejs mapnik desktop-file-utils webkitgtk2 boost)
+source=(https://github.com/mapbox/$pkgname/archive/v$pkgver.zip \
+        tilemill.png \
+        tilemill.desktop \
+        tilemill.install)
+noextract=($pkgname-$pkgver.tgz)
+sha1sums=('f27e0671fd2cb2c112c89a02120d7cf7dd130b9d'
+          '350bbce4e2a3a338123e919f050c418d317a7862'
+          '9aced645fcc1407e7a0cb864a48501e3048a4c37'
+          'f011df5ca2f0597ddd51c4d5f1b365caa0c7c847')
+
+build() {
+  # nodejs python3 incompatibility hax
+  mkdir -p $srcdir/bin
+  ln -s -f /usr/bin/python2 $srcdir/bin/python
+  export PATH=$srcdir/bin:$PATH
+  python --version
+}
+
+package() {
+  # install the actual tilemill
+  cd $srcdir
+  local _npmdir="$pkgdir/usr/lib/node_modules/"
+  mkdir -p $_npmdir
+  cd $_npmdir
+  npm install -g --prefix "$pkgdir/usr" $pkgname@$pkgver
+
+  # icon and .desktop files
+  install -Dm644 $srcdir/tilemill.png "$pkgdir/usr/share/pixmaps/tilemill.png"
+  install -Dm644 $srcdir/tilemill.desktop "$pkgdir/usr/share/applications/tilemill.desktop"
+  install -Dm644 $pkgdir/usr/lib/node_modules/tilemill/LICENSE.md "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
+}
+# vim:set ts=2 sw=2 et:

@@ -1,0 +1,42 @@
+# Maintainer: Gilrain <pierre.buard+aur gmail com>
+
+pkgname=pgl-cli
+pkgver=2.2.3
+pkgrel=1
+pkgdesc='PeerGuardian is a privacy oriented firewall application (Daemon & CLI).'
+url='http://sourceforge.net/projects/peerguardian/'
+arch=('i686' 'x86_64')
+depends=('cron' 'logrotate' 'wget' 'libnetfilter_queue' 'iptables' 'dbus')
+optdepends=('unzip: for zipped blocklists'
+	    'p7zip: for 7z blocklists'
+	    'net-tools: to whitelist local IP addresses'
+	    'networkmanager: to whitelist newly started network interfaces'
+	    'smtp-forwarder: to send reports'
+	    'tcptraceroute: to diagnose connection problems')
+license=('GPL')
+replace=('pgl-nogui')
+conflicts=('blockcontrol' 'moblock' 'pgl' 'pgl-git')
+backup=('etc/pgl/allow.p2p'
+	'etc/pgl/blocklists.list'
+	'etc/pgl/pglcmd.conf'
+	'etc/logrotate.d/pglcmd'
+	'etc/logrotate.d/pgld')
+source=(http://downloads.sourceforge.net/project/peerguardian/PeerGuardian%20Linux/${pkgver}/pgl-${pkgver}.tar.gz)
+md5sums=('46d4ca7c9f61549dcf0c09612916a77f')
+install=install
+changelog=changelog.cli
+
+build() {
+    cd ${srcdir}/pgl-${pkgver}/
+    ./configure --prefix=/usr --sbindir=/usr/bin --sysconfdir=/etc --localstatedir=/var --datarootdir=/usr/share \
+		--with-piddir=/run --with-systemd --without-initddir --without-qt4
+    make
+}
+
+package() {
+    cd ${srcdir}/pgl-${pkgver}/
+    make DESTDIR=${pkgdir} install
+
+    # integrates daemon log in systemd journal
+    sed -i '/^LOG_SYSLOG/s/0/1/g' ${pkgdir}/usr/lib/pgl/pglcmd.defaults
+}

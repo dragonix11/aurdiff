@@ -1,0 +1,39 @@
+# Maintainer: Anton Larionov <diffident dot cat at gmail dot com>
+# Contributor: Diego <cdprincipe@at@gmail@dot@com>
+# Contributor: Scott Horowitz <stonecrest[at]gmail[dot]com>
+
+_pkgname=sonata
+pkgname=sonata-git
+pkgver=v1.7a1.r54.g0b44eb3
+pkgrel=1
+pkgdesc='Elegant GTK+ music client for MPD (Git Version)'
+url='https://github.com/multani/sonata'
+license=('GPL3')
+arch=('i686' 'x86_64')
+depends=('python-gobject' 'python-mpd2' 'python' 'gtk3' 'python-distribute')
+makedepends=('git')
+
+optdepends=('python-tagpy: Metadata editing support'
+            'python2-dbus: Various extra functionality (e.g. multimedia keys support)')
+
+conflicts=('sonata' 'sonata-svn')
+provides=('sonata')
+
+source=(git+git://github.com/multani/sonata.git
+	mpd-0.18.patch)
+
+md5sums=('SKIP'
+         'b5841b051dc21957499a83335b067721')
+
+pkgver() {
+  cd "${srcdir}/${_pkgname}"
+  git describe | sed -E 's/([^-]*-g)/r\1/;s/-/./g'
+}
+
+package() {
+  cd "${srcdir}/${_pkgname}"
+  patch -Np1 -i "${srcdir}/mpd-0.18.patch"
+  python setup.py install --prefix=/usr --optimize 1 --root="${pkgdir}"
+}
+
+# vim:set ts=2 sw=2 et:
