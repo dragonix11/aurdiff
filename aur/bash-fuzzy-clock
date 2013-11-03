@@ -1,0 +1,31 @@
+# Maintainer: Corey Mwamba <contact.me@coreymwamba.co.uk>
+# Submitter:  Corey Mwamba <contact.me@coreymwamba.co.uk>
+pkgname=bash-fuzzy-clock
+pkgver=20130424
+pkgrel=2
+pkgdesc="Script to display the time in natural language. English and French"
+arch=('any')
+url="https://sourceforge.net/projects/bashfuzzyclock/"
+license=('GPL')
+depends=('bash')
+makedepends=()
+optdepends=()
+provides=("bash-fuzzy-clock")
+conflicts=()
+replaces=()
+backup=()
+options=()
+changelog=
+source=(https://downloads.sourceforge.net/project/bashfuzzyclock/$pkgname.tar.gz)
+noextract=()
+md5sums=('144f8de5d6b93b29f78758ab0696c793')
+
+package() {
+  cd "$pkgdir"
+  mkdir -p usr/bin/
+  mkdir -p usr/share/locale/fr/LC_MESSAGES/
+
+  cd $srcdir
+  install -v $pkgname -m 0755 $pkgdir/usr/bin/
+  msgfmt fr.po -o $pkgdir/usr/share/locale/fr/LC_MESSAGES/bash-fuzzy-clock.mo
+}

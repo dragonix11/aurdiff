@@ -1,0 +1,30 @@
+# $Id: pkgbuild-mode.el,v 1.23 2007/10/20 16:02:14 juergen Exp $
+# Maintainer:  perlawk
+pkgname=apli  
+pkgver=1.0
+pkgrel=3 
+pkgdesc="LISP A portable implemenatation, in C, modified to run under linux"
+url="http://aur.archlinux.org"
+arch=('i686' 'x86_64')
+license=('Unknown')
+depends=()
+makedepends=()
+conflicts=()
+replaces=()
+backup=()
+install=
+source=($pkgname.sh)
+build() {
+  cd "$srcdir/"
+  sh ./$pkgname.sh
+  cd "$srcdir/$pkgname"
+  make || return 1
+}
+
+package() {
+  cd "$srcdir/$pkgname"
+  mkdir -p $pkgdir/usr/bin
+  install -m755 kern kcomp $pkgdir/usr/bin
+}
+
+md5sums=('c563f7a17ff1f40af2550b822ec2bf9a')
