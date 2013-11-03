@@ -1,0 +1,43 @@
+# Maintainer Alfredo Palhares <masterkorp@masterkorp.net>
+# edited by Steffen Hoenig <mail@steffenhoenig.com>
+
+pkgname=tasknc-git
+pkgver=20130227
+pkgrel=1
+pkgdesc="An ncurses wrapper around taskwarrior"
+arch=('i686' 'x86_64')
+url="https://github.com/mjheagle8/tasknc"
+license=('GPL')
+depends=('task' )
+makedepends=('git' 'perl')
+conflicts=('tasknc')
+provides=('tasknc')
+
+_gitroot="git://github.com/mjheagle8/tasknc.git"
+_gitname="tasknc"
+
+build() {
+  cd ${srcdir}
+  msg "Connecting to GIT server...."
+
+  if [ -d "$_gitname" ] ; then
+    cd $_gitname && git pull && cd ..
+  else
+    git clone $_gitroot
+  fi
+  if [ -d "$_gitname/build" ]; then
+    rm -rf "$_gitname/build"
+  fi
+  mkdir $_gitname/build
+  cd $_gitname/build
+
+  msg "Starting cmake..."
+  cmake ..
+  make || true #due to some syntax issues
+  make 
+}
+
+package() {
+  cd $srcdir/$_gitname/build
+  make DESTDIR=${pkgdir} PREFIX=/usr install
+}

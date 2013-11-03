@@ -1,0 +1,26 @@
+#Maintainer Nicky726 (Nicky726 <at> gmail <dot> com)
+#Contributor Lukas Kropatschek (lukas <dot> krop <at> gmail <dot> com)
+
+arch=('i686' 'x86_64')
+pkgname=qgamex
+pkgver=1.1.1
+pkgrel=5
+pkgdesc="QGameX is a tool not only for launching games, optionally in a separated X11 session."
+url=(http://www.dolezel.info/projects/qgamex)
+license=('GPL2')
+depends=('qt4')
+source=(http://www.dolezel.info/download/data/${pkgname}/${pkgname}-${pkgver}.tar.bz2)
+sha256sums=('2780ec078528740e95ca3112e98cac08f527a01066e0c961eb30e90a0688d085')
+
+build() {
+  cd "${srcdir}/${pkgname}-${pkgver}"
+  qmake-qt4 "${pkgname}.pro"
+  make
+}
+
+package() {
+  cd "${srcdir}/${pkgname}-${pkgver}"
+  mkdir "${pkgdir}/usr"
+  mkdir "${pkgdir}/usr/bin"
+  install -m 751 qgamex "${pkgdir}/usr/bin/qgamex"
+}

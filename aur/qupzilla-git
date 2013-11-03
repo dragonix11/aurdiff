@@ -1,0 +1,52 @@
+# Mantainer: sxe <sxxe@gmx.de>
+
+pkgname=qupzilla-git
+pkgver=20131103
+pkgrel=1
+pkgdesc="A new and very fast open source browser based on WebKit core, written in Qt Framework."
+arch=('i686' 'x86_64')
+url="http://www.qupzilla.com"
+license=('GPL')
+depends=( 'qt4' 'qtwebkit')
+makedepends=('git')
+provides=('qupzilla')
+conflicts=('qupzilla')
+source=()
+md5sums=()
+
+_gitroot="https://github.com/QupZilla/qupzilla.git"
+_gitname="qupzilla" 
+
+build() {
+  cd $srcdir
+
+  msg "Connecting to github.com GIT server...."
+ 
+  if [ -d ${srcdir}/$_gitname ] ; then
+    cd $_gitname && git pull origin
+    msg "The local files are updated."
+  else
+    git clone $_gitroot
+  fi
+  
+  msg "Starting make..."
+
+  if [ -d ${srcdir}/${_gitname}-build ]; then
+      rm -rf ${srcdir}/${_gitname}-build
+  fi
+
+  cp -r ${srcdir}/$_gitname ${srcdir}/${_gitname}-build
+  cd ${srcdir}/${_gitname}-build
+
+  export USE_WEBGL="true"
+  export KDE="true"
+   
+  qmake-qt4
+  make clean
+  make
+}
+
+package() {
+  cd ${srcdir}/${_gitname}-build
+  make INSTALL_ROOT="$pkgdir/" install
+}

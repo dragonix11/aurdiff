@@ -1,0 +1,31 @@
+# Maintainer: Daniel Sandman <revoltism@gmail.com>
+
+pkgname=music-player-git
+pkgver=2013113
+pkgrel=2
+pkgdesc="Simple Music Player using GTK3.10 created by Ikey Doherty. Tries to be pretty. Written in C. Supports video."
+arch=('i686' 'x86_64')
+url="https://github.com/ikeydoherty/music-player"
+license=('GPLv2')
+depends=('gtk3' 'gst-plugins-base-libs' 'id3lib')
+makedepends=('git')
+conflicts=('musicplayer')
+provides=('musicplayer')
+source=("$pkgname"::'git+https://github.com/ikeydoherty/music-player.git#branch=master')
+md5sums=('SKIP')
+
+pkgver() {
+  date +%Y%m%d
+  }
+
+
+build() {
+     cd "$srcdir/$pkgname"
+     ./autogen.sh
+     make
+}
+
+package() {
+     cd "$srcdir/$pkgname"
+     make PREFIX=/usr DESTDIR="$pkgdir" install
+}

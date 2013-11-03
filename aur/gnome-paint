@@ -1,0 +1,33 @@
+# Contributor: Edoardo Maria Elidoro <edoardo.elidoro@gmail.com>
+# Contributor: György Balló <ballogy@freestart.hu>
+# Maintainer: Stefan Husmann <stefan-husmann@t-online.de>
+
+pkgname=gnome-paint
+pkgver=0.4.0
+pkgrel=1
+pkgdesc="A simple, easy-to-use paint program for GNOME"
+arch=('i686' 'x86_64')
+url="https://launchpad.net/gnome-paint"
+license=('GPL')
+depends=('gtk2' 'desktop-file-utils' 'hicolor-icon-theme' 'xdg-utils')
+makedepends=('intltool')
+options=('!libtool')
+install=$pkgname.install
+source=(http://launchpad.net/$pkgname/trunk/$pkgver/+download/$pkgname-$pkgver.tar.gz)
+md5sums=('a6c71a0daf065f7bd238b59e598c5f30')
+
+build() {
+  cd "$srcdir/$pkgname-$pkgver"
+  sed -i 's/-lX11/-lX11 -lm/' src/Makefile.in
+
+  ./configure --prefix=/usr --sysconfdir=/etc --localstatedir=/var \
+              --disable-static
+  make
+}
+
+package() {
+  cd "$srcdir/$pkgname-$pkgver"
+
+  make DESTDIR="$pkgdir/" install
+  rm -r "$pkgdir/usr/doc"
+}

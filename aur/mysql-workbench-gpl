@@ -1,0 +1,46 @@
+ 
+# Contributor: giacomogiorgianni@gmail.com
+# Contributor: ming13@yandex.ru
+
+pkgname=mysql-workbench-gpl
+pkgver=6.0.4
+pkgrel=1
+pkgdesc="A cross-platform, visual database design tool developed by MySQL (Ubuntu precompiled binary)."
+arch=('i686' 'x86_64')
+url="https://www.mysql.com/products/workbench/"
+license=('GPL2')
+depends=('hicolor-icon-theme' 'tinyxml' 'pcre>=8' 'libzip' 'lua51' 'gtkmm' 'ctemplate' 'libgl' 'python2-pexpect' 'python2-paramiko' 'libgnome-keyring' 'libmysqlclient' 'python2-crypto')
+optdepends=('mysql-utilities')
+conflicts=('mysql-workbench' 'python26')
+install=${pkgname}.install
+
+if [ "${CARCH}" = 'x86_64' ]; then
+  ARCH='amd64'
+  md5sums=('982bb577b07a6de6b0ca9a570c4df065' '7600292884e1c180c03989a0aedea413')
+
+elif [ "${CARCH}" = 'i686' ]; then
+  ARCH='i386'
+  md5sums=('3549b61c61e673121cd8b7e37b9662bd' '7600292884e1c180c03989a0aedea413')
+fi
+
+#source=(http://download.softagency.net/mysql/Downloads/MySQLGUITools/${pkgname}-${pkgver}-1ubu1204-${ARCH}.deb)
+source=(http://www.mirrorservice.org/sites/ftp.mysql.com/Downloads/MySQLGUITools/${pkgname}-${pkgver}-1ubu1204-${ARCH}.deb $pkgname.install)
+package() {
+  ar -x "${srcdir}/${pkgname}-${pkgver}-1ubu1204-${ARCH}.deb"
+  tar -zxf "${srcdir}/data.tar.gz"
+  cp -r "${srcdir}/usr/" "${pkgdir}"
+  
+  # the /usr/bin fix, see
+  # https://www.archlinux.org/news/binaries-move-to-usrbin-requiring-update-intervention/
+  rm -rf "${pkgdir}"/sbin
+ 
+  ln -s "/usr/lib/liblua.so.5.1" "${pkgdir}/usr/lib/liblua5.1.so.0"
+  ln -s "/usr/lib/libpython2.7.so.1.0" "${pkgdir}/usr/lib/libpython2.6.so.1.0"
+  ln -s "/usr/lib/libzip.so.2" "${pkgdir}/usr/lib/libzip.so.1"
+  ln -s "/usr/lib/libmysqlclient_r.so.18" "${pkgdir}/usr/lib/libmysqlclient_r.so.16"
+  ln -s "/usr/lib/libpcre.so.1" "${pkgdir}/usr/lib/libpcre.so.3"
+  ln -s "/usr/lib/libctemplate.so.2" "${pkgdir}/usr/lib/libctemplate.so.0"
+  ln -s "/usr/lib/libtinyxml.so.0.2.6.2" "${pkgdir}/usr/lib/libtinyxml.so.2.6.2"
+  #ln -s "/usr/lib/ctemplate.so" "${pkgdir}/usr/lib/ctemplate.so.0"
+  rm -rf "${pkgdir}/usr/sbin"
+}

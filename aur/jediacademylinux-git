@@ -1,0 +1,56 @@
+# Maintainer: Rene Schoebel (wesley) <schoebel.r at gmail dot com>
+
+pkgname=jediacademylinux-git
+_gitname=JediAcademyLinux
+pkgver=7de0de0
+pkgrel=1
+pkgdesc="Singleplayer Jedi Knight III: Jedi Academy. needs original media files."
+arch=('i686' 'x86_64')
+url="https://github.com/xLAva/JediAcademyLinux"
+license=('GPL2')
+depends=('openal' 'libxxf86vm' 'libxrandr' 'libgl')
+[ "$CARCH" == "x86_64" ] && depends=('lib32-openal' 'lib32-libxxf86vm' 'lib32-libxrandr' 'lib32-libgl')
+makedepends=('git' 'cmake')
+[ "$CARCH" == "x86_64" ] && makedepends+=('gcc-multilib')
+conflicts=('jediacademylinux')
+provides=('jediacademylinux')
+install=$pkgname.install
+
+#source=('git+https://github.com/xLAva/JediAcademyLinux.git'
+source=('git://github.com/xLAva/JediAcademyLinux.git'
+        'jediacademylinux.png'
+	'jediacademylinux.desktop'
+	'jediacademylinux.sh'
+	'jediacademylinux-git.install')
+
+# Because the sources are not static, skip Git checksum:
+md5sums=('SKIP'
+	 '7014e282e980f197eef319d3af786835'
+	 '63a69dd549c639699768df6f8ed30e73'
+	 '61a4308b53eaadac5ac9af68093a04fe'
+	 '808f3700caf0dc17179e098c8fb0c8e8')
+
+pkgver() {
+  cd $_gitname
+
+  # Use the tag of the last commit
+  git describe --always | sed 's|-|.|g'
+}
+
+build() {
+  cd $_gitname
+
+  cmake ./code
+  make
+}
+
+package() {
+  cd $_gitname
+
+  install -Dm755 "$srcdir/$_gitname/jasp" "$pkgdir/opt/jediacademylinux/jasp"
+  install -Dm755 "$srcdir/$_gitname/jagamex86.so" "$pkgdir/opt/jediacademylinux/jagamex86.so"
+
+  install -Dm755 "$srcdir/jediacademylinux.sh" "$pkgdir/usr/bin/jediacademylinux"
+  install -Dm755 "$srcdir/jediacademylinux.desktop" "$pkgdir/usr/share/applications/jediacademylinux.desktop"
+  install -Dm644 "$srcdir/jediacademylinux.png" "$pkgdir/usr/share/pixmaps/jediacademylinux.png"
+}

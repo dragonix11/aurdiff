@@ -1,0 +1,48 @@
+# Maintainer: willemw <willemw12@gmail.com>
+
+_pkgname=cstitch
+pkgname=$_pkgname-git
+pkgver=19.008962d
+pkgrel=2
+pkgdesc="Convert images to cross stitch patterns: choose the number of colors to use and the final pattern size; edit your pattern (save and restore your work); save your pattern as a pdf"
+arch=('any')
+url="http://cstitch.sourceforge.net"
+license=('GPL3')
+depends=('qt4')
+makedepends=('git' 'python2' 'unzip')
+provides=($_pkgname)
+conflicts=($_pkgname)
+source=($_pkgname::git://github.com/kleintom/Cstitch.git
+        http://sourceforge.net/projects/cstitch/files/Cstitch/Icons/icons.zip)
+md5sums=('SKIP' 'SKIP')
+
+pkgver() {
+  cd $_pkgname
+  echo $(git rev-list --count HEAD).$(git rev-parse --short HEAD)
+}
+
+build() {
+  cd $_pkgname
+
+  # Get icons
+  unzip "$srcdir/icons.zip" -d icons/
+
+  # Generate documentation
+  python2 doc/createDocs.py
+
+  # Undo any Qt3 configuration (/etc/profile.d/qt3.sh)
+  unset QTDIR QT_XFT PKG_CONFIG_PATH
+  PATH="$(echo $PATH | /usr/bin/sed "s|[:]*/opt/qt/bin||g")"
+
+  # Build
+  qmake-qt4 -project
+  python2 ./progen
+  qmake-qt4
+  make
+}
+
+package() {
+  cd $_pkgname
+  install -D -m755 $_pkgname "$pkgdir/usr/bin/$_pkgname"
+}
+

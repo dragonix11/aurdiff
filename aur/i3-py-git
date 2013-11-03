@@ -1,0 +1,38 @@
+# Maintainer: willemw <willemw12@gmail.com>
+
+_pkgname=i3-py
+pkgname=$_pkgname-git
+pkgver=156.27f88a6
+pkgrel=2
+pkgdesc="Python based tools for i3 users and developers"
+arch=('any')
+url="https://github.com/ziberna/i3-py"
+license=('GPL3')
+depends=('i3-wm' 'python')
+makedepends=('git')
+provides=($_pkgname)
+conflicts=($_pkgname)
+source=($pkgname::git://github.com/ziberna/i3-py.git)
+md5sums=('SKIP')
+
+pkgver() {
+  cd $pkgname
+  echo $(git rev-list --count HEAD).$(git rev-parse --short HEAD)
+}
+
+package() {
+  cd $pkgname
+  python setup.py install --root="$pkgdir" --optimize=1
+
+  # Optionally, install some of the examples
+  cd examples
+  for i in ipc.py scratcher.py winmenu.py wsbar.py
+  #
+  # Or install all examples: cycle.py fibonacci.py ipc.py scratcher.py winmenu.py wsbar.py
+  #for i in *.py
+  #
+  do
+    install -Dm 755 "$i" "$pkgdir/usr/bin/i3-$i"
+  done
+}
+

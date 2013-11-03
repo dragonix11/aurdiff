@@ -1,0 +1,34 @@
+# Maintainer: willemw <willemw12@gmail.com>
+
+_pkgname=diodon
+pkgname=$_pkgname-bzr
+pkgver=369
+pkgrel=1
+pkgdesc="GTK+ clipboard manager"
+arch=('any')
+url="https://launchpad.net/diodon"
+license=('GPL2')
+depends=('gconf' 'libgee06' 'libpeas' 'libunique3' 'libxtst' 'dconf' 'libappindicator3')
+makedepends=('bzr' 'vala')
+provides=($_pkgname)
+conflicts=($_pkgname)
+install=diodon.install
+source=($pkgname::bzr+https://code.launchpad.net/diodon/trunk)
+md5sums=('SKIP')
+
+pkgver() {
+  cd $pkgname
+  bzr revno
+}
+
+build() {
+  cd $pkgname
+  python2 ./waf configure --prefix=/usr
+  python2 ./waf build
+}
+
+package() {
+  cd $pkgname
+  python2 ./waf install --destdir="$pkgdir"
+}
+
