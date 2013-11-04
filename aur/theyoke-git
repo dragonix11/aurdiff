@@ -1,0 +1,28 @@
+# Maintainer: willemw <willemw12@gmail.com>
+
+_pkgname=theyoke
+pkgname=$_pkgname-git
+pkgver=18.77fd68d
+pkgrel=2
+pkgdesc="Ultra-simple, polite RSS aggregrator for the command line"
+arch=('any')
+url="http://github.com/mackers/theyoke/"
+license=('GPL' 'PerlArtistic')
+depends=('perl-libwww' 'perl-html-parser' 'perl-uri' 'perl-xml-feed' 'perl-digest-md5' 'perl-encode' 'perl-term-size' 'perl-html-format')
+makedepends=('git')
+conflicts=($_pkgname)
+provides=($_pkgname)
+source=($pkgname::git://github.com/mackers/theyoke.git)
+md5sums=('SKIP')
+
+pkgver() {
+  cd $pkgname
+  echo $(git rev-list --count HEAD).$(git rev-parse --short HEAD)
+}
+
+package() {
+  cd $pkgname
+  install -Dm755 scripts/theyoke "$pkgdir/usr/bin/theyoke"
+  install -Dm644 README "$pkgdir/usr/share/theyoke/README"
+}
+

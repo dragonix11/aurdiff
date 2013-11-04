@@ -1,0 +1,36 @@
+# Maintainer: Anshul Sirur <vixus0@gmail.com>
+_pkgname=non-suite
+pkgname=$_pkgname-git
+pkgver=20131025.1778
+pkgrel=1
+pkgdesc="NON suite of music production tools, including Timeline, Sequencer, Mixer and Session Manager."
+arch=('i686' 'x86_64')
+url="http://non.tuxfamily.org"
+license=('GPL' 'LGPL')
+depends=('liblo' 'libsigc++' 'liblrdf' 'jack' 'ntk-git' 'hicolor-icon-theme')
+makedepends=('git' 'python')
+optdepends=('python: for /usr/bin/import-ardour-session')
+provides=("$_pkgname" 'non-daw' 'non-mixer' 'non-sequencer' 'non-sessionmanager')
+conflicts=("$_pkgname" 'non-daw' 'non-mixer' 'non-sequencer' 'non-sessionmanager')
+replaces=('non-daw' 'non-mixer' 'non-sequencer' 'non-sessionmanager')
+install=$pkgname.install
+source=("$_pkgname::git+git://git.tuxfamily.org/gitroot/non/non.git")
+md5sums=('SKIP')
+
+pkgver() {
+  cd "$srcdir/$_pkgname"
+  echo "$(git log -1 --format="%cd" --date=short | sed 's|-||g').$(git rev-list --count master)"
+}
+
+build() {
+  cd "$srcdir/$_pkgname"
+  ./waf configure --prefix=/usr
+  ./waf 
+}
+
+package() {
+  cd "$srcdir/$_pkgname"
+  DESTDIR="$pkgdir" ./waf install  
+}
+
+# vim:set ts=2 sw=2 et:

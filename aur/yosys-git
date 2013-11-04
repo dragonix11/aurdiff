@@ -2,7 +2,7 @@
 
 pkgname=yosys-git
 _pkgbasename=yosys
-pkgver=0.1.git20131031
+pkgver=0.1.git20131103
 pkgrel=1
 pkgdesc="A framework for Verilog RTL synthesis with extensive Verilog-2005 support"
 arch=('i686' 'x86_64')
@@ -10,7 +10,7 @@ url="http://www.clifford.at/yosys/"
 license=('custom:ISC')
 depends=('minisat-git' 'tcl' 'qt4' 'graphviz')
 makedepends=('git')
-source=(git+https://github.com/cliffordwolf/yosys.git#commit=d78a9dfb372654999916af46f35fe3914f960d9d
+source=(git+https://github.com/cliffordwolf/yosys.git#commit=cd0fe7d7860f490b43cacb37752fe9bf983e2279
         yosys-Makefile-Arch-Linux.patch
         license.txt)
 sha256sums=('SKIP'
