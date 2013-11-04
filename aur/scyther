@@ -1,0 +1,33 @@
+
+# Maintainer: Luca Fulchir <luca@fulchir.it>
+
+pkgname=scyther
+pkgver=v1.1.1
+pkgrel=1
+pkgdesc="Tool for the symbolic analysis of security protocols"
+arch=('i686' 'x86_64')
+depends=('python2' 'graphviz' 'wxpython')
+url="http://people.inf.ethz.ch/cremersc/scyther/"
+license=('GPL')
+http://users.ox.ac.uk/~coml0529/downloads/scyther/scyther-linux-v1.1.1.tgz
+source=('http://users.ox.ac.uk/~coml0529/downloads/scyther/scyther-linux-v1.1.1.tgz' 'scyther.desktop')
+md5sums=('97c1df526b64745178fa7a4c09642cf9'
+         '3f09cd0a790e58c8c42b129118ecde8e')
+sha1sums=('e9ce8ee124477894becccb68627e0cfd20a1ed0a'
+          '293a960b39ffcc3d26480713b29505d94d08701f')
+sha256sums=('c41ee738698247b3cbb9f43cf49a4f8987224d688f63f0e425efabd705b30e67'
+            'd3bc8366a76892d47252c517246310e76e8e14af7856fb85a89b7e1de1c9dc07')
+
+package() {
+	cd "$srcdir/$pkgname-linux-$pkgver"
+	mkdir -p $pkgdir/usr/{bin,share/applications}
+	cp -a $srcdir/$pkgname-linux-$pkgver $pkgdir/usr/share/$pkgname-$pkgver
+	cat > $pkgdir/usr/bin/scyther << EOF
+#!/bin/sh
+/usr/bin/python2 /usr/share/$pkgname-$pkgver/scyther-gui.py
+EOF
+	chmod +x $pkgdir/usr/bin/scyther
+	chmod 755 $pkgdir/usr/bin/scyther
+	cp $srcdir/scyther.desktop $pkgdir/usr/share/applications/
+}
+

@@ -1,0 +1,36 @@
+# Maintainer: Charon77 <evans.jahja@yahoo.com>
+# Contributor: debdj <debd92@gmail.com>
+
+pkgname=florence
+pkgver=0.6.0
+pkgrel=2
+pkgdesc="A configurable on-screen virtual keyboard"
+arch=('i686' 'x86_64')
+url="http://sourceforge.net/projects/florence/"
+license=('GPL')
+depends=('gtk2' 'gconf>=2.0' 'libglade>=2.0' 'libxml2' 'librsvg' 'cairo' 'gettext' 'libxtst')
+makedepends=('intltool>=0.23' 'gstreamer>=0.10')
+optdepends=('gnome-doc-utils' 'libnotify' 'libpanelapplet')
+provides=(florence)
+source=("http://nchc.dl.sourceforge.net/project/florence/florence/$pkgver/florence-$pkgver.tar.bz2" "florence_config.desktop")
+md5sums=('dfd587db78fe5dc3e2ad741b0a9974b4'
+         'f5b3562b6145bb16d8613c88f6efb97a')
+build() {
+  cd "${srcdir}/${pkgname}-${pkgver}"
+  
+  ./configure --prefix=/usr --without-panelapplet --without-docs --without-notification --disable-schemas-compile
+  #you might want to add --without-at-spi if you don't have at-spi, or simply install at-spi.
+  
+  make || return 1
+}
+
+package() {
+  cd "${srcdir}/${pkgname}-${pkgver}"
+  make DESTDIR=${pkgdir} install || return 1
+
+  #add a menu entry for configuring florence
+  install -Dm 644 ${startdir}/florence_config.desktop ${pkgdir}/usr/share/applications/florence_config.desktop
+  
+
+}
+

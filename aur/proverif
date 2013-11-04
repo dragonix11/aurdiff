@@ -1,0 +1,43 @@
+
+# Maintainer: Luca Fulchir <luca@fulchir.it>
+
+pkgname=proverif
+pkgver=1.88
+pkgrel=1
+pkgdesc="automatic cryptographic protocol verifier"
+arch=('i686' 'x86_64')
+url="http://prosecco.gforge.inria.fr/personal/bblanche/proverif/"
+license=('GPL')
+makedepends=('ocaml' 'sed')
+source=(http://prosecco.gforge.inria.fr/personal/bblanche/proverif/${pkgname}$pkgver.tar.gz)
+md5sums=('f0b22a3b3f4e7a8a0313658ff3235842')
+sha1sums=('090e33ccd24ff898acca6129bf1645c1d6fca2c8')
+sha256sums=('3a9528ed8cb26f24296aa0f1b1c2c9e11402cdbb6d75659cdbe9e276434bd248')
+
+build() {
+	cd "$srcdir/$pkgname$pkgver"
+	./build
+}
+
+# test is possible, but takes *LONG* time...
+# it just runs proverif on a lot of protocols, and takes *LOTS* of time...
+#check() {
+#	cd "$srcdir/$pkgname$pkgver"
+#	./test all
+#}
+
+package() {
+	cd "$srcdir/$pkgname$pkgver"
+	mkdir -p $pkgdir/usr/{bin,share/doc/proverif/tests}
+	cp proverif  proveriftotex $pkgdir/usr/bin/
+
+	cp -a docs/* emacs examples test test-type cryptoverif.pvl README LICENSE CHANGES spassconvert $pkgdir/usr/share/doc/proverif/
+
+	# make the examples work again. the executable is not in the docs directory
+	sed -i 's/\.\/proverif/proverif/' $pkgdir/usr/share/doc/proverif/test
+	sed -i 's/\.\/proverif/proverif/' $pkgdir/usr/share/doc/proverif/test-type
+	sed -i 's/\.\/proverif/proverif/' $pkgdir/usr/share/doc/proverif/spassconvert	
+
+}
+
+

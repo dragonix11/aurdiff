@@ -4,13 +4,13 @@
 _pkgbasename=gnome-themes-standard
 pkgname=lib32-$_pkgbasename
 pkgver=3.10.0
-pkgrel=1
+pkgrel=2
 pkgdesc="Default themes for the GNOME desktop (32-bit)"
 arch=(x86_64)
 url="http://www.gnome.org"
 license=(GPL2)
-depends=(cantarell-fonts ttf-dejavu lib32-librsvg $_pkgbasename)
-makedepends=(intltool lib32-gtk2 lib32-gtk3)
+depends=(lib32-librsvg $_pkgbasename)
+makedepends=(gcc-multilib intltool lib32-gtk2 lib32-gtk3)
 optdepends=('lib32-gtk-engines: HighContrast GTK2 theme')
 #groups=(gnome)
 replaces=(lib32-gnome-themes)
