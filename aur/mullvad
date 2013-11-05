@@ -1,0 +1,34 @@
+# $Id: pkgbuild-mode.el,v 1.23 2007/10/20 16:02:14 juergen Exp $
+pkgname=mullvad
+pkgver=40
+pkgrel=1
+pkgdesc="VPN Client for Mullvad.net, a bitcoin-friendly VPN for anonymity and privacy"
+url="https://www.mullvad.net"
+arch=('any')
+license=('unknown')
+depends=(openvpn resolvconf python2 gksu wxpython)
+makedepends=()
+conflicts=()
+replaces=()
+backup=()
+install=
+source=(https://www.mullvad.net/static/download/${pkgname}_${pkgver}_all.deb
+        up-down.patch)
+md5sums=('39bc69eae46d5386f1601498707b1d51'
+         '06483f4fcd0c2bc19574c8351278f2ab')
+build() {
+  cd $startdir/src/
+  tar xzvf data.tar.gz
+  patch -p0 < up-down.patch
+
+  # From http://allanmcrae.com/2010/10/big-python-transition-in-arch-linux/
+  sed -i -e "s|#![ ]*/usr/bin/python$|#!/usr/bin/python2|" \
+    -e "s|#![ ]*/usr/bin/env python$|#!/usr/bin/env python2|" \
+    $(find usr/ -name '*.py')
+  echo $pkgdir
+  cp -r usr/ $pkgdir
+  mkdir -p $pkgdir/etc/openvpn
+  cp /usr/share/openvpn/contrib/pull-resolv-conf/client.up    $pkgdir/etc/openvpn/mullvad-up-resolv-conf
+  cp /usr/share/openvpn/contrib/pull-resolv-conf/client.down  $pkgdir/etc/openvpn/mullvad-down-resolv-conf
+  chmod +x $pkgdir/etc/openvpn/mullvad-{up,down}-resolv-conf
+}

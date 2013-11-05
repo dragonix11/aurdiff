@@ -1,0 +1,34 @@
+# Maintainer: Jurij Podgoršek <gismopwn at gmail dot com>
+# Contributor: Joao Cordeiro <jlcordeiro at gmail dot com>
+pkgname=hydraslayer
+pkgver=15.3
+pkgrel=1
+pkgdesc="Roguelike influenced by mathematical puzzles. In Hydra Slayer your task is to enter Hydra Nest and clear it."
+arch=('i686' 'x86_64')
+url="http://www.roguetemple.com/z/hydra.php"
+license=('GPL2')
+depends=('ncurses' 'gcc-libs')
+changelog=
+source=(http://www.roguetemple.com/z/noteye-73.zip
+        hydraslayer.sh)
+md5sums=('c97bb0f246efbcf58dbf257ebc749fca'
+         'a32502df5d22950a4655a265410f38e0')
+
+build() {
+
+  _dest_dir=$pkgdir/usr/share/hydraslayer
+
+  mkdir -p $_dest_dir || return 1
+
+  cd "$srcdir/noteye/hydra"
+
+  make
+
+  install -T -D -m 755 hydra "$_dest_dir/hydraslayer"
+  install -T -D -m 755 "$srcdir/hydraslayer.sh" "$pkgdir/usr/bin/hydraslayer"
+
+  chown -R :games $_dest_dir 
+  chmod -R g+srw $_dest_dir
+}
+
+# vim:set ts=2 sw=2 et:

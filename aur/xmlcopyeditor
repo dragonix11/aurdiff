@@ -1,0 +1,36 @@
+# Maintainer: David Scholl <djscholl at gmail dot com>
+pkgname=xmlcopyeditor
+pkgver=1.2.0.11	
+pkgrel=1
+pkgdesc="XML editor based on Scintilla."
+arch=('i686' 'x86_64')
+url="http://xml-copy-editor.sourceforge.net"
+license=('custom')
+depends=('wxgtk' 'libxslt' 'xerces-c' 'enchant' 'desktop-file-utils')
+makedepends=('boost')
+install="xmlcopyeditor.install"
+source=(http://downloads.sourceforge.net/xml-copy-editor/$pkgname-$pkgver.tar.gz 
+http://sourceforge.net/p/xml-copy-editor/bugs/202/attachment/xmlcopyeditor-1.2.0.11-enchantlang.patch)
+md5sums=('203280e12fd9ee2851523543f55c5ff5'
+         'b2c00b7651a7d43b3bb964b61159cb8d')
+
+build() {
+  cd $srcdir/$pkgname-$pkgver
+  patch -p0 <$srcdir/xmlcopyeditor-1.2.0.11-enchantlang.patch
+  ./configure --prefix=/usr
+  make
+}
+package() {
+  cd $srcdir/$pkgname-$pkgver
+  make DESTDIR=$pkgdir install
+  install -d $pkgdir/usr/share/$pkgname
+  cp -R $srcdir/$pkgname-$pkgver/src/help $pkgdir/usr/share/$pkgname
+  cp -R $srcdir/$pkgname-$pkgver/src/png $pkgdir/usr/share/$pkgname
+  cp -R $srcdir/$pkgname-$pkgver/src/po $pkgdir/usr/share/$pkgname
+  cp -R $srcdir/$pkgname-$pkgver/src/rng $pkgdir/usr/share/$pkgname
+  cp -R $srcdir/$pkgname-$pkgver/src/rulesets $pkgdir/usr/share/$pkgname
+  cp -R $srcdir/$pkgname-$pkgver/src/templates $pkgdir/usr/share/$pkgname
+  cp -R $srcdir/$pkgname-$pkgver/src/xpm $pkgdir/usr/share/$pkgname
+  install -d $pkgdir/usr/share/licenses/$pkgname
+  cp -R $srcdir/$pkgname-$pkgver/src/copying/* $pkgdir/usr/share/licenses/$pkgname
+}
