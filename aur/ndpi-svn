@@ -1,0 +1,37 @@
+# Maintainer: M0Rf30
+
+pkgname=ndpi-svn
+pkgver=6936
+pkgrel=1
+pkgdesc="Open and Extensible GPLv3 Deep Packet Inspection Library"
+arch=('i686' 'x86_64')
+url="http://www.ntop.org/products/ndpi/"
+license=('GPL3')
+replaces=('ndpi')
+conflicts=('ndpi')
+source=('ndpi::svn+https://svn.ntop.org/svn/ntop/trunk/nDPI')
+makedepends=('subversion')
+
+pkgver() {
+  cd ndpi
+  svnversion | tr -d [A-z]
+}
+
+build() {
+  cd ndpi
+  ./configure --prefix=/usr
+  make
+}
+         
+package() {
+  cd ndpi
+
+  make DESTDIR="$pkgdir" install
+  mv $pkgdir/usr/include/libndpi*/libndpi $pkgdir/usr/include/a
+  rm -r $pkgdir/usr/include/libndpi*/
+  mv $pkgdir/usr/include/a $pkgdir/usr/include/libndpi
+  cp src/include/*.h $pkgdir/usr/include/libndpi
+}
+
+md5sums=('SKIP')
+

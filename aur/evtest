@@ -1,0 +1,29 @@
+# Maintainer: Devin J. Pohly <djpohly+arch@gmail.com>
+# Contributor: Andrej Gelenberg <andrej.gelenberg@udo.edu>
+pkgname=evtest
+pkgver=1.31
+pkgrel=1
+pkgdesc="Input device event monitor and query tool"
+arch=('i686' 'x86_64' 'armv6h')
+url="http://cgit.freedesktop.org/evtest/"
+license=('GPL')
+depends=(libxml2)
+makedepends=(xmlto asciidoc)
+optdepends=('libxslt: to parse output from evtest-capture')
+source=("http://cgit.freedesktop.org/$pkgname/snapshot/$pkgname-$pkgver.tar.bz2")
+md5sums=('1d95cd9952d34dd15f93adb197323073')
+sha1sums=('4a0dd592703f8dea37065e048e1aeb49a505103c')
+
+build() {
+  cd "$srcdir/$pkgname-$pkgver"
+  autoreconf -i
+  ./configure --prefix=/usr 
+  make
+}
+
+package() {
+  cd "$srcdir/$pkgname-$pkgver"
+  make DESTDIR="$pkgdir" install
+}
+
+# vim:set ts=2 sw=2 et:
