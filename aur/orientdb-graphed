@@ -2,7 +2,7 @@
 # Contributor: Michele Damiano Torelli <me_AT_mdtorelli_DOT_it>
 
 pkgname=orientdb-graphed
-pkgver=1.5.1
+pkgver=1.6
 pkgrel=1
 pkgdesc="A NoSQL Graph-Document DBMS - Graph Edition (with TinkerPop Blueprints, Gremlin and Pipes)"
 arch=('any')
@@ -12,19 +12,19 @@ depends=('java-runtime-headless')
 makedepends=('unzip')
 conflicts=('orientdb' 'orientdb-git' 'orientdb-graphed-git')
 install=$pkgname.install
-source=("https://s3.amazonaws.com/orientdb/releases/${pkgname}-${pkgver}.zip"
+source=("https://github.com/orientechnologies/orientdb/archive/${pkgver}.zip"
   'orientdb.service')
-noextract=("${pkgname}-${pkgver}.zip")
-md5sums=('751e887f15ab721ef57f9ac2b5e73831'
+noextract=("${pkgver}.zip")
+md5sums=('2fafa32decfde4a8ca2e9a148e71d126'
   '64c40019196576036766e7b92729a741')
 
 build() {
   cd "${srcdir}"
-  unzip "${pkgname}-${pkgver}.zip"
+  unzip "${pkgver}.zip"
 }
 
 package() {
-  cd ${pkgname}-${pkgver}
+  cd orientdb-${pkgver}
 
   install -dm755 "${pkgdir}"/opt/orientdb
   install -dm700 "${pkgdir}"/opt/orientdb/config
