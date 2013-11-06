@@ -1,0 +1,25 @@
+# Maintainer: Robert Knauer <robert@privatdemail.net>
+
+pkgname=fhem
+pkgver=5.5
+pkgrel=1
+pkgdesc="A perl server for house automation"
+arch=('any')
+url="http://fhem.de"
+license=('GPL')
+depends=('perl')
+backup=('opt/fhem/fhem.cfg')
+source=(
+  "http://fhem.de/${pkgname}-${pkgver}.tar.gz"
+  'fhem.service'
+)
+sha256sums=(
+  '3ba14e4952dade54260b8c6e049eb1e679300c9f29d444d97093ff2e3b3a8dfa'
+  '1eac800e4ab463e060c633e4269f21ea1adbf6192861727545c5195f4a86ed4b'
+)
+
+package() {
+  cd "${srcdir}/${pkgname}-${pkgver}"
+  make ROOT="${pkgdir}/" install
+  install -Dm 644 "${srcdir}/fhem.service" "${pkgdir}/usr/lib/systemd/system/fhem.service"
+}
