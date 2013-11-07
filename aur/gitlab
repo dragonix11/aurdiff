@@ -10,8 +10,8 @@
 # gitlab-shell better installation path?
 
 pkgname=gitlab
-pkgver=6.2.0
-pkgrel=2
+pkgver=6.2.3
+pkgrel=1
 pkgdesc="Project management and code hosting application"
 arch=('any')
 url="https://www.gitlab.org"
@@ -31,7 +31,7 @@ source=("$pkgname-$pkgver.tar.gz::https://github.com/gitlabhq/gitlabhq/archive/v
         "gitlab.service"
         "gitlab-sidekiq.service")
 install='gitlab.install'
-sha512sums=("783a015e57faa02b75b8897ade52f38cf10a9fa91135e46c384c22b942953798b4fce00194346391bb49013ec49b8b4de50579c434a5b19a03794a177e99a0e8"
+sha512sums=("f0091eda99f71bbb6043f63ab00920d5bd2389de89ca24839ed5494f9b9e72497adca9d7035d97eac4b31ee89c04c5f136171e05edcf011d82ed34f3e266ff8d"
             "f515a6a6b94b5c15405978addd2923dbfa4aaedd9eff2aa2760f53c3a88ec8148fb39b6bcb5897d5b0e586e44945475b1c3cd09350138d0ae7560aae504120dd"
             "64b81772fda07c842a0eff58ac533cca0b6f2122f7746dccb93d24f1e0ca7a1871605d0dad91ad46e5a1b6c226844c3584160f8b2504711115f84c290a5412c6")
 options=('!strip')
@@ -47,7 +47,7 @@ build() {
 }
 
 package() {
-    homedir="/home/gitlab"
+    homedir="/var/lib/gitlab"
     datadir="/usr/share/webapps/gitlab"
 
     cd $srcdir/gitlabhq-$pkgver
@@ -69,11 +69,11 @@ package() {
         -e "s|/home/git/gitlab-satellites|$datadir/satellites|" \
         -e "s|/home/git|$homedir|" \
         config/gitlab.yml.example > "$pkgdir/etc/gitlab/gitlab.yml"
-    rm config/gitlab.yml
-    [ -f config/gitlab.yml ] || ln -s /etc/gitlab/gitlab.yml config/gitlab.yml
-    rm config/database.yml
+    [ ! -f config/gitlab.yml ] || rm config/gitlab.yml
+    ln -s /etc/gitlab/gitlab.yml config/gitlab.yml
+    [ ! -f config/database.yml ] || rm config/database.yml
     cp config/database.yml.mysql $pkgdir/etc/gitlab/database.yml
-    [ -f config/database.yml ] || ln -s /etc/gitlab/database.yml config/database.yml
+    ln -s /etc/gitlab/database.yml config/database.yml
     touch $pkgdir$homedir/.secret
     touch $pkgdir$datadir/.secret
 

@@ -3,8 +3,8 @@
 # Maintainer: Jonas Heinrich <onny@project-insnaity.org>
 
 pkgname=gitlab-shell
-pkgver=1.7.1
-pkgrel=3
+pkgver=1.7.4
+pkgrel=1
 pkgdesc="Self hosted Git management software. (shell daemon)"
 arch=(any)
 url="http://gitlab.org/"
@@ -15,11 +15,11 @@ options=('!strip')
 install=gitlab-shell.install
 backup=(etc/gitlab/shell.yml)
 source=($pkgname-$pkgver.tar.gz::https://github.com/gitlabhq/gitlab-shell/archive/v$pkgver.tar.gz)
-sha512sums=('7a612497e0947980953e41e4f22f9e24edaba8cad4fc5a322ecb0d4001133335834dd5820af0388c4f72f5cf0dab892c7074d062ea1f99638945283215157fe6')
+sha512sums=('5d0d511c993ba07b26fddbd7009450ae0b73df851750ab0483f15c64c9558655ca0b85e1d6ef31ae8444fa76b84cf4e72f19c509bf1a1b51331dbf72435b56d2')
 
 package() {
 	local datadir=/usr/share/webapps/gitlab
-	local homedir=/home/gitlab
+	local homedir=/var/lib/gitlab
 	
 	install -d \
 	  	"${pkgdir}${datadir}/gitlab-shell" \
