@@ -2,7 +2,7 @@
 # Contributor: luben
 # Generator  : CPANPLUS::Dist::Arch 
 
-pkgname='perl-io-async'
+pkgname='io-async'
 pkgver='0.61'
 pkgrel='1'
 pkgdesc="Asynchronous event-driven programming"
