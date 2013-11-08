@@ -3,11 +3,11 @@
 pkgname=digital-devices-dvb-drivers
 pkgver=hg
 pkgrel=1
-pkgdesc="Digital Devices proprietary DVB drivers + firmware"
+pkgdesc="Digital Devices (CineView) proprietary DVB drivers + firmware"
 url="http://www.linuxtv.org"
 arch=('i686' 'x86_64')
 license=('GPLv2')
-makedepends=('linux-headers' 'mercurial' 'patchutils' 'perl-proc-processtable')
+makedepends=('linux-headers' 'mercurial' 'patchutils' 'perl-proc-processtable' 'wget')
 conflicts=('ffdecsawrapper-git-digital-devices' 'digital-devices-dvb-drivers')
 provides=('digital-devices-dvb-drivers')
 install='digital-devices-dvb-drivers.install'
@@ -28,7 +28,11 @@ pkgver() {
 prepare() {
 
 	cd "$srcdir/media_build_experimental"
+	sed -i 's/system ("make") == 0 or die "build failed";/#system ("make") == 0 or die "build failed";/' build
 	./build
+
+	make distclean || return 1
+	make || return 1
 }
 
 package() {

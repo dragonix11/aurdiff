@@ -2,23 +2,22 @@
 # Contributor: Massimiliano Torromeo <massimiliano.torromeo@gmail.com>
 # Maintainer: Jonas Heinrich <onny@project-insanity.org>
 
+# TODO:
 # Nginx template files: lib/support/nginx/gitlab
 # git config global missing /var/run/gitlab/.gitconfig
-# gitlab-shell missing in check
-# gitlab-sidekiq not starting
-# gitlab-shell path in /etc/gitlab/gitlab.yaml
-# gitlab-shell better installation path?
+# makechrootpkg fixes?
+# confirm missing dependencies
 
 pkgname=gitlab
 pkgver=6.2.3
-pkgrel=1
+pkgrel=2
 pkgdesc="Project management and code hosting application"
 arch=('any')
 url="https://www.gitlab.org"
 license=('MIT')
 depends=('ruby' 'ruby-bundler' 'python2' 'gitlab-shell' 'postgresql-libs') # 'ruby-rake>=10.1.0')
 # not yet tested and confirmed: libxslt:
-makedepends=('sudo' 'libxslt')
+makedepends=('sudo' 'libxslt' 'pwgen')
 # base-devel zlib libyaml openssl gdbm readline ncurses libffi curl openssh redis libxml2 libxslt icu 
 optdepends=(
     'mariadb: database backend'
@@ -38,11 +37,8 @@ options=('!strip')
 
 build() {
         cd "$srcdir/gitlabhq-$pkgver"
-
-        #gem install charlock_holmes --version '0.6.9.4'
-        #gem install rake
         msg "Fetching bundled gems..."
-        # will be installed in the gitlab directory vendor/bundle
+        # Gems will be installed into vendor/bundle
         bundle install --no-cache --no-prune --deployment --without development test aws
 }
 
@@ -65,21 +61,21 @@ package() {
     
     # Install config files
     sed -e 's|# user: git|user: gitlab|' \
-        -e "s|/home/git/repositories|$datadir/repositories|" \
-        -e "s|/home/git/gitlab-satellites|$datadir/satellites|" \
-        -e "s|/home/git|$homedir|" \
+        -e "s|/home/git/repositories|$homedir/repositories|" \
+        -e "s|/home/git/gitlab-satellites|$homedir/satellites|" \
+        -e "s|/home/git/gitlab-shell|/usr/share/gitlab-shell|" \
         config/gitlab.yml.example > "$pkgdir/etc/gitlab/gitlab.yml"
     [ ! -f config/gitlab.yml ] || rm config/gitlab.yml
     ln -s /etc/gitlab/gitlab.yml config/gitlab.yml
     [ ! -f config/database.yml ] || rm config/database.yml
     cp config/database.yml.mysql $pkgdir/etc/gitlab/database.yml
     ln -s /etc/gitlab/database.yml config/database.yml
-    touch $pkgdir$homedir/.secret
     touch $pkgdir$datadir/.secret
 
     # Install license, help and systemd service files
     mv README.md MAINTENANCE.md CONTRIBUTING.md CHANGELOG config/*.{example,mysql,postgresql} "$pkgdir/usr/share/doc/$pkgname"
     install -D "LICENSE" "${pkgdir}/usr/share/licenses/${pkgname}/LICENSE"
+    rm $pkgdir/usr/share/webapps/gitlab/LICENSE
 
     # Install systemd service files
     install -Dm0755 "$srcdir/gitlab.service" "$pkgdir/usr/lib/systemd/system/gitlab.service"

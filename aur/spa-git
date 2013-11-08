@@ -1,0 +1,34 @@
+_pkgname=spa
+pkgname=spa-git
+pkgver=95.ad55344
+pkgrel=1
+pkgdesc="like asteroids, only the asteroids fire back at you with deadly accuracy"
+arch=('i686' 'x86_64')
+url="https://github.com/buhman/spa"
+license=('GPL')
+depends=('allegro')
+makedepends=('git')
+
+source=('git+https://github.com/buhman/spa.git'
+        'stupid-spa-wrapper.sh')
+md5sums=('SKIP'
+         'c5d664f5fb328458320d058439855e0a')
+
+pkgver() {
+    cd "${_pkgname}"
+    echo $(git rev-list --count HEAD).$(git rev-parse --short HEAD)
+}
+
+build() {
+    cd "${_pkgname}"
+    make
+}
+
+package() {
+    cd "${_pkgname}"
+
+    install -D -m755 spa "${pkgdir}/opt/spa/spa"
+    install -m644 DejaVuSansMono.ttf "${pkgdir}/opt/spa/DejaVuSansMono.ttf"
+
+    install -D -m755 "${srcdir}/stupid-spa-wrapper.sh" "${pkgdir}/usr/bin/spa"
+}
