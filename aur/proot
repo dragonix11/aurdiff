@@ -1,0 +1,32 @@
+# Maintainer: Nicolas Cornu <ncornu@aldebaran-robotics.com>
+
+pkgname=proot
+_pkgname=PRoot
+pkgver=3.2
+pkgrel=1
+pkgdesc="chroot, mount --bind, and binfmt_misc without privilege/setup"
+arch=('i686' 'x86_64')
+url="http://cedric-vincent.github.com/PRoot/"
+license=('GPL')
+provides=('proot')
+depends=('talloc')
+source=(${pkgname}-v${pkgver}.tar.gz::https://github.com/cedric-vincent/${_pkgname}/archive/v${pkgver}.tar.gz)
+sha1sums=('899da4ce184a94f6af0718e83b083ff1e69ee5ae')
+
+build() {
+	cd "${srcdir}"/${_pkgname}-${pkgver}/src
+
+	make -f GNUmakefile
+}
+
+package() {
+	cd "${srcdir}"/${_pkgname}-${pkgver}
+
+	install -m755 -d "${pkgdir}"/usr/bin
+	install -m755 src/${pkgname} "${pkgdir}"/usr/bin
+
+	install -m755 -d "${pkgdir}"/usr/share/man/man1/
+	install -m644 doc/${pkgname}.1 "${pkgdir}"/usr/share/man/man1/
+}
+
+# vim: ft=sh syn=sh et

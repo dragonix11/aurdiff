@@ -6,13 +6,13 @@
 # Maintainer: Argyros Argyridis <arargyridis@gmail.com>
 pkgname=orfeo-toolbox
 pkgver=3.18.0
-pkgrel=2
+pkgrel=3
 pkgdesc="ORFEO Toolbox (OTB) is an open source library of image processing algorithms"
 arch=(x86_64 i686)
 url="http://www.orfeo-toolbox.org/otb/"
 license=('CeCILL')
 groups=()
-depends=('cmake' 'gdal' 'freeglut' 'curl' 'fftw' 'tinyxml' 'muparser')
+depends=('cmake' 'gdal' 'freeglut' 'curl' 'fftw' 'tinyxml' 'muparser' 'fltk')
 makedepends=('boost')
 optdepends=()
 provides=(orfeo-toolbox)
@@ -33,8 +33,8 @@ build() {
   msg "Extracting archive..."  
   msg "starting make..."
   #rm -rf OTB/Examples
-  rm -rf build/
-  mkdir build/
+  #rm -rf build/
+  #mkdir build/
   cd build
 
 
@@ -47,16 +47,18 @@ build() {
 	  -DOTB_USE_GETTEXT:BOOL=OFF \
 	  -DOTB_USE_JPEG2000:BOOL=ON \
 	  -DOTB_USE_EXTERNAL_TINYXML:BOOL=ON \
-	  -DOTB_USE_EXTERNAL_FLTK:BOOL=OFF \
+	  -DOTB_USE_EXTERNAL_FLTK:BOOL=ON \
 	  -DOTB_USE_EXTERNAK_MUPARSER=ON \
 	  -DOTB_BUILD_TESTING:BOOL=OFF \
 	  -DOTB_BUILD_EXAMPLES:BOOL=ON \
-	  -DOTB_BUILD_APPLICATIONS:BOOL=ON
+	  -DOTB_BUILD_APPLICATIONS:BOOL=ON \
+	  -DOTB_WRAP_PYTHON:BOOL=ON \
+	  -DOTB_WRAP_QT:BOOL=ON
   make -j9
 }
 
 package() {
-
+  #python2 -m src/build/Code/Wrappers/SWIG/otbApplication.py << see how this is going to work!!
   cd "$srcdir/"build
   make DESTDIR="$pkgdir" install
 }

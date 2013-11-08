@@ -28,8 +28,8 @@ fi
 
 #source=("http://us.download.nvidia.com/XFree86/Linux-${_arch}/${pkgver}/${_pkg}.run"
 source=("ftp://download.nvidia.com/XFree86/Linux-${_arch}/${pkgver}/${_pkg}.run"
-        'nvidia-linux-3.11.patch')
-md5sums+=('c47d740429b3a4bf92a8fea757f1db9a') # nvidia-linux-3.11.patch
+        'nvidia-linux.patch')
+md5sums+=('c47d740429b3a4bf92a8fea757f1db9a') # nvidia-linux.patch
 
 build() {
     # Version of 'linux'
@@ -48,8 +48,8 @@ build() {
 
     # Patch
     if [[ ${_kernver} = 3.11* ]]; then
-        msg2 "Applying nvidia-linux-3.11.patch..."
-        patch -p1 -i "${srcdir}/nvidia-linux-3.11.patch"
+        msg2 "Applying nvidia-linux.patch..."
+        patch -p1 -i "${srcdir}/nvidia-linux.patch"
     fi
 
     # Build module
