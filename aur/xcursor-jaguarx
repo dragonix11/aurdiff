@@ -1,8 +1,10 @@
-# Maintainer: flan_suse <windows2linux AT zoho DOT com>
+# $Id$
+# Maintainer: Travis Glenn Hansen <travisghansen@yahoo.com>
+
 pkgname=xcursor-jaguarx
 pkgver=1.1
-pkgrel=1
-pkgdesc="A high quality set of Xfree 4.3.0 animated mouse cursors"
+pkgrel=2
+pkgdesc="animated OSX-style mouse cursors"
 arch=('any')
 url="http://gnome-look.org/content/show.php/jaguarx?content=14775"
 license=('PerlArtistic')

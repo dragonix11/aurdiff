@@ -1,19 +1,19 @@
 # Maintainer: Kristof Jozsa <kjozsa@fsdev.hu>
 
 pkgname=eclipse-scala-ide
-pkgver=3.0.1
-pkgrel=1
+pkgver=3.0.2
+pkgrel=2
 pkgdesc="Scala IDE for Eclipse"
 arch=('any')
 url="http://www.scala-ide.org/"
 license=('custom')
 depends=('eclipse>=3.8')
 
-source=($pkgname-$pkgver.zip::"http://download.scala-ide.org/ecosystem/e38/scala210/stable/site_assembly-20130802-1347.zip"
+source=($pkgname-$pkgver.zip::"http://download.scala-ide.org/sdk/e38/scala210/stable/update-site.zip"
 	"LICENSE" "scala-ide.desktop" "product.png"
 )
 
-md5sums=('00d9b284b63a46cf6f42454b6fd1f3d3'
+md5sums=('813ed83f2aa1bb8ba2c77d750d57e856'
          '58b225f304aaf42c8b8738894a10cb96'
 	 '205ac79eeebb9cc43f9a0c836e60cf82'
 	 'c95b1920928f10d2c982afd7f5827a2c')

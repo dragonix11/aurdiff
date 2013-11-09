@@ -1,0 +1,52 @@
+# $Id: PKGBUILD,v 1.12 2003/11/06 08:26:13 dorphell Exp $
+# Maintainer: Marty_Stoopid <>
+# Contributor: Marty_Stoopid <>
+pkgname=mkv-extractor-gui
+pkgver=4.9.1
+pkgrel=1
+pkgdesc="GUI for extract files from .mkv"
+arch=('any')
+url="http://hizo.fr/linux/mkv_extractor_gui"
+license=('Creative Common BY-NC-SA')
+#groups=()
+#provides=()
+depends=('mplayer' 'gtk2' 'pygtk' 'gettext' 'python2-notify' 'pango' 'python2-gobject2' 'vte' 'python2' 'mkvtoolnix-cli' 'mkclean' 'mkvalidator' 'imagemagick' 'pywebkitgtk' 'desktop-file-utils')
+#makedepends=('patch')
+#conflicts=()
+#replaces=()
+#backup=()
+install="${pkgname}.install"
+source=(http://hizo.fr/linux/mkv_extractor_gui/MKV-Extractor-GUI_$pkgver.tar.gz
+		  mkv-extractor-gui.desktop
+		  mkv-extractor-gui.xml)
+md5sums=('f299e54dd62b68f1645229260987d8a5'
+			'6c074ce897256f34422c4beddab00757'
+			'0c28dc4f00190d87b5421beba815e0c2')
+package() {
+sed -i -e "s/\/usr\/bin\/env python/\/usr\/bin\/env python2/g" ${srcdir}/${pkgname}_test/mkv-extractor-gui.py
+#mv ${srcdir}/${pkgname}_test/flags ${srcdir}
+#mv ${srcdir}/${pkgname}_test/locale ${srcdir}
+mv ${srcdir}/${pkgname}_test/* ${srcdir}
+rm -R ${srcdir}/${pkgname}_test/
+# apply some patches
+#patch < ../glade2script.patch
+
+# Install the icon file
+install -Dm644 ${srcdir}/mkv-extractor-gui.png "${pkgdir}/usr/share/pixmaps/mkv-extractor-gui.png"
+# Install the binaries and data files
+mkdir -p "${pkgdir}/opt/${pkgname}"
+mv -T "${srcdir}" "${pkgdir}/opt/${pkgname}"
+  
+# Install the .desktop file
+install -Dm644 mkv-extractor-gui.desktop "${pkgdir}/usr/share/applications/mkv-extractor-gui.desktop"
+
+# Install the shared MIME info package
+install -Dm644 mkv-extractor-gui.xml "${pkgdir}/usr/share/mime/packages/mkv-extractor-gui.xml"
+
+#rm ${pkgdir}/opt/${pkgname}/glade2script.patch
+rm ${pkgdir}/opt/${pkgname}/mkv-extractor-gui.xml
+rm ${pkgdir}/opt/${pkgname}/MKV-Extractor-GUI_$pkgver.tar.gz
+rm ${pkgdir}/opt/${pkgname}/mkv-extractor-gui.desktop
+# Change the ownership to root
+#chown -R root:root ${pkgdir}/*
+}
