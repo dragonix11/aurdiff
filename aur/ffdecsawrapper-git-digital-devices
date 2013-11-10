@@ -11,7 +11,7 @@ pkgrel=1
 pkgdesc="FFdecsa empowered softcam (newest generation of open-sasc-ng) - compiled with Digital Devices DVB drivers + firmware"
 url="http://www.linuxtv.org"
 arch=('i686' 'x86_64')
-license=('GPLv2')
+license=('GPLv3')
 makedepends=('linux-headers' 'mercurial' 'patchutils' 'perl-proc-processtable' 'wget')
 depends=('v4l-utils')
 conflicts=('ffdecsawrapper-git-digital-devices' 'digital-devices-dvb-drivers')
@@ -21,7 +21,7 @@ install='ffdecsawrapper-dd.install'
 source=('git://github.com/bas-t/ffdecsawrapper.git#branch=stable' \
 	'hg+http://linuxtv.org/hg/~endriss/media_build_experimental' \
 	'cardclient.conf' 'cardslot.conf' 'ffdecsawrapper.conf' 'ffdecsawrapper-dd.install' \
-	'ffdecsawrapper.lr' 'ffdecsawrapper.service' 'ffdecsawrapper.rc' 'v4l-mutex.patch')
+	'ffdecsawrapper.lr' 'ffdecsawrapper.service' 'ffdecsawrapper.rc' 'v4l-mutex-dd.patch')
 
 sha256sums=('SKIP'
             'SKIP'
@@ -53,8 +53,8 @@ prepare() {
 	sed -i 's/system ("make") == 0 or die "build failed";/#system ("make") == 0 or die "build failed";/' build
 	./build
 
-	msg "Applying V4l-mutex patch..."
-	patch -p1 < $srcdir/v4l-mutex.patch
+	msg "Applying V4l-mutex-dd patch..."
+	patch -p1 < $srcdir/v4l-mutex-dd.patch
 	echo ""
 	msg "Here's a few seconds to confirm the patch has been applied sucessfully..."
 	echo ""

@@ -1,24 +1,24 @@
-pkgname=mingw-w64-sdl2_mixer
-pkgver=2.0.0
-pkgrel=6
-pkgdesc="SDL2 mixer libraries (mingw-w64)"
+pkgname=mingw-w64-sdl_image
+pkgver=1.2.12
+pkgrel=7
+pkgdesc="A simple library to load images of various formats as SDL surfaces (mingw-w64)"
 arch=(any)
-url="http://www.libsdl.org/projects/SDL_mixer"
-license=("MIT")
+url="http://www.libsdl.org/projects/SDL_image"
+license=("zlib")
 makedepends=(mingw-w64-gcc
 mingw-w64-pkg-config
-mingw-w64-smpeg2
-mingw-w64-libvorbis
-mingw-w64-libmodplug
-mingw-w64-flac)
-depends=(mingw-w64-crt mingw-w64-sdl2)
-optdepends=("mingw-w64-flac: FLAC support"
-"mingw-w64-libmodplug: MOD support"
-"mingw-w64-libvorbis: Ogg-Vorbis support"
-"mingw-w64-smpeg2: MP3 support")
+mingw-w64-libpng
+mingw-w64-libwebp
+mingw-w64-libjpeg-turbo
+mingw-w64-libtiff)
+depends=(mingw-w64-crt mingw-w64-sdl)
+optdepends=("mingw-w64-libjpeg-turbo: JPEG support"
+"mingw-w64-libpng: PNG support"
+"mingw-w64-libtiff: TIFF support"
+"mingw-w64-libwebp: WebP support")
 options=(staticlibs !strip !buildflags)
-source=("http://www.libsdl.org/projects/SDL_mixer/release/SDL2_mixer-$pkgver.tar.gz")
-md5sums=('65f6d80df073a1fb3bb537fbda031b50')
+source=("$url/release/SDL_image-$pkgver.tar.gz")
+md5sums=('a0f9098ebe5400f0bdc9b62e60797ecb')
 
 _architectures="i686-w64-mingw32 x86_64-w64-mingw32"
 
@@ -27,13 +27,11 @@ build() {
     unset LDFLAGS
     mkdir -p "${srcdir}/${pkgname}-${pkgver}-build-${_arch}"
     cd "${srcdir}/${pkgname}-${pkgver}-build-${_arch}"
-    "${srcdir}"/SDL2_mixer-${pkgver}/configure \
+    "${srcdir}"/SDL_image-${pkgver}/configure \
       --prefix=/usr/${_arch} \
       --build=$CHOST \
       --host=${_arch} \
-      --disable-sdltest \
-      --disable-smpegtest \
-      --with-smpeg-prefix=/usr/${_arch}
+      --disable-sdltest
     make
   done
 }

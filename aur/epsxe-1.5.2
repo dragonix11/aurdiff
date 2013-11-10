@@ -4,7 +4,7 @@
 pkgname=epsxe-1.5.2
 _realname=epsxe
 pkgver=1.5.2
-pkgrel=7
+pkgrel=11
 pkgdesc="Enhanced PSX emulator"
 url="http://epsxe.com"
 arch=('i686' 'x86_64')
@@ -40,10 +40,8 @@ EOF
 }
 
 package () {
-    install -d "$pkgdir/usr/bin"
-
-	install -d "$pkgdir/opt/$_realname/$pkgver/"{cheats,patches,sstates,cfg,snap,plugins,bios,memcards}
-	chmod g+rw "$pkgdir/opt/$_realname/$pkgver/"{sstates,cfg,snap,plugins,bios,memcards}
+	install -d "$pkgdir/opt/$_realname/"{plugins,bios,memcards,cdimages,$pkgver/{cheats,patches,sstates,cfg}}
+	chmod 674 "$pkgdir/opt/$_realname/"{plugins,bios,memcards,cdimages,$pkgver/{cheats,patches,sstates,cfg}}
 
 	cd "$srcdir"
 
@@ -60,6 +58,11 @@ package () {
 	do
 	    install -Dm 644 "cheats/$item" \
 		"$pkgdir/opt/$_realname/$pkgver/cheats/$item"
+	done
+
+	for things in plugins bios memcards cdimages
+	do
+	    ln -sf "/opt/$_realname/$things" -T "$pkgdir/opt/$_realname/$pkgver/$things"
 	done
 
 	install -Dm 755 ${pkgname}.sh \

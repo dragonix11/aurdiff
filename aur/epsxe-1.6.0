@@ -4,7 +4,7 @@
 pkgname=epsxe-1.6.0
 _realname=epsxe
 pkgver=1.6.0
-pkgrel=6
+pkgrel=11
 pkgdesc="Enhanced PSX emulator"
 url="http://epsxe.com"
 arch=('i686' 'x86_64')
@@ -40,13 +40,8 @@ EOF
 }
 
 package () {
-    install -d "$pkgdir/usr/bin"
-    install -d "$pkgdir/opt/$_realname/$pkgver"{plugins,bios,memcards}
-	chmod g+rw "$pkgdir/opt/$_realname/$pkgver"{plugins,bios,memcards}
-
-	install -d "$pkgdir/opt/$_realname/$pkgver/"{cheats,patches}
-	install -d "$pkgdir/opt/$_realname/$pkgver/"{sstates,cfg,snap}
-	chmod g+rw "$pkgdir/opt/$_realname/$pkgver/"{sstates,cfg,snap}
+	install -d "$pkgdir/opt/$_realname/"{plugins,bios,memcards,cdimages,$pkgver/{cheats,patches,sstates,cfg}}
+	chmod 674 "$pkgdir/opt/$_realname/"{plugins,bios,memcards,cdimages,$pkgver/{cheats,patches,sstates,cfg}}
 
 	cd "$srcdir"
 
@@ -65,11 +60,8 @@ package () {
 		"$pkgdir/opt/$_realname/$pkgver/cheats/$item"
 	done
 
-	for things in plugins bios memcards cfg
+	for things in plugins bios memcards cdimages
 	do
-	    if [[ -d "$pkgdir/opt/$_realname/$pkgver/$things" ]]; then
-		rm -rf "$pkgdir/opt/$_realname/$pkgver/$things"
-	    fi
 	    ln -sf "/opt/$_realname/$things" -T "$pkgdir/opt/$_realname/$pkgver/$things"
 	done
 
